@@ -1,0 +1,21 @@
+footer {
+  font-family: 'Arial', sans-serif;
+  font-size: 0.9rem;
+}
+
+footer a:hover {
+  text-decoration: underline;
+  color: #ffc107; /* golden hover */
+}
+
+footer .bi-facebook:hover {
+  color: #3b5998;
+}
+
+footer .bi-instagram:hover {
+  color: #e4405f;
+}
+
+.background{
+    background-color: #e65872;
+}

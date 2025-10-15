@@ -1,0 +1,34 @@
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-capitalize">Welcome to Our Makeup Store 💄</h1>
+        <p class="text-muted fs-5">Explore our top beauty picks powered by the Makeup API</p>
+    </div>
+    @if(isLoading){
+    <div class="text-center my-5">
+        <div class="spinner-border text-danger" role="status"></div>
+        <p class="mt-2 text-muted">Loading products...</p>
+    </div>
+    }
+    @else{
+    <div class="row g-4">
+        @for (product of products; track $index) {
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <img [src]="product.image_link || 'assets/images/placeholder.jpg'" class="card-img-top"
+                    alt="{{ product.name }}" />
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-muted">{{ product.brand | titlecase }}</p>
+                    <p class="fw-semibold text-danger">
+                        {{ product.price || 'N/A' }} {{ product.price_sign || '$' }}
+                    </p>
+                    <a [href]="product.product_link" target="_blank" class="btn btn-outline-danger w-100">
+                        View Product
+                    </a>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>
