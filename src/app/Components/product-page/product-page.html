@@ -1,1 +1,76 @@
-<p>product-page works!</p>
+<div class="container my-5" style="margin-top: 100px;">
+    <h2 class="text-center text-uppercase mb-4">Makeup Products</h2>
+
+    @if (loading) {
+    <div class="text-center my-5">
+        <div class="spinner-border text-dark"></div>
+        <p>Loading products...</p>
+    </div>
+    } @else {
+
+    <!-- Categories -->
+    <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+        <button class="btn btn-outline-dark" [class.active]="selectedCategory === 'All'" (click)="filteredProducts = products; selectedCategory='All'; subCategories=[]">
+        All
+      </button> @for (category of categories; track $index) {
+        <button class="btn btn-outline-dark" [class.active]="selectedCategory === category" (click)="filterByCategory(category)">
+          {{ category }}
+        </button> }
+    </div>
+
+    <!-- Subcategories -->
+    @if (subCategories.length > 0) {
+    <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+        @for (sub of subCategories; track $index) {
+        <button class="btn btn-outline-secondary" [class.active]="selectedSubCategory === sub" (click)="filterBySubCategory(sub)">
+            {{ sub }}
+          </button> }
+    </div>
+    }
+
+    <!-- Product Grid -->
+    <div class="row">
+        @for (product of pagedProducts; track product.id ?? $index) {
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 shadow-sm product-card">
+                <img [src]="product.image_link || 'https://via.placeholder.com/200'" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body text-center">
+                    <h6 class="card-title">{{ product.name }}</h6>
+                    <p class="text-muted mb-1">{{ product.brand || 'Unknown Brand' }}</p>
+                    <p><strong>${{ product.price || 'N/A' }}</strong></p>
+                    <button class="btn btn-dark btn-sm" (click)="addToCart(product)">
+                Add to Cart
+              </button>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+    <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link" (click)="changePage(currentPage - 1)">
+              Previous
+            </button>
+            </li>
+
+            @for (page of totalPagesArray; track $index) {
+            <li class="page-item" [class.active]="currentPage === page">
+                <button class="page-link" (click)="changePage(page)">
+                {{ page }}
+              </button>
+            </li>
+            }
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link" (click)="changePage(currentPage + 1)">
+              Next
+            </button>
+            </li>
+        </ul>
+    </nav>
+    } }
+</div>
