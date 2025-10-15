@@ -1,0 +1,52 @@
+.text-pink {
+  color: #e83e8c;
+}
+
+/* Make 5 columns per row on large screens */
+@media (min-width: 992px) {
+  .col-lg-custom {
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
+}
+
+/* Category card styles */
+.category-card {
+  position: relative;
+  height: 220px; /* increased size */
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+/* Overlay */
+.category-card .overlay {
+  background: rgba(0, 0, 0, 0.45);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.category-card:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 20px rgba(232, 62, 140, 0.5);
+}
+
+.category-card:hover .overlay {
+  background: rgba(232, 62, 140, 0.55);
+}
+
+.category-card h5 {
+  margin: 0;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-size: 1.1rem;
+}

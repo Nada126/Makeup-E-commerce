@@ -19,8 +19,8 @@ export class HomeProducts implements OnInit{
     .get<any[]>('http://makeup-api.herokuapp.com/api/v1/products.json?brand=maybelline')
     .subscribe({
       next: (data) => {
-        this.products = data.slice(0,3); 
-        this.isLoading = false;        
+        this.products = data.slice(0,3);
+        this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
