@@ -25,7 +25,7 @@
         <div class="collapse navbar-collapse" id="navbarMenu">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" routerLinkActive="" routerLink="/home">Home</a>
+              <a class="nav-link active" routerLink="/home">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" routerLink="/about">About</a>
@@ -34,7 +34,7 @@
               <a class="nav-link" href="#women">Favourit's</a>
             </li>
 
-            <!-- Pages Dropdown -->
+            <!-- Products Dropdown -->
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -53,7 +53,7 @@
               </ul>
             </li>
 
-            <!-- Features Dropdown -->
+            <!-- Account Dropdown -->
             <li class="nav-item dropdown">
               <a
                 class="nav-link dropdown-toggle"
@@ -64,9 +64,16 @@
               >
                 Account
               </a>
+            
               <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">LogIn</a></li>
-                <li><a class="dropdown-item" href="#">Register</a></li>
+                @if(isLoggedIn){
+                <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
+              }
+              @else {
+                <li><a class="dropdown-item" routerLink="/login">LogIn</a></li>
+                
+                <li><a class="dropdown-item" routerLink="/register">Register</a></li>
+              }
               </ul>
             </li>
 
