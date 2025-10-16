@@ -1,0 +1,13 @@
+<div class="slideShow" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+    <img [src]="imgSrc" alt="Slide" class="slide-img">
+    
+    <!-- Prev Arrow -->
+    <button class="arrow left" (click)="prev()">
+      &#10094;
+    </button>
+
+    <!-- Next Arrow -->
+    <button class="arrow right" (click)="next()">
+      &#10095;
+    </button>
+</div>
