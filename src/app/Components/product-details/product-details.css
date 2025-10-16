@@ -1,0 +1,126 @@
+.product-details {
+    background-color: #f8f9fa;
+    /* light gray background */
+    min-height: 100vh;
+}
+
+.product-image-wrapper {
+    background: #fff;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-image-wrapper:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-img {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    border-radius: 1rem;
+}
+
+.product-title {
+    font-size: 2rem;
+    color: #212529;
+}
+
+.price {
+    color: #f27bc8;
+}
+
+.desc {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #6c757d;
+}
+
+.btn-primary {
+    background-color: #f27bc8;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #df69b5;
+    transform: translateY(-2px);
+}
+
+/* product-details.css additions */
+
+/* position heart icon over the image (top-right) */
+.product-image-wrapper {
+  position: relative;
+  background: #fff;
+}
+
+/* small circular heart button on top-right */
+.fav-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  border: none;
+  background: rgba(255,255,255,0.9);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform .12s ease, background .12s ease;
+  color: #ff4d6d; /* pink/red tone for heart */
+  font-size: 1.1rem;
+}
+
+/* hover effect (visual only) */
+.fav-btn:hover {
+  transform: translateY(-3px);
+  background: #fff;
+}
+
+/* reduce button default outline/padding */
+.fav-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255,77,109,0.12);
+}
+
+/* product image styling (kept from before) */
+.product-img {
+  width: 100%;
+  max-height: 600px;
+  object-fit: cover;
+  border-radius: 1rem;
+}
+
+/* adjust small brand text */
+.product-details .text-muted.small {
+  margin-bottom: 0.5rem;
+}
+
+/* small tweaks for stars */
+.text-warning i {
+  font-size: 1rem;
+  margin-right: 1px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 767.98px) {
+    .product-details {
+        padding: 2rem 1rem;
+    }
+
+    .product-title {
+        font-size: 1.5rem;
+    }
+
+    .price {
+        font-size: 1.5rem;
+    }
+}

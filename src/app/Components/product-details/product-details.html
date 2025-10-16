@@ -1,0 +1,82 @@
+<!-- src/app/Components/product-details/product-details.html -->
+<div class="product-details container py-5">
+  <div *ngIf="product; else notFound">
+    <div class="row justify-content-center align-items-center g-5">
+      <div class="col-md-6 text-center">
+        <div class="product-image-wrapper shadow-sm rounded-4 overflow-hidden position-relative">
+          <!-- heart icon (visual only for now) -->
+          <button class="fav-btn" type="button" aria-label="Add to favorites" title="Add to favorites">
+            <i class="bi bi-heart"></i>
+          </button>
+
+          <img
+            [src]="product.image"
+            alt="{{ product.name }}"
+            class="img-fluid product-img"
+            (error)="onImageError($event)"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="d-flex align-items-start justify-content-between">
+          <div>
+            <h1 class="product-title mb-1 fw-semibold">{{ product.name }}</h1>
+
+            <!-- brand -->
+            <p class="text-muted small mb-2">{{ product.brand || 'Unknown' }}</p>
+
+            <!-- stars & rating number (if available) -->
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div class="text-warning small" aria-hidden="true">
+                <ng-container *ngFor="let filled of getStarsArray(product.rating)">
+                  <i class="bi" [ngClass]="filled ? 'bi-star-fill' : 'bi-star'"></i>
+                </ng-container>
+              </div>
+              <div class="small text-muted" *ngIf="product.rating">
+                ({{ product.rating }})
+              </div>
+            </div>
+          </div>
+
+          <!-- simplified back icon button (no text) -->
+          <button class="btn btn-link p-0" (click)="goBack()" aria-label="Go back" title="Go back">
+            <i class="bi bi-arrow-left fs-4"></i>
+          </button>
+        </div>
+
+        <!-- السعر بالدولار -->
+        <p class="price fs-2 fw-bold mb-3">
+          {{ product.price | currency:'USD':'symbol':'1.0-2' }}
+        </p>
+
+        <p class="desc text-muted mb-4" *ngIf="product.description">
+          {{ product.description }}
+        </p>
+
+        <div class="d-flex gap-3">
+          <button
+            class="btn btn-primary px-5 py-3 rounded-pill shadow-sm"
+            (click)="addToCart()"
+          >
+            <i class="bi bi-cart-plus me-2"></i> Add to Cart
+          </button>
+
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #notFound>
+    <div class="text-center py-5">
+      <p>Product not found.</p>
+      <button class="btn btn-link" (click)="goBack()">Go back</button>
+    </div>
+  </ng-template>
+
+  <div *ngIf="errorMessage" class="text-center text-danger mt-4">
+    <p>{{ errorMessage }}</p>
+    <button class="btn btn-link" (click)="goBack()">Go back</button>
+  </div>
+</div>
