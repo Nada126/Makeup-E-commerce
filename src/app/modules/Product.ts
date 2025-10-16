@@ -7,4 +7,5 @@ export interface Product {
   image_link: string;
   product_type: string;
   product_category: string;
+  category: string;
 }

@@ -2,15 +2,30 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../../app/modules/Product';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './product-page.html',
   styleUrls: ['./product-page.css']
 })
 export class ProductPage implements OnInit {
+handleCategoryClick(category: string) {
+  // List of product types that should navigate to their own pages
+  const specialProductTypes = [
+    'lipstick', 'lip_liner', 'foundation', 'eyeliner',
+    'eyeshadow', 'blush', 'bronzer', 'mascara',
+    'eyebrow', 'nail_polish'
+  ];
+
+  if (specialProductTypes.includes(category)) {
+    this.navigateToProductType(category);
+  } else {
+    this.filterByCategory(category);
+  }
+}
   products: Product[] = [];
   filteredProducts: Product[] = [];
   categories: string[] = [];
@@ -19,10 +34,15 @@ export class ProductPage implements OnInit {
   selectedSubCategory = 'All';
 
   currentPage = 1;
-  itemsPerPage = 30; // show 50 per page
+  itemsPerPage = 25;
   loading = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
+
+navigateToProductType(productType: string) {
+  this.router.navigate(['/', productType]);
+}
+
 
   ngOnInit() {
     this.fetchProducts();
@@ -47,7 +67,7 @@ export class ProductPage implements OnInit {
       const checkImagePromises = allProducts.map(product =>
         this.http.head(product.image_link || '', { observe: 'response' }).toPromise()
           .then(() => validProducts.push(product))
-          .catch(() => null) 
+          .catch(() => null)
       );
 
       Promise.all(checkImagePromises).then(() => {
@@ -66,6 +86,7 @@ export class ProductPage implements OnInit {
 
 
   // pagination
+  // ... rest of your existing methods
   get totalPages(): number {
     return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
   }
@@ -78,6 +99,12 @@ export class ProductPage implements OnInit {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     return this.filteredProducts.slice(start, start + this.itemsPerPage);
   }
+
+  filterByAll() {
+  this.filteredProducts = this.products;
+  this.selectedCategory = 'All';
+  this.subCategories = [];
+}
 
   filterByCategory(category: string) {
     this.selectedCategory = category;

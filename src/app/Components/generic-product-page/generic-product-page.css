@@ -1,0 +1,110 @@
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card h5 {
+    font-weight: 600;
+}
+
+.card-title {
+    font-size: 0.9rem;
+}
+
+.text-warning i {
+    font-size: 0.85rem;
+}
+
+.text-warning i {
+    font-size: 1rem;
+    margin-right: 1px;
+}
+
+/* Back button styling */
+.btn-outline-secondary {
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Category buttons */
+.btn-outline-dark {
+    border-radius: 50px;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-weight: 500;
+}
+
+.btn-outline-dark.active {
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+    color: #fff;
+    border-color: #ff6f91;
+}
+
+.btn-outline-dark:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Pagination container */
+.pagination {
+    gap: 0.3rem;
+}
+
+/* Pagination numbers */
+.pagination .page-link {
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+    color: #fff;
+    border: none;
+    font-weight: 500;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover effect */
+.pagination .page-link:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Active page */
+.pagination .active .page-link {
+    background: linear-gradient(45deg, #ff6f91, #ff9a9e);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Add to cart button */
+.btn-dark {
+    background: linear-gradient(45deg, #495057, #6c757d);
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-dark:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
