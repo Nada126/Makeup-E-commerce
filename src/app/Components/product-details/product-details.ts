@@ -1,8 +1,9 @@
-// src/app/Components/product-details/product-details.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { ReviewService } from '../../Services/review-service';
+import { Review } from '../../modules/review';
 
 @Component({
   selector: 'app-product-details',
@@ -16,15 +17,19 @@ export class ProductDetails implements OnInit {
   productId?: number;
   loading = false;
   errorMessage: string | null = null;
+  reviews: Review[] = [];
+  showReviews = false;
+  reviewsLoading = false;
+  reviewsError: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private reviewService: ReviewService
   ) {}
 
   ngOnInit() {
-    // try navigation state first
     const nav = (this.router as any).getCurrentNavigation ? (this.router as any).getCurrentNavigation() : null;
     const stateProduct = nav?.extras?.state?.product ?? (history && (history.state as any)?.product);
 
@@ -61,6 +66,7 @@ export class ProductDetails implements OnInit {
           return;
         }
         this.product = this.normalizeProduct(data);
+        console.log('Product loaded:', this.product);
         this.loading = false;
       },
       error: (err) => {
@@ -73,6 +79,64 @@ export class ProductDetails implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  toggleReviews() {
+    this.showReviews = !this.showReviews;
+    
+    if (this.showReviews && this.reviews.length === 0) {
+      this.loadReviews();
+    }
+  }
+
+  loadReviews() {
+    if (!this.product) return;
+
+    this.reviewsLoading = true;
+    this.reviewsError = null;
+
+    const category = this.product.product_type;
+    console.log('Loading reviews for category:', category);
+
+    this.reviewService.getReviewsByCategory(category).subscribe({
+      next: (reviews) => {
+        console.log('Reviews loaded:', reviews);
+        // Normalize reviews to the app's Review interface (ensure required 'rating' exists)
+        this.reviews = (reviews || []).map((r: any) => ({
+          userName: r.userName ?? r.username ?? r.user ?? 'Anonymous',
+          userImage: r.userImage ?? r.userImageUrl ?? r.avatar ?? '',
+          date: r.date ?? r.createdAt ?? new Date().toISOString(),
+          rating: typeof r.rating === 'number' ? r.rating : Number(r.rating) || 0,
+          comment: r.comment ?? r.text ?? ''
+        }));
+        this.reviewsLoading = false;
+        
+        // Calculate average rating from reviews
+        if (this.reviews.length > 0) {
+          this.product.rating = this.calculateAverageRating();
+        }
+        
+        if (this.reviews.length === 0) {
+          this.reviewsError = 'No reviews available for this product category.';
+        }
+      },
+      error: (err) => {
+        console.error('Error loading reviews:', err);
+        this.reviewsError = 'Failed to load reviews. Please try again later.';
+        this.reviewsLoading = false;
+      }
+    });
+  }
+
+  // Calculate average rating from all reviews
+  calculateAverageRating(): number {
+    if (!this.reviews || this.reviews.length === 0) return 0;
+    
+    const total = this.reviews.reduce((sum, review) => sum + review.rating, 0);
+    const average = total / this.reviews.length;
+    
+    // Round to 1 decimal place
+    return Math.round(average * 10) / 10;
   }
 
   normalizeProduct(data: any) {
@@ -91,8 +155,17 @@ export class ProductDetails implements OnInit {
   }
 
   getStarsArray(rating: any): boolean[] {
-    const stars = Math.round(Number(rating) || 0);
+    const numericRating = Number(rating) || 0;
+    const stars = Math.round(numericRating);
     return Array.from({ length: 5 }, (_, i) => i < stars);
+  }
+
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   addToCart() {

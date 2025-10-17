@@ -1,20 +1,14 @@
-<!-- src/app/Components/product-details/product-details.html -->
 <div class="product-details container py-5">
-  <div *ngIf="product; else notFound">
+  @if (product) {
     <div class="row justify-content-center align-items-center g-5">
       <div class="col-md-6 text-center">
         <div class="product-image-wrapper shadow-sm rounded-4 overflow-hidden position-relative">
-          <!-- heart icon (visual only for now) -->
           <button class="fav-btn" type="button" aria-label="Add to favorites" title="Add to favorites">
             <i class="bi bi-heart"></i>
           </button>
 
-          <img
-            [src]="product.image"
-            alt="{{ product.name }}"
-            class="img-fluid product-img"
-            (error)="onImageError($event)"
-          />
+          <img [src]="product.image" alt="{{ product.name }}" class="img-fluid product-img"
+            (error)="onImageError($event)" />
         </div>
       </div>
 
@@ -22,61 +16,151 @@
         <div class="d-flex align-items-start justify-content-between">
           <div>
             <h1 class="product-title mb-1 fw-semibold">{{ product.name }}</h1>
+            <p class="brand-name mb-2">{{ product.brand || 'Unknown' }}</p>
 
-            <!-- brand -->
-            <p class="text-muted small mb-2">{{ product.brand || 'Unknown' }}</p>
-
-            <!-- stars & rating number (if available) -->
             <div class="d-flex align-items-center gap-2 mb-3">
               <div class="text-warning small" aria-hidden="true">
-                <ng-container *ngFor="let filled of getStarsArray(product.rating)">
+                @for (filled of getStarsArray(product.rating); track $index) {
                   <i class="bi" [ngClass]="filled ? 'bi-star-fill' : 'bi-star'"></i>
-                </ng-container>
+                }
               </div>
-              <div class="small text-muted" *ngIf="product.rating">
-                ({{ product.rating }})
-              </div>
+              @if (product.rating && product.rating > 0) {
+                <div class="rating-text">
+                  ({{ product.rating | number:'1.1-1' }} from {{ reviews.length }} reviews)
+                </div>
+              }
+              @if (!product.rating || product.rating === 0) {
+                <div class="rating-text">
+                  (No reviews yet)
+                </div>
+              }
             </div>
           </div>
 
-          <!-- simplified back icon button (no text) -->
           <button class="btn btn-link p-0" (click)="goBack()" aria-label="Go back" title="Go back">
             <i class="bi bi-arrow-left fs-4"></i>
           </button>
         </div>
 
-        <!-- السعر بالدولار -->
         <p class="price fs-2 fw-bold mb-3">
           {{ product.price | currency:'USD':'symbol':'1.0-2' }}
         </p>
 
-        <p class="desc text-muted mb-4" *ngIf="product.description">
-          {{ product.description }}
-        </p>
+        @if (product.description) {
+          <p class="desc text-muted mb-4">
+            {{ product.description }}
+          </p>
+        }
 
-        <div class="d-flex gap-3">
-          <button
-            class="btn btn-primary px-5 py-3 rounded-pill shadow-sm"
-            (click)="addToCart()"
-          >
+        <div class="d-flex gap-3 flex-wrap">
+          <button class="btn btn-primary px-5 py-3 rounded-pill shadow-sm" (click)="addToCart()">
             <i class="bi bi-cart-plus me-2"></i> Add to Cart
           </button>
 
-          
+          <!-- View Reviews Button -->
+          <button class="btn btn-primary px-4 py-3 rounded-pill shadow-sm" (click)="toggleReviews()"
+            [disabled]="reviewsLoading">
+            <i class="bi bi-chat-text me-2"></i>
+            {{ showReviews ? 'Hide Reviews' : 'View Reviews' }}
+            @if (reviews.length > 0) {
+              <span class="badge bg-danger bg-opacity-50 ms-2">
+                {{ reviews.length }}
+              </span>
+            }
+            @if (reviewsLoading) {
+              <span class="spinner-border spinner-border-sm ms-2"></span>
+            }
+          </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <ng-template #notFound>
+    <!-- Reviews Section -->
+    @if (showReviews) {
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="reviews-section">
+            <h3 class="mb-4">
+              Customer Reviews
+              @if (reviews.length > 0) {
+                <span class="badge bg-danger bg-opacity-50 fs-6">
+                  {{ reviews.length }}
+                </span>
+              }
+            </h3>
+
+            <!-- Loading State -->
+            @if (reviewsLoading) {
+              <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading reviews...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading reviews...</p>
+              </div>
+            }
+
+            <!-- Error State -->
+            @if (reviewsError && !reviewsLoading) {
+              <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                {{ reviewsError }}
+              </div>
+            }
+
+            <!-- No Reviews State -->
+            @if (!reviewsLoading && !reviewsError && reviews.length === 0) {
+              <div class="text-center py-4 text-muted">
+                <i class="bi bi-chat-square-text display-4 d-block mb-2"></i>
+                <p>No reviews available for this product yet.</p>
+                <small>Be the first to review this product!</small>
+              </div>
+            }
+
+            <!-- Reviews List -->
+            @if (!reviewsLoading && reviews.length > 0) {
+              <div class="reviews-list">
+                @for (review of reviews; track review.userName + review.date) {
+                  <div class="review-card card mb-3 border-0 shadow-sm">
+                    <div class="card-body">
+                      <div class="d-flex align-items-start gap-3">
+                        <img [src]="review.userImage" [alt]="review.userName" class="rounded-circle user-avatar"
+                          (error)="review.userImage = 'https://via.placeholder.com/50'">
+                        <div class="flex-grow-1">
+                          <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                              <h6 class="mb-0 fw-semibold">{{ review.userName }}</h6>
+                              <!-- Individual review stars -->
+                              <div class="text-warning small mt-1">
+                                @for (filled of getStarsArray(review.rating); track $index) {
+                                  <i class="bi" [ngClass]="filled ? 'bi-star-fill' : 'bi-star'"></i>
+                                }
+                              </div>
+                            </div>
+                            <small class="review-date">{{ formatDate(review.date) }}</small>
+                          </div>
+                          <p class="mb-0 review-comment">{{ review.comment }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  } @else {
     <div class="text-center py-5">
       <p>Product not found.</p>
       <button class="btn btn-link" (click)="goBack()">Go back</button>
     </div>
-  </ng-template>
+  }
 
-  <div *ngIf="errorMessage" class="text-center text-danger mt-4">
-    <p>{{ errorMessage }}</p>
-    <button class="btn btn-link" (click)="goBack()">Go back</button>
-  </div>
+  @if (errorMessage) {
+    <div class="text-center text-danger mt-4">
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn-link" (click)="goBack()">Go back</button>
+    </div>
+  }
 </div>
