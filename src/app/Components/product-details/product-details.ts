@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { ReviewService } from '../../Services/review-service';
-import { Review } from '../../modules/review';
+import { ReviewService, Review, User } from '../../Services/review-service';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './product-details.html',
   styleUrls: ['./product-details.css']
 })
@@ -22,12 +22,22 @@ export class ProductDetails implements OnInit {
   reviewsLoading = false;
   reviewsError: string | null = null;
 
+  // New properties for adding reviews
+  showAddReviewForm = false;
+  newReview: Partial<Review> = {
+    rating: 5,
+    comment: ''
+  };
+  submittingReview = false;
+  availableUsers: User[] = [];
+  selectedUserId: number | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
     private reviewService: ReviewService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const nav = (this.router as any).getCurrentNavigation ? (this.router as any).getCurrentNavigation() : null;
@@ -35,6 +45,7 @@ export class ProductDetails implements OnInit {
 
     if (stateProduct) {
       this.product = this.normalizeProduct(stateProduct);
+      this.loadAvailableUsers();
       return;
     }
 
@@ -68,6 +79,7 @@ export class ProductDetails implements OnInit {
         this.product = this.normalizeProduct(data);
         console.log('Product loaded:', this.product);
         this.loading = false;
+        this.loadAvailableUsers();
       },
       error: (err) => {
         console.error('Error fetching product details:', err);
@@ -81,13 +93,161 @@ export class ProductDetails implements OnInit {
     });
   }
 
+  loadAvailableUsers() {
+    this.reviewService.getUsers().subscribe({
+      next: (users) => {
+        console.log('Raw users from API:', users);
+        // Ensure all user IDs are numbers
+        this.availableUsers = users.map(user => ({
+          ...user,
+          id: Number(user.id) // Convert ID to number
+        }));
+        
+        console.log('Normalized users:', this.availableUsers);
+        
+        if (this.availableUsers.length > 0) {
+          this.selectedUserId = this.availableUsers[0].id;
+          console.log('Default selected user ID:', this.selectedUserId);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+      }
+    });
+  }
+
+  scrollToReviews() {
+    setTimeout(() => {
+      const reviewsSection = document.querySelector('.reviews-section');
+      if (reviewsSection) {
+        reviewsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  scrollToAddReview() {
+    setTimeout(() => {
+      const addReviewForm = document.querySelector('.add-review-form');
+      if (addReviewForm) {
+        addReviewForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  // FIXED: Toggle reviews - don't show form when viewing reviews
   toggleReviews() {
     this.showReviews = !this.showReviews;
     
-    if (this.showReviews && this.reviews.length === 0) {
-      this.loadReviews();
+    if (this.showReviews) {
+      // Close add review form if it's open
+      if (this.showAddReviewForm) {
+        this.showAddReviewForm = false;
+      }
+      
+      if (this.reviews.length === 0) {
+        this.loadReviews();
+      }
+      
+      this.scrollToReviews();
     }
   }
+
+  // FIXED: Toggle add review form - don't show reviews when adding review
+  toggleAddReviewForm() {
+    this.showAddReviewForm = !this.showAddReviewForm;
+    
+    if (this.showAddReviewForm) {
+      this.resetReviewForm();
+      
+      // Close reviews if they're open
+      if (this.showReviews) {
+        this.showReviews = false;
+      }
+      
+      this.scrollToAddReview();
+    }
+  }
+
+  resetReviewForm() {
+    this.newReview = {
+      rating: 5,
+      comment: ''
+    };
+    if (this.availableUsers.length > 0) {
+      this.selectedUserId = this.availableUsers[0].id;
+    }
+  }
+
+  // FIXED: Submit review with proper user handling
+submitReview() {
+  console.log('=== SUBMIT REVIEW DEBUG ===');
+  console.log('Selected User ID:', this.selectedUserId);
+  console.log('Available Users:', this.availableUsers);
+
+  if (!this.product) {
+    console.error('No product selected');
+    return;
+  }
+
+  if (!this.selectedUserId) {
+    console.error('No user selected');
+    return;
+  }
+
+  if (!this.newReview.comment?.trim()) {
+    console.error('No review comment');
+    return;
+  }
+
+  // Find user with proper ID comparison
+  const selectedUser = this.availableUsers.find(user => {
+    return user.id === Number(this.selectedUserId);
+  });
+
+  console.log('Found user:', selectedUser);
+
+  if (!selectedUser) {
+    console.error('User not found. Available IDs:', this.availableUsers.map(u => u.id));
+    return;
+  }
+
+  this.submittingReview = true;
+
+  const review: Review = {
+    userName: selectedUser.name,
+    userImage: selectedUser.avatar,
+    date: new Date().toISOString().split('T')[0],
+    rating: this.newReview.rating || 5,
+    comment: this.newReview.comment.trim(),
+    category: this.product.product_type.toLowerCase()
+  };
+
+  console.log('Submitting review:', review);
+
+  this.reviewService.addReview(review).subscribe({
+    next: (newReview) => {
+      console.log('Review added successfully:', newReview);
+      
+      // Add to local reviews
+      this.reviews.unshift(newReview);
+      
+      // Clear error message
+      this.reviewsError = null;
+      
+      // Update product rating
+      this.product.rating = this.calculateAverageRating();
+      
+      // Reset and close form
+      this.showAddReviewForm = false;
+      this.resetReviewForm();
+      this.submittingReview = false;
+    },
+    error: (err) => {
+      console.error('Error submitting review:', err);
+      this.submittingReview = false;
+    }
+  });
+}
 
   loadReviews() {
     if (!this.product) return;
@@ -101,22 +261,31 @@ export class ProductDetails implements OnInit {
     this.reviewService.getReviewsByCategory(category).subscribe({
       next: (reviews) => {
         console.log('Reviews loaded:', reviews);
-        // Normalize reviews to the app's Review interface (ensure required 'rating' exists)
-        this.reviews = (reviews || []).map((r: any) => ({
-          userName: r.userName ?? r.username ?? r.user ?? 'Anonymous',
-          userImage: r.userImage ?? r.userImageUrl ?? r.avatar ?? '',
-          date: r.date ?? r.createdAt ?? new Date().toISOString(),
-          rating: typeof r.rating === 'number' ? r.rating : Number(r.rating) || 0,
-          comment: r.comment ?? r.text ?? ''
-        }));
+        
+        this.reviews = (reviews || [])
+          .filter(review => 
+            review && 
+            review.userName && 
+            review.userName !== 'Anonymous' && 
+            review.comment && 
+            review.comment.trim() !== '' &&
+            review.rating > 0
+          )
+          .map((r: any) => ({
+            userName: r.userName ?? r.username ?? r.user ?? 'Anonymous',
+            userImage: r.userImage ?? r.userImageUrl ?? r.avatar ?? 'https://via.placeholder.com/50',
+            date: r.date ?? r.createdAt ?? new Date().toISOString(),
+            rating: typeof r.rating === 'number' ? r.rating : Number(r.rating) || 0,
+            comment: r.comment ?? r.text ?? '',
+            category: r.category ?? this.product.product_type.toLowerCase()
+          }));
+        
         this.reviewsLoading = false;
         
-        // Calculate average rating from reviews
         if (this.reviews.length > 0) {
           this.product.rating = this.calculateAverageRating();
-        }
-        
-        if (this.reviews.length === 0) {
+          this.reviewsError = null;
+        } else {
           this.reviewsError = 'No reviews available for this product category.';
         }
       },
@@ -128,14 +297,12 @@ export class ProductDetails implements OnInit {
     });
   }
 
-  // Calculate average rating from all reviews
   calculateAverageRating(): number {
     if (!this.reviews || this.reviews.length === 0) return 0;
-    
+
     const total = this.reviews.reduce((sum, review) => sum + review.rating, 0);
     const average = total / this.reviews.length;
-    
-    // Round to 1 decimal place
+
     return Math.round(average * 10) / 10;
   }
 

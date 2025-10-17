@@ -1,7 +1,9 @@
 export interface Review {
+    id?: number;
     userName: string;
     userImage: string;
     date: string;
-    rating: number; 
+    rating: number;
     comment: string;
+    category: string;
 }

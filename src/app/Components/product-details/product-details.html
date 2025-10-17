@@ -47,12 +47,14 @@
         </p>
 
         @if (product.description) {
-          <p class="desc text-muted mb-4">
-            {{ product.description }}
-          </p>
+          <div class="description-container mb-4">
+            <p class="desc text-muted mb-2 scrollable-description">
+              {{ product.description }}
+            </p>
+          </div>
         }
 
-        <div class="d-flex gap-3 flex-wrap">
+        <div class="button-group">
           <button class="btn btn-primary px-5 py-3 rounded-pill shadow-sm" (click)="addToCart()">
             <i class="bi bi-cart-plus me-2"></i> Add to Cart
           </button>
@@ -63,7 +65,7 @@
             <i class="bi bi-chat-text me-2"></i>
             {{ showReviews ? 'Hide Reviews' : 'View Reviews' }}
             @if (reviews.length > 0) {
-              <span class="badge bg-danger bg-opacity-50 ms-2">
+              <span class="badge bg-light text-dark ms-2">
                 {{ reviews.length }}
               </span>
             }
@@ -71,9 +73,96 @@
               <span class="spinner-border spinner-border-sm ms-2"></span>
             }
           </button>
+
+          <!-- Add Review Button - Hidden when form is open -->
+          @if (!showAddReviewForm) {
+            <button class="btn btn-outline-primary px-4 py-3 rounded-pill shadow-sm" (click)="toggleAddReviewForm()">
+              <i class="bi bi-pencil-square me-2"></i> Add Review
+            </button>
+          }
         </div>
       </div>
     </div>
+
+    <!-- Add Review Form - STANDALONE (shown when form is open but reviews are not visible) -->
+    @if (showAddReviewForm && !showReviews) {
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="add-review-form card border-0 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title mb-4">Write Your Review</h5>
+              
+              <!-- User Selection -->
+              @if (availableUsers.length > 0) {
+                <div class="mb-3">
+                  <label class="form-label">Post as:</label>
+                  <select class="form-select" [(ngModel)]="selectedUserId">
+                    @for (user of availableUsers; track user.id) {
+                      <option [value]="user.id">
+                        {{ user.name }}
+                      </option>
+                    }
+                  </select>
+                  <small class="text-muted">Select a guest user for demo purposes</small>
+                </div>
+              }
+
+              <!-- Rating Selection -->
+              <div class="mb-3">
+                <label class="form-label">Your Rating</label>
+                <div class="rating-selector">
+                  @for (star of [1,2,3,4,5]; track star) {
+                    <button type="button" 
+                            class="btn btn-link p-0 me-1"
+                            (click)="newReview.rating = star"
+                            [class.text-warning]="star <= (newReview.rating || 0)"
+                            [class.text-muted]="star > (newReview.rating || 0)">
+                      <i class="bi bi-star-fill fs-4"></i>
+                    </button>
+                  }
+                  <span class="ms-2 text-muted">
+                    ({{ newReview.rating }}/5)
+                  </span>
+                </div>
+              </div>
+
+              <!-- Comment Textarea -->
+              <div class="mb-3">
+                <label for="reviewComment" class="form-label">Your Review</label>
+                <textarea 
+                  id="reviewComment"
+                  class="form-control" 
+                  rows="4" 
+                  placeholder="Share your experience with this product..."
+                  [(ngModel)]="newReview.comment"
+                  [disabled]="submittingReview"></textarea>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="d-flex gap-2 justify-content-end">
+                <button type="button" 
+                        class="btn btn-outline-secondary" 
+                        (click)="toggleAddReviewForm()"
+                        [disabled]="submittingReview">
+                  Cancel
+                </button>
+                <button type="button" 
+                        class="btn btn-primary" 
+                        (click)="submitReview()"
+                        [disabled]="!newReview.comment?.trim() || submittingReview">
+                  @if (submittingReview) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    Submitting...
+                  } @else {
+                    <i class="bi bi-send me-2"></i> Submit Review
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
 
     <!-- Reviews Section -->
     @if (showReviews) {
@@ -144,6 +233,82 @@
                     </div>
                   </div>
                 }
+              </div>
+            }
+
+            <!-- Add Review Form - INSIDE REVIEWS SECTION (shown when both form and reviews are visible) -->
+            @if (showAddReviewForm && showReviews) {
+              <div class="add-review-form card border-0 shadow-sm mt-5">
+                <div class="card-body">
+                  <h5 class="card-title mb-4">Write Your Review</h5>
+                  
+                  <!-- User Selection -->
+                  @if (availableUsers.length > 0) {
+                    <div class="mb-3">
+                      <label class="form-label">Post as:</label>
+                      <select class="form-select" [(ngModel)]="selectedUserId">
+                        @for (user of availableUsers; track user.id) {
+                          <option [value]="user.id">
+                            {{ user.name }}
+                          </option>
+                        }
+                      </select>
+                      <small class="text-muted">Select a guest user for demo purposes</small>
+                    </div>
+                  }
+
+                  <!-- Rating Selection -->
+                  <div class="mb-3">
+                    <label class="form-label">Your Rating</label>
+                    <div class="rating-selector">
+                      @for (star of [1,2,3,4,5]; track star) {
+                        <button type="button" 
+                                class="btn btn-link p-0 me-1"
+                                (click)="newReview.rating = star"
+                                [class.text-warning]="star <= (newReview.rating || 0)"
+                                [class.text-muted]="star > (newReview.rating || 0)">
+                          <i class="bi bi-star-fill fs-4"></i>
+                        </button>
+                      }
+                      <span class="ms-2 text-muted">
+                        ({{ newReview.rating }}/5)
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Comment Textarea -->
+                  <div class="mb-3">
+                    <label for="reviewComment" class="form-label">Your Review</label>
+                    <textarea 
+                      id="reviewComment"
+                      class="form-control" 
+                      rows="4" 
+                      placeholder="Share your experience with this product..."
+                      [(ngModel)]="newReview.comment"
+                      [disabled]="submittingReview"></textarea>
+                  </div>
+
+                  <!-- Form Actions -->
+                  <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" 
+                            class="btn btn-outline-secondary" 
+                            (click)="toggleAddReviewForm()"
+                            [disabled]="submittingReview">
+                      Cancel
+                    </button>
+                    <button type="button" 
+                            class="btn btn-primary" 
+                            (click)="submitReview()"
+                            [disabled]="!newReview.comment?.trim() || submittingReview">
+                      @if (submittingReview) {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        Submitting...
+                      } @else {
+                        <i class="bi bi-send me-2"></i> Submit Review
+                      }
+                    </button>
+                  </div>
+                </div>
               </div>
             }
           </div>
