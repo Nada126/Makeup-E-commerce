@@ -5,18 +5,14 @@ import { Home } from './Components/home/home';
 import { About } from './Components/about/about';
 import { Login } from './Components/login/login';
 import { Register } from './Components/register/register';
+import { NotFound } from './Components/not-found/not-found';
 export const routes: Routes = [
-  {
-    path: '',
-    component: ProductPage
-  },
-  {
-    path: ':type', // This will handle ALL product types dynamically
-    component: GenericProductPage
-  },
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
     { path: 'home', component: Home, title: 'Home' },
+    { path: 'products', component: ProductPage, title: 'Products' },
+    { path: 'products/:type', component: GenericProductPage, title: 'Product Category' },
     { path: 'about', component: About, title: 'About' },
     { path: 'login', component: Login, title: 'Login' },
-    { path: 'register', component: Register, title: 'Register' }
+    { path: 'register', component: Register, title: 'Register' },
+    { path: '**', component: NotFound, title: 'Not Found' }
 ];

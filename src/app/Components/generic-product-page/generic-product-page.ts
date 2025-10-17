@@ -48,14 +48,17 @@ export class GenericProductPage implements OnInit {
     product.isFavorite = !product.isFavorite;
   }
   navigateToProducts() {
-    this.router.navigate(['/']);
+    this.router.navigate(['/products']);
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.productType = params['type'];
-      this.pageTitle = this.productTypeNames[this.productType] || this.formatProductType(this.productType);
-      this.fetchProducts();
+    this.route.paramMap.subscribe(params => {
+      const type = params.get('type');
+      if(type){
+        this.productType = type;
+        this.pageTitle = this.productTypeNames[type] ||this.formatProductType(type)
+        this.fetchProducts();
+      }
     });
   }
 
@@ -77,7 +80,7 @@ export class GenericProductPage implements OnInit {
         const allProducts = data.map(p => ({
           ...p,
           price: Number(p.price) || 0,
-  rating: Number(p.rating) || 0,
+          rating: Number(p.rating) || 0,
           isFavorite: false
         }));
 

@@ -31,26 +31,18 @@
               <a class="nav-link" routerLink="/about">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#women">Favourit's</a>
+              <a class="nav-link" routerLink="/Favourit">Favourit's</a>
             </li>
 
             <!-- Products Dropdown -->
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Products
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
+            <li class="nav-item ">
+              <a class="nav-link" routerLink="/products">Products</a>
+              <!-- <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" routerLink="about.html"></a></li>
-                <li><a class="dropdown-item" href="products.html"></a></li>
+                <li><a class="dropdown-item" routerLink="products.html"></a></li>
                 <li><a class="dropdown-item" href="single-product.html"></a></li>
                 <li><a class="dropdown-item" href="contact.html"></a></li>
-              </ul>
+              </ul> -->
             </li>
 
             <!-- Account Dropdown -->
@@ -64,14 +56,14 @@
               >
                 Account
               </a>
-            
+
               <ul class="dropdown-menu dropdown-menu-end">
                 @if(isLoggedIn){
                 <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
               }
               @else {
                 <li><a class="dropdown-item" routerLink="/login">LogIn</a></li>
-                
+
                 <li><a class="dropdown-item" routerLink="/register">Register</a></li>
               }
               </ul>
