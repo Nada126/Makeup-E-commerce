@@ -25,7 +25,7 @@ export class ProductDetails implements OnInit {
   // New properties for adding reviews
   showAddReviewForm = false;
   newReview: Partial<Review> = {
-    rating: 5,
+    rating: 0,
     comment: ''
   };
   submittingReview = false;
@@ -170,7 +170,7 @@ export class ProductDetails implements OnInit {
 
   resetReviewForm() {
     this.newReview = {
-      rating: 5,
+      rating: 0,
       comment: ''
     };
     if (this.availableUsers.length > 0) {

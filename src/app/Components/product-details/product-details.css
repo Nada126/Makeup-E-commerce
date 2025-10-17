@@ -342,6 +342,7 @@
   background-clip: text;
 }
 
+/* Rating Selector */
 .rating-selector {
   display: flex;
   align-items: center;
@@ -362,6 +363,18 @@
 .rating-selector .bi-star-fill {
   color: #ffd700;
   text-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.rating-selector .bi-star {
+  color: #e2e8f0; /* Empty star color */
+}
+
+.rating-selector .text-warning .bi-star-fill {
+  color: #ffd700;
+}
+
+.rating-selector .text-muted .bi-star {
+  color: #e2e8f0;
 }
 
 .form-control {
