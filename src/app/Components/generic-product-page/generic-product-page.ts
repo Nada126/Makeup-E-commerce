@@ -44,6 +44,9 @@ export class GenericProductPage implements OnInit {
     private route: ActivatedRoute
   ) {}
 
+  toggleFavorite(product: Product) {
+    product.isFavorite = !product.isFavorite;
+  }
   navigateToProducts() {
     this.router.navigate(['/']);
   }
@@ -74,7 +77,8 @@ export class GenericProductPage implements OnInit {
         const allProducts = data.map(p => ({
           ...p,
           price: Number(p.price) || 0,
-          rating: Number(p.rating) || 0
+  rating: Number(p.rating) || 0,
+          isFavorite: false
         }));
 
         // Check if image exists
@@ -142,6 +146,25 @@ export class GenericProductPage implements OnInit {
   addToCart(product: Product) {
     alert(`${product.name} added to cart!`);
   }
+sortByPrice(event: any) {
+  const value = event.target.value;
+  if (value === 'low-high') {
+    this.filteredProducts.sort((a, b) => Number(a.price) - Number(b.price));
+  } else if (value === 'high-low') {
+    this.filteredProducts.sort((a, b) => Number(b.price) - Number(a.price));
+  }
+  this.currentPage = 1;
+}
+
+sortByRating(event: any) {
+  const value = event.target.value;
+  if (value === 'low-high') {
+    this.filteredProducts.sort((a, b) => Number(a.rating) - Number(b.rating));
+  } else if (value === 'high-low') {
+    this.filteredProducts.sort((a, b) => Number(b.rating) - Number(a.rating));
+  }
+  this.currentPage = 1;
+}
 
   getStarsArray(rating: any): boolean[] {
     const stars = Math.round(Number(rating) || 0);

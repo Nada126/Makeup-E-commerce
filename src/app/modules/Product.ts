@@ -8,4 +8,5 @@ export interface Product {
   product_type: string;
   product_category: string;
   category: string;
+  isFavorite?: boolean;
 }

@@ -56,12 +56,14 @@ navigateToProductType(productType: string) {
     next: (data) => {
       const validProducts: Product[] = [];
 
-      // convert price/rating to numbers
+
       const allProducts = data.map(p => ({
-        ...p,
-        price: Number(p.price) || 0,
-        rating: Number(p.rating) || 0
-      }));
+  ...p,
+  price: Number(p.price) || 0,
+  rating: Number(p.rating) || 0,
+  isFavorite: false
+}));
+
 
       // Check if image exists
       const checkImagePromises = allProducts.map(product =>
@@ -84,6 +86,9 @@ navigateToProductType(productType: string) {
   });
 }
 
+toggleFavorite(product: Product) {
+  product.isFavorite = !product.isFavorite;
+}
 
   // pagination
   // ... rest of your existing methods
@@ -144,25 +149,26 @@ navigateToProductType(productType: string) {
     alert(`${product.name} added to cart!`);
   }
 
- sortByPrice(event: any) {
+sortByPrice(event: any) {
   const value = event.target.value;
-  if (value === 'low') {
+  if (value === 'low-high') {
     this.filteredProducts.sort((a, b) => Number(a.price) - Number(b.price));
-  } else if (value === 'high') {
+  } else if (value === 'high-low') {
     this.filteredProducts.sort((a, b) => Number(b.price) - Number(a.price));
   }
-this.currentPage = 1;
+  this.currentPage = 1;
 }
 
 sortByRating(event: any) {
   const value = event.target.value;
-  if (value === 'low') {
+  if (value === 'low-high') {
     this.filteredProducts.sort((a, b) => Number(a.rating) - Number(b.rating));
-  } else if (value === 'high') {
+  } else if (value === 'high-low') {
     this.filteredProducts.sort((a, b) => Number(b.rating) - Number(a.rating));
   }
-this.currentPage = 1;
+  this.currentPage = 1;
 }
+
 
 getStarsArray(rating: any): boolean[] {
   const stars = Math.round(Number(rating) || 0);
