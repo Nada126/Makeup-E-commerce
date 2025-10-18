@@ -71,7 +71,7 @@
   <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3">
     @for (product of pagedProducts; track product.id ?? $index) {
     <div class="col">
-      <div class="card h-100 shadow-sm position-relative text-center">
+      <div class="card h-100 shadow-sm position-relative text-center" (click)="openDetail(product)" role="button" tabindex="0">
         <!-- ❤️ Favorite Icon -->
         <i
           class="bi"

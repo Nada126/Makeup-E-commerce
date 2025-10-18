@@ -1,10 +1,8 @@
-// src/app/Components/product-page/product-page.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../../app/modules/Product';
-import { RouterModule, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-product-page',
@@ -35,6 +33,7 @@ export class ProductPage implements OnInit {
       this.filterByCategory(category);
     }
   }
+
   products: Product[] = [];
   filteredProducts: Product[] = [];
   categories: string[] = [];
@@ -45,20 +44,16 @@ export class ProductPage implements OnInit {
   currentPage = 1;
   itemsPerPage = 25;
   loading = false;
-  errorMessage: string | null = null;
 
-  // receive whole product and navigate while passing it as navigation state
+  constructor(private http: HttpClient, private router: Router) {}
+
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;
     this.router.navigate(['/product', product.id], { state: { product } });
   }
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {}
 
   navigateToProductType(productType: string) {
-    this.router.navigate(['/', productType]);
+    this.router.navigate(['/products', productType]);
   }
 
   ngOnInit() {
@@ -89,33 +84,15 @@ export class ProductPage implements OnInit {
             .catch(() => null)
         );
 
-        Promise.all(checkImagePromises)
-          .then(() => {
-            // if none passed (rare), fall back to allProducts
-            this.products = validProducts.length ? validProducts : allProducts;
-            this.filteredProducts = [...this.products];
-            this.categories = [
-              ...new Set(
-                this.products.map((p) => p.product_type).filter(Boolean)
-              ),
-            ];
-            this.loading = false;
-          })
-          .catch((err) => {
-            console.error('Image checks failed:', err);
-            this.products = allProducts;
-            this.filteredProducts = [...this.products];
-            this.categories = [
-              ...new Set(
-                this.products.map((p) => p.product_type).filter(Boolean)
-              ),
-            ];
-            this.loading = false;
-          });
+        Promise.all(checkImagePromises).then(() => {
+          this.products = validProducts;
+          this.filteredProducts = this.products;
+          this.categories = [...new Set(this.products.map((p) => p.product_type).filter(Boolean))];
+          this.loading = false;
+        });
       },
       error: (err) => {
         console.error('Error fetching products:', err);
-        this.errorMessage = 'Failed to load products.';
         this.loading = false;
       },
     });
@@ -128,7 +105,7 @@ export class ProductPage implements OnInit {
   // pagination
   // ... rest of your existing methods
   get totalPages(): number {
-    return Math.ceil(this.filteredProducts.length / this.itemsPerPage) || 1;
+    return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
   }
 
   get totalPagesArray(): number[] {
@@ -149,6 +126,7 @@ export class ProductPage implements OnInit {
   filterByCategory(category: string) {
     this.selectedCategory = category;
     this.selectedSubCategory = 'All';
+
     if (category === 'All') {
       this.filteredProducts = this.products;
       this.subCategories = [];
@@ -161,19 +139,17 @@ export class ProductPage implements OnInit {
             .filter(Boolean)
         ),
       ];
-      this.filteredProducts = this.products.filter(
-        (p) => p.product_type === category
-      );
+
+      this.filteredProducts = this.products.filter((p) => p.product_type === category);
     }
+
     this.currentPage = 1;
   }
 
   filterBySubCategory(subCategory: string) {
     this.selectedSubCategory = subCategory;
     this.filteredProducts = this.products.filter(
-      (p) =>
-        p.product_type === this.selectedCategory &&
-        p.product_category === subCategory
+      (p) => p.product_type === this.selectedCategory && p.product_category === subCategory
     );
     this.currentPage = 1;
   }
@@ -185,9 +161,9 @@ export class ProductPage implements OnInit {
     }
   }
 
-  addToCart(product: Product) {
-    alert(`${product.name} added to cart!`);
-  }
+  // addToCart(product: Product) {
+  //   alert(${product.name} added to cart!);
+  // }
 
   sortByPrice(event: any) {
     const value = event.target.value;
@@ -213,10 +189,8 @@ export class ProductPage implements OnInit {
     const stars = Math.round(Number(rating) || 0);
     return Array.from({ length: 5 }, (_, i) => i < stars);
   }
-
   getCategoryIcon(category: string): string {
-    const c = (category || '').toLowerCase();
-    switch (c) {
+    switch (category.toLowerCase()) {
       case 'lipstick':
         return 'bi bi-brush';
       case 'eyeshadow':

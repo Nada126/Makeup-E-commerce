@@ -44,6 +44,10 @@ export class GenericProductPage implements OnInit {
     private route: ActivatedRoute
   ) {}
 
+  openDetail(product: Product | undefined) {
+    if (!product || product.id == null) return;
+    this.router.navigate(['/product', product.id], { state: { product } });
+  }
   toggleFavorite(product: Product) {
     product.isFavorite = !product.isFavorite;
   }

@@ -1,4 +1,3 @@
-<!-- src/app/Components/product-page/product-page.html -->
 <div class="container my-5" style="margin-top: 100px;">
   <h2 class="text-center text-uppercase mb-4">Makeup Products</h2>
 @if (loading) {
@@ -7,7 +6,9 @@
     <p class="loading-text">Loading products...</p>
   </div>
 }
-@else {
+
+  @else {
+
   <!-- Category buttons -->
   <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center">
     <button class="category-btn"
@@ -24,7 +25,6 @@
       </button>
     }
   </div>
-}
 <div>
 <!-- 🔹 Filter Bar (Price Left, Rating Right) -->
   <div class="filter-bar">
@@ -50,19 +50,19 @@
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3 flex-grow-1">
       @for (product of pagedProducts; track product.id ?? $index) {
         <div class="col">
-          <div class="card h-100 shadow-sm text-center position-relative d-flex flex-column">
+          <div class="card h-100 shadow-sm text-center position-relative d-flex flex-column" (click)="openDetail(product)" role="button" tabindex="0">
 
-            <!-- ❤️ Favorite -->
+            <!-- ❤ Favorite -->
             <i class="bi"
-                [ngClass]="product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"
-                (click)="toggleFavorite(product)"
-                class="favorite-icon">
+              [ngClass]="product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"
+              (click)="toggleFavorite(product)"
+              class="favorite-icon">
             </i>
 
             <div class="image-container">
               <img [src]="product.image_link || 'https://via.placeholder.com/200'"
-                    alt="{{ product.name }}"
-                    class="card-img-top" />
+                  alt="{{ product.name }}"
+                  class="card-img-top" />
             </div>
 
             <div class="card-body mt-auto p-2 d-flex flex-column justify-content-between">
@@ -78,8 +78,7 @@
                 </div>
               </div>
 
-              <button class="btn btn-sm btn-outline-dark w-100 mt-auto"
-                      (click)="addToCart(product)">
+              <button class="btn btn-sm btn-outline-dark w-100 mt-auto">
                 Add to Cart
               </button>
             </div>
@@ -87,60 +86,6 @@
           </div>
         </div>
       }
-
-  <div *ngIf="errorMessage && !loading" class="alert alert-danger text-center">{{ errorMessage }}</div>
-
-  <!-- Categories -->
-  <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center" *ngIf="!loading">
-    <button class="category-btn" [class.active]="selectedCategory === 'All'" (click)="filterByCategory('All')">
-      <i class="bi bi-list"></i> All
-    </button>
-    <button *ngFor="let category of categories" class="category-btn" [class.active]="selectedCategory === category" (click)="filterByCategory(category)">
-      <i [ngClass]="getCategoryIcon(category)"></i> {{ category }}
-    </button>
-  </div>
-
-  <div class="d-flex gap-4" *ngIf="!loading">
-    <!-- Filters sidebar -->
-    <div class="filters d-flex flex-column gap-3">
-      <div class="d-flex flex-column gap-2">
-        <label class="form-label fw-bold mb-0">Price</label>
-        <select class="form-select form-select-sm" (change)="sortByPrice($event)">
-          <option value="">Sort</option>
-          <option value="low">Low → High</option>
-          <option value="high">High → Low</option>
-        </select>
-      </div>
-
-      <div class="d-flex flex-column gap-2">
-        <label class="form-label fw-bold mb-0">Rating</label>
-        <select class="form-select form-select-sm" (change)="sortByRating($event)">
-          <option value="">Sort</option>
-          <option value="low">Low → High</option>
-          <option value="high">High → Low</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Products Grid -->
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3 flex-grow-1">
-      <div *ngFor="let product of pagedProducts" class="col">
-        <div class="card h-100 shadow-sm p-2 text-center" (click)="openDetail(product)" role="button" tabindex="0">
-          <img [src]="product.image_link || 'https://via.placeholder.com/200'" alt="{{ product.name }}" class="card-img-top" style="height:120px; object-fit:contain;" />
-          <div class="card-body p-2">
-            <h6 class="card-title mb-1">{{ product.name }}</h6>
-            <p class="text-muted small mb-1">{{ product.brand || 'Unknown' }}</p>
-            <p class="fw-bold mb-1">${{ product.price }}</p>
-
-            <!-- Stars -->
-            <div class="text-warning small">
-              <ng-container *ngFor="let filled of getStarsArray(product.rating)">
-                <i class="bi" [ngClass]="filled ? 'bi-star-fill' : 'bi-star'"></i>
-              </ng-container>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -162,11 +107,5 @@
     </ul>
   </nav>
   }
-  <nav class="mt-4" *ngIf="!loading">
-    <ul class="pagination justify-content-center">
-      <li *ngFor="let page of totalPagesArray; let i = index" class="page-item" [class.active]="i + 1 === currentPage">
-        <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
-      </li>
-    </ul>
-  </nav>
+  }
 </div>
