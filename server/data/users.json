@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "name": "Sophia Turner",
+        "avatar": "https://randomuser.me/api/portraits/women/11.jpg"
+    },
+    {
+        "id": 2,
+        "name": "Lina Johnson",
+        "avatar": "https://randomuser.me/api/portraits/women/19.jpg"
+    },
+    {
+        "id": 3,
+        "name": "Amani Hussein",
+        "avatar": "https://randomuser.me/api/portraits/women/41.jpg"
+    },
+    {
+        "id": 4,
+        "name": "Emma Davis",
+        "avatar": "https://randomuser.me/api/portraits/women/8.jpg"
+    },
+    {
+        "id": 5,
+        "name": "Maryam Fadel",
+        "avatar": "https://randomuser.me/api/portraits/women/29.jpg"
+    },
+    {
+        "id": 6,
+        "name": "Isabella Brown",
+        "avatar": "https://randomuser.me/api/portraits/women/38.jpg"
+    },
+    {
+        "id": 7,
+        "name": "Layla Ahmed",
+        "avatar": "https://randomuser.me/api/portraits/women/30.jpg"
+    },
+    {
+        "id": 8,
+        "name": "Chloe Martin",
+        "avatar": "https://randomuser.me/api/portraits/women/13.jpg"
+    },
+    {
+        "id": 9,
+        "name": "Hana Yusuf",
+        "avatar": "https://randomuser.me/api/portraits/women/26.jpg"
+    },
+    {
+        "id": 10,
+        "name": "Nora Hill",
+        "avatar": "https://randomuser.me/api/portraits/women/74.jpg"
+    }
+]

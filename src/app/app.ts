@@ -9,6 +9,4 @@ import { Footer } from "./Components/footer/footer";
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })
-export class App {
-  protected readonly title = signal('E-commerce');
-}
+export class App {}
