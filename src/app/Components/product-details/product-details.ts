@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { ReviewService, Review, User } from '../../Services/review-service';
+import { ReviewService, User } from '../../Services/review-service';
+import { Review } from '../../modules/review';
 
 @Component({
   selector: 'app-product-details',
@@ -181,8 +182,8 @@ export class ProductDetails implements OnInit {
   // FIXED: Submit review with proper user handling
 submitReview() {
   console.log('=== SUBMIT REVIEW DEBUG ===');
-  console.log('Selected User ID:', this.selectedUserId);
-  console.log('Available Users:', this.availableUsers);
+  console.log('Product ID:', this.product.id);
+  console.log('Product Name:', this.product.name);
 
   if (!this.product) {
     console.error('No product selected');
@@ -219,7 +220,7 @@ submitReview() {
     date: new Date().toISOString().split('T')[0],
     rating: this.newReview.rating || 5,
     comment: this.newReview.comment.trim(),
-    category: this.product.product_type.toLowerCase()
+    productId: this.product.id
   };
 
   console.log('Submitting review:', review);
@@ -250,52 +251,46 @@ submitReview() {
 }
 
   loadReviews() {
-    if (!this.product) return;
+  if (!this.product) return;
 
-    this.reviewsLoading = true;
-    this.reviewsError = null;
+  this.reviewsLoading = true;
+  this.reviewsError = null;
 
-    const category = this.product.product_type;
-    console.log('Loading reviews for category:', category);
+  console.log('Loading reviews for product ID:', this.product.id);
 
-    this.reviewService.getReviewsByCategory(category).subscribe({
-      next: (reviews) => {
-        console.log('Reviews loaded:', reviews);
-        
-        this.reviews = (reviews || [])
-          .filter(review => 
-            review && 
-            review.userName && 
-            review.userName !== 'Anonymous' && 
-            review.comment && 
-            review.comment.trim() !== '' &&
-            review.rating > 0
-          )
-          .map((r: any) => ({
-            userName: r.userName ?? r.username ?? r.user ?? 'Anonymous',
-            userImage: r.userImage ?? r.userImageUrl ?? r.avatar ?? 'https://via.placeholder.com/50',
-            date: r.date ?? r.createdAt ?? new Date().toISOString(),
-            rating: typeof r.rating === 'number' ? r.rating : Number(r.rating) || 0,
-            comment: r.comment ?? r.text ?? '',
-            category: r.category ?? this.product.product_type.toLowerCase()
-          }));
-        
-        this.reviewsLoading = false;
-        
-        if (this.reviews.length > 0) {
-          this.product.rating = this.calculateAverageRating();
-          this.reviewsError = null;
-        } else {
-          this.reviewsError = 'No reviews available for this product category.';
-        }
-      },
-      error: (err) => {
-        console.error('Error loading reviews:', err);
-        this.reviewsError = 'Failed to load reviews. Please try again later.';
-        this.reviewsLoading = false;
+  // CHANGE: Use productId instead of category
+  this.reviewService.getReviewsByProduct(this.product.id).subscribe({
+    next: (reviews) => {
+      console.log('Reviews loaded for product:', reviews);
+      
+      // Filter out invalid reviews
+      this.reviews = (reviews || [])
+        .filter(review => 
+          review && 
+          review.userName && 
+          review.userName !== 'Anonymous' && 
+          review.comment && 
+          review.comment.trim() !== '' &&
+          review.rating > 0
+        );
+      
+      this.reviewsLoading = false;
+      
+      // Calculate average rating from reviews
+      if (this.reviews.length > 0) {
+        this.product.rating = this.calculateAverageRating();
+        this.reviewsError = null;
+      } else {
+        this.reviewsError = 'No reviews available for this product yet.';
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error('Error loading reviews:', err);
+      this.reviewsError = 'Failed to load reviews. Please try again later.';
+      this.reviewsLoading = false;
+    }
+  });
+}
 
   calculateAverageRating(): number {
     if (!this.reviews || this.reviews.length === 0) return 0;

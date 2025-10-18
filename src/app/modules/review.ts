@@ -5,5 +5,5 @@ export interface Review {
     date: string;
     rating: number;
     comment: string;
-    category: string;
+    productId: number;   
 }

@@ -1,16 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, of, tap, map } from 'rxjs';
-
-export interface Review {
-  id?: number;
-  userName: string;
-  userImage: string;
-  date: string;
-  rating: number;
-  comment: string;
-  category: string;
-}
+import { Review } from '../modules/review';
 
 export interface User {
   id: number;
@@ -23,81 +14,44 @@ export interface User {
 })
 export class ReviewService {
   private apiUrl = 'http://localhost:3001';
-  
-  // API endpoints
   private reviewsUrl = `${this.apiUrl}/reviews`;
-  private usersUrl = `${this.apiUrl}/users`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  // Get reviews by category
-  getReviewsByCategory(category: string): Observable<Review[]> {
-    if (!category) {
-      return of([]);
-    }
-
-    const normalizedCategory = category.toLowerCase().trim();
-    
-    return this.http.get<Review[]>(`${this.reviewsUrl}?category=${normalizedCategory}`).pipe(
+  // NEW: Get reviews by product ID
+  getReviewsByProduct(productId: number): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.reviewsUrl}?productId=${productId}`).pipe(
       tap(reviews => {
-        console.log(`Found ${reviews.length} reviews for category:`, normalizedCategory);
+        console.log(`Found ${reviews.length} reviews for product ID: ${productId}`);
       }),
       catchError(error => {
-        console.error('Error loading reviews from API:', error);
+        console.error('Error loading product reviews:', error);
         return of([]);
       })
     );
   }
 
-addReview(review: Review): Observable<Review> {
-  console.log('Sending review to server:', review);
-  console.log('API URL:', this.reviewsUrl);
-  
-  return this.http.post<Review>(this.reviewsUrl, review).pipe(
-    tap(newReview => {
-      console.log('Review added successfully:', newReview);
-    }),
-    catchError(error => {
-      console.error('Error adding review:', error);
-      console.error('Error status:', error.status);
-      console.error('Error message:', error.message);
-      console.error('Error response:', error.error);
-      throw error;
-    })
-  );
-}
+  // Keep this for category-based filtering if needed elsewhere
+  getReviewsByCategory(category: string): Observable<Review[]> {
+    return this.http.get<Review[]>(`${this.reviewsUrl}?category=${category}`).pipe(
+      catchError(error => {
+        console.error('Error loading reviews:', error);
+        return of([]);
+      })
+    );
+  }
 
-  // Get available users for reviews
+  // Add a new review
+  addReview(review: Review): Observable<Review> {
+    return this.http.post<Review>(this.reviewsUrl, review);
+  }
+
+  // Get available users
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(this.usersUrl).pipe(
+    return this.http.get<User[]>(`${this.apiUrl}/users`).pipe(
       catchError(error => {
         console.error('Error loading users:', error);
         return of([]);
-      })
-    );
-  }
-
-  // Get a random user (for demo purposes)
-  getRandomUser(): Observable<User> {
-    return this.getUsers().pipe(
-      map(users => {
-        if (users.length === 0) {
-          return {
-            id: 0,
-            name: 'Guest User',
-            avatar: 'https://via.placeholder.com/50'
-          };
-        }
-        const randomIndex = Math.floor(Math.random() * users.length);
-        return users[randomIndex];
-      }),
-      catchError(error => {
-        console.error('Error getting random user:', error);
-        return of({
-          id: 0,
-          name: 'Guest User',
-          avatar: 'https://via.placeholder.com/50'
-        });
       })
     );
   }
