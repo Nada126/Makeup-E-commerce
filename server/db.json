@@ -5,21 +5,24 @@
       "name": "Admin",
       "email": "admin@test.com",
       "password": "Admin123",
-      "avatar": "https://randomuser.me/api/portraits/women/1.jpg"
+      "avatar": "https://randomuser.me/api/portraits/women/1.jpg",
+      "role": "admin"
     },
     {
       "id": "c7fd",
       "name": "nada",
       "email": "nada@test1.com",
       "password": "12345Aa",
-      "avatar": "https://randomuser.me/api/portraits/women/50.jpg"
+      "avatar": "https://randomuser.me/api/portraits/women/50.jpg",
+      "role": "user"
     },
     {
       "id": "e979",
       "name": "mariem",
       "email": "mariem@test1.com",
       "password": "12345Aa",
-      "avatar": "https://randomuser.me/api/portraits/women/14.jpg"
+      "avatar": "https://randomuser.me/api/portraits/women/14.jpg",
+      "role": "user"
     }
   ],
   "reviews": [

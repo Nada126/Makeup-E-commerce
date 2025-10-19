@@ -1,0 +1,22 @@
+<div class="container mt-4">
+      <h2 class="fw-bold text-primary">Admin Dashboard</h2>
+      <p class="text-muted">Manage all users below:</p>
+      <table class="table table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{user.id}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.role}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>

@@ -7,6 +7,8 @@ import { Login } from './Components/login/login';
 import { Register } from './Components/register/register';
 import { NotFound } from './Components/not-found/not-found';
 import { ProductDetails } from './Components/product-details/product-details';
+import { AdminDashboard } from './Components/admin-dashboard/admin-dashboard';
+import { AdminGuard } from './Services/admin-guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
@@ -17,5 +19,6 @@ export const routes: Routes = [
     { path: 'about', component: About, title: 'About' },
     { path: 'login', component: Login, title: 'Login' },
     { path: 'register', component: Register, title: 'Register' },
+    { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: '**', component: NotFound, title: 'Not Found' }
 ]

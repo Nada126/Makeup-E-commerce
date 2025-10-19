@@ -21,6 +21,7 @@ export class AuthService {
 
         // Assign auto avatar
         userData.avatar = `https://randomuser.me/api/portraits/women/${Math.floor(Math.random() * 90) + 1}.jpg`;
+        userData.role = 'user'
         // Add user to db.json
         return this.http.post(this.baseUrl, userData).pipe(
           map(() => true)
@@ -51,5 +52,15 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
+  }
+
+  getCurrentUser(): any {
+    const user = localStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
+  }
+
+  isAdmin(): boolean {
+    const user = this.getCurrentUser();
+    return user?.role === 'admin';
   }
 }
