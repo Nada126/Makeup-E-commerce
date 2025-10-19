@@ -1,6 +1,12 @@
 <div class="slideShow" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-    <img [src]="imgSrc" alt="Slide" class="slide-img">
-    
+    <!-- Make the image clickable -->
+    <img
+        [src]="currentSlide.src"
+        alt="Slide"
+        class="slide-img clickable"
+        (click)="goToBrand()"
+    >
+
     <!-- Prev Arrow -->
     <button class="arrow left" (click)="prev()">
       &#10094;

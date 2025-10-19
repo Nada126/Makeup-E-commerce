@@ -1,79 +1,75 @@
+<!-- ***** Header Area Start ***** -->
+<header class="sticky-top fw-bold shadow-sm bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light  container py-2 ">
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold d-flex align-items-center" routerLink="/home">
+      <img src="images/logo.png" alt="Logo" width="100" class="me-2" />
+    </a>
 
+    <!-- Toggler -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarMenu"
+      aria-controls="navbarMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <!-- ***** Header Area Start ***** -->
-    <header class="sticky-top fw-bold shadow-sm bg-light">
-      <nav class="navbar navbar-expand-lg navbar-light  container py-2 ">
-        <!-- Logo -->
-        <a class="navbar-brand fw-bold d-flex align-items-center" href="index.html">
-          <img src="images/logo.png" alt="Logo" width="100" class="me-2" />
-        </a>
+    <!-- Menu -->
+    <div class="collapse navbar-collapse" id="navbarMenu">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/favorites" routerLinkActive="active">
+            <i class="bi bi-heart me-1"></i>Favorites
+            @if (favoriteService.getFavoritesCount() > 0) {
+            <span class="badge bg-danger">{{ favoriteService.getFavoritesCount() }}</span>
+            }
+          </a>
+        </li>
 
-        <!-- Toggler -->
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarMenu"
-          aria-controls="navbarMenu"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
+        <!-- Products Dropdown -->
+        <li class="nav-item ">
+          <a class="nav-link" routerLink="/products">Products</a>
+        </li>
 
-        <!-- Menu -->
-        <div class="collapse navbar-collapse" id="navbarMenu">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" routerLink="/home">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/about">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" routerLink="/Favourit">Favourit's</a>
-            </li>
+        <!-- Account Dropdown -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Account
+          </a>
 
-            <!-- Products Dropdown -->
-            <li class="nav-item ">
-              <a class="nav-link" routerLink="/products">Products</a>
-              <!-- <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" routerLink="about.html"></a></li>
-                <li><a class="dropdown-item" routerLink="products.html"></a></li>
-                <li><a class="dropdown-item" href="single-product.html"></a></li>
-                <li><a class="dropdown-item" href="contact.html"></a></li>
-              </ul> -->
-            </li>
-
-            <!-- Account Dropdown -->
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Account
-              </a>
-
-              <ul class="dropdown-menu dropdown-menu-end">
-                @if(isLoggedIn){
-                <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
-              }
-              @else {
-                <li><a class="dropdown-item" routerLink="/login">LogIn</a></li>
-
-                <li><a class="dropdown-item" routerLink="/register">Register</a></li>
-              }
-              </ul>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="#explore">Cart</a>
-            </li>
+          <ul class="dropdown-menu dropdown-menu-end">
+            @if(isLoggedIn){
+            <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
+            }
+            @else {
+            <li><a class="dropdown-item" routerLink="/login">LogIn</a></li>
+            <li><a class="dropdown-item" routerLink="/register">Register</a></li>
+            }
           </ul>
-        </div>
-      </nav>
-    </header>
-    <!-- ***** Header Area End ***** -->
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#explore">Cart</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+<!-- ***** Header Area End ***** -->

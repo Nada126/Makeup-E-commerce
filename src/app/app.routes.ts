@@ -7,13 +7,17 @@ import { Login } from './Components/login/login';
 import { Register } from './Components/register/register';
 import { NotFound } from './Components/not-found/not-found';
 import { ProductDetails } from './Components/product-details/product-details';
+import { GenericBrandPage } from './Components/generic-brand-page/generic-brand-page';
+import { Favorite } from './Components/favorite/favorite';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
     { path: 'home', component: Home, title: 'Home' },
     { path: 'products', component: ProductPage, title: 'Products' },
     { path: 'products/:type', component: GenericProductPage, title: 'Product Category' },
+    { path: 'brand/:brand', component: GenericBrandPage, title: 'Brand Products' }, // Add this route
     {path: 'product/:id', component: ProductDetails },
+    { path: 'favorites', component: Favorite, title: 'My Favorites' }, // Add this line
     { path: 'about', component: About, title: 'About' },
     { path: 'login', component: Login, title: 'Login' },
     { path: 'register', component: Register, title: 'Register' },

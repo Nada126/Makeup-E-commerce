@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../../app/modules/Product';
 import { Router, RouterModule } from '@angular/router';
+import { FavoriteService } from '../../Services/favorite.service';
+
 
 @Component({
   selector: 'app-product-page',
@@ -45,7 +47,7 @@ export class ProductPage implements OnInit {
   itemsPerPage = 25;
   loading = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router,public favoriteService: FavoriteService,) {}
 
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;
@@ -58,6 +60,11 @@ export class ProductPage implements OnInit {
 
   ngOnInit() {
     this.fetchProducts();
+      if (this.products) {
+    this.products.forEach(product => {
+      product.isFavorite = this.favoriteService.isFavorite(product.id);
+    });
+  }
   }
 
   fetchProducts() {
@@ -98,9 +105,19 @@ export class ProductPage implements OnInit {
     });
   }
 
-  toggleFavorite(product: Product) {
-    product.isFavorite = !product.isFavorite;
+toggleFavorite(product: Product, event?: Event) {
+  if (event) {
+    event.stopPropagation(); // Prevent card click when clicking favorite
   }
+
+  if (this.favoriteService.isFavorite(product.id)) {
+    this.favoriteService.removeFromFavorites(product.id);
+    product.isFavorite = false;
+  } else {
+    this.favoriteService.addToFavorites(product);
+    product.isFavorite = true;
+  }
+}
 
   // pagination
   // ... rest of your existing methods

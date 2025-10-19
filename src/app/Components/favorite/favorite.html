@@ -1,0 +1,93 @@
+<div class="container my-5" style="margin-top: 100px;">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="fw-bold mb-2">My Favorites</h2>
+          <p class="text-muted mb-0">
+            {{ totalItems }} items • Total value: ${{ totalValue | number:'1.2-2' }}
+          </p>
+        </div>
+
+        @if (favoriteProducts.length > 0) {
+        <button class="btn btn-outline-danger btn-sm" (click)="clearAllFavorites()">
+          <i class="bi bi-trash me-2"></i>Clear All
+        </button>
+        }
+      </div>
+
+      <!-- Loading State -->
+      @if (loading) {
+      <div class="loading-container">
+        <div class="custom-spinner"></div>
+        <p class="loading-text">Loading your favorites...</p>
+      </div>
+      }
+
+      <!-- Empty State -->
+      @else if (favoriteProducts.length === 0) {
+      <div class="text-center py-5">
+        <i class="bi bi-heart display-1 text-muted mb-3"></i>
+        <h4 class="text-muted">No favorites yet</h4>
+        <p class="text-muted mb-4">Start adding products to your favorites!</p>
+        <a routerLink="/products" class="btn btn-primary">
+          <i class="bi bi-arrow-left me-2"></i>Browse Products
+        </a>
+      </div>
+      }
+
+      <!-- Favorites Grid -->
+      @else {
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
+        @for (product of favoriteProducts; track product.id) {
+        <div class="col">
+          <div class="card h-100 shadow-sm position-relative text-center">
+            <!-- Remove from Favorites Button -->
+            <i
+              class="bi bi-heart-fill text-danger favorite-icon"
+              (click)="removeFromFavorites(product, $event)"
+              title="Remove from favorites"
+            >
+            </i>
+
+            <!-- Product Image -->
+            <div class="image-container">
+              <img [src]="product.image_link || 'https://via.placeholder.com/200'" [alt]="product.name"
+                class="card-img-top" />
+            </div>
+
+            <!-- Product Info -->
+            <div class="card-body p-2 d-flex flex-column justify-content-between">
+              <div>
+                <h6 class="card-title mb-1">{{ product.name }}</h6>
+                <p class="text-muted small mb-1">{{ product.brand || 'Unknown' }}</p>
+                <p class="fw-bold mb-1 text-dark">${{ product.price || 0 }}</p>
+
+                <!-- Stars -->
+                <div class="text-warning small mb-2">
+                  @for (filled of getStarsArray(product.rating); track $index) {
+                  <i class="bi" [ngClass]="filled ? 'bi-star-fill' : 'bi-star'"></i>
+                  }
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-flex gap-1">
+                <button class="btn btn-outline-dark btn-sm flex-fill">
+                  Add to Cart
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" [routerLink]="['/product', product.id]"
+                  title="View details">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>

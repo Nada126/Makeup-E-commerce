@@ -1,29 +1,32 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-slide-show',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './slide-show.html',
   styleUrl: './slide-show.css'
 })
-
 export class SlideShow implements OnInit, OnDestroy {
-  src: string[] = [
-    'images/benefit.png',
-    'images/dior.png',
-    'images/essie.jpg',
-    'images/fenty.jpg',
-    'images/marcilla.png',
-    'images/maybelline.jpg',
-    'images/mineral-lipstick-maias.jpg',
-    'images/pacifica.jpg',
-    'images/revlon.png',
-    'images/stila.png'
+  slides: { src: string, brand: string }[] = [
+    { src: 'images/benefit.png', brand: 'benefit' },
+    { src: 'images/dior.png', brand: 'dior' },
+    { src: 'images/essie.jpg', brand: 'essie' },
+    { src: 'images/fenty.jpg', brand: 'fenty' },
+    { src: 'images/marcilla.png', brand: 'marcilla' },
+    { src: 'images/maybelline.jpg', brand: 'maybelline' },
+    { src: 'images/mineral-lipstick-maias.jpg', brand: 'maias' },
+    { src: 'images/pacifica.jpg', brand: 'pacifica' },
+    { src: 'images/revlon.png', brand: 'revlon' },
+    { src: 'images/stila.png', brand: 'stila' }
   ];
 
   idx: number = 0;
-  imgSrc: string = this.src[0];
+  currentSlide = this.slides[0];
   timer: any = null;
+
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.startSlide();
@@ -34,13 +37,13 @@ export class SlideShow implements OnInit, OnDestroy {
   }
 
   next() {
-    this.idx = (this.idx + 1) % this.src.length;
-    this.imgSrc = this.src[this.idx];
+    this.idx = (this.idx + 1) % this.slides.length;
+    this.currentSlide = this.slides[this.idx];
   }
 
   prev() {
-    this.idx = (this.idx - 1 + this.src.length) % this.src.length;
-    this.imgSrc = this.src[this.idx];
+    this.idx = (this.idx - 1 + this.slides.length) % this.slides.length;
+    this.currentSlide = this.slides[this.idx];
   }
 
   startSlide() {
@@ -53,6 +56,11 @@ export class SlideShow implements OnInit, OnDestroy {
       clearInterval(this.timer);
       this.timer = null;
     }
+  }
+
+  // Navigate to brand page
+  goToBrand() {
+    this.router.navigate(['/brand', this.currentSlide.brand]);
   }
 
   // optional: restart slide show after hover ends

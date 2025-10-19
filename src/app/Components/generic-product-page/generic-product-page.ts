@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../modules/Product';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { FavoriteService } from '../../Services/favorite.service';
+
 
 @Component({
   selector: 'app-generic-product-page',
@@ -41,16 +43,27 @@ export class GenericProductPage implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public favoriteService: FavoriteService,
   ) {}
 
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;
     this.router.navigate(['/product', product.id], { state: { product } });
   }
-  toggleFavorite(product: Product) {
-    product.isFavorite = !product.isFavorite;
+toggleFavorite(product: Product, event?: Event) {
+  if (event) {
+    event.stopPropagation(); // Prevent card click when clicking favorite
   }
+
+  if (this.favoriteService.isFavorite(product.id)) {
+    this.favoriteService.removeFromFavorites(product.id);
+    product.isFavorite = false;
+  } else {
+    this.favoriteService.addToFavorites(product);
+    product.isFavorite = true;
+  }
+}
   navigateToProducts() {
     this.router.navigate(['/products']);
   }
@@ -64,6 +77,11 @@ export class GenericProductPage implements OnInit {
         this.fetchProducts();
       }
     });
+      if (this.products) {
+    this.products.forEach(product => {
+      product.isFavorite = this.favoriteService.isFavorite(product.id);
+    });
+  }
   }
 
   private formatProductType(type: string): string {

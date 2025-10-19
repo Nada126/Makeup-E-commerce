@@ -5,6 +5,8 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ReviewService, User } from '../../Services/review-service';
 import { Review } from '../../modules/review';
+import { FavoriteService } from '../../Services/favorite.service';
+import { Product } from '../../modules/Product';
 
 @Component({
   selector: 'app-product-details',
@@ -22,6 +24,8 @@ export class ProductDetails implements OnInit {
   showReviews = false;
   reviewsLoading = false;
   reviewsError: string | null = null;
+  products: Product[] = [];
+
 
   // New properties for adding reviews
   showAddReviewForm = false;
@@ -37,7 +41,8 @@ export class ProductDetails implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    private favoriteService: FavoriteService,
   ) { }
 
   ngOnInit() {
@@ -62,6 +67,12 @@ export class ProductDetails implements OnInit {
     } else {
       this.errorMessage = 'No product id provided.';
     }
+
+      if (this.products) {
+    this.products.forEach(product => {
+      product.isFavorite = this.favoriteService.isFavorite(product.id);
+    });
+  }
   }
 
   fetchProductDetails(id: number) {
@@ -103,9 +114,9 @@ export class ProductDetails implements OnInit {
           ...user,
           id: Number(user.id) // Convert ID to number
         }));
-        
+
         console.log('Normalized users:', this.availableUsers);
-        
+
         if (this.availableUsers.length > 0) {
           this.selectedUserId = this.availableUsers[0].id;
           console.log('Default selected user ID:', this.selectedUserId);
@@ -116,6 +127,20 @@ export class ProductDetails implements OnInit {
       }
     });
   }
+
+toggleFavorite(product: Product, event?: Event) {
+  if (event) {
+    event.stopPropagation(); // Prevent card click when clicking favorite
+  }
+
+  if (this.favoriteService.isFavorite(product.id)) {
+    this.favoriteService.removeFromFavorites(product.id);
+    product.isFavorite = false;
+  } else {
+    this.favoriteService.addToFavorites(product);
+    product.isFavorite = true;
+  }
+}
 
   scrollToReviews() {
     setTimeout(() => {
@@ -138,17 +163,17 @@ export class ProductDetails implements OnInit {
   // FIXED: Toggle reviews - don't show form when viewing reviews
   toggleReviews() {
     this.showReviews = !this.showReviews;
-    
+
     if (this.showReviews) {
       // Close add review form if it's open
       if (this.showAddReviewForm) {
         this.showAddReviewForm = false;
       }
-      
+
       if (this.reviews.length === 0) {
         this.loadReviews();
       }
-      
+
       this.scrollToReviews();
     }
   }
@@ -156,15 +181,15 @@ export class ProductDetails implements OnInit {
   // FIXED: Toggle add review form - don't show reviews when adding review
   toggleAddReviewForm() {
     this.showAddReviewForm = !this.showAddReviewForm;
-    
+
     if (this.showAddReviewForm) {
       this.resetReviewForm();
-      
+
       // Close reviews if they're open
       if (this.showReviews) {
         this.showReviews = false;
       }
-      
+
       this.scrollToAddReview();
     }
   }
@@ -228,16 +253,16 @@ submitReview() {
   this.reviewService.addReview(review).subscribe({
     next: (newReview) => {
       console.log('Review added successfully:', newReview);
-      
+
       // Add to local reviews
       this.reviews.unshift(newReview);
-      
+
       // Clear error message
       this.reviewsError = null;
-      
+
       // Update product rating
       this.product.rating = this.calculateAverageRating();
-      
+
       // Reset and close form
       this.showAddReviewForm = false;
       this.resetReviewForm();
@@ -262,20 +287,20 @@ submitReview() {
   this.reviewService.getReviewsByProduct(this.product.id).subscribe({
     next: (reviews) => {
       console.log('Reviews loaded for product:', reviews);
-      
+
       // Filter out invalid reviews
       this.reviews = (reviews || [])
-        .filter(review => 
-          review && 
-          review.userName && 
-          review.userName !== 'Anonymous' && 
-          review.comment && 
+        .filter(review =>
+          review &&
+          review.userName &&
+          review.userName !== 'Anonymous' &&
+          review.comment &&
           review.comment.trim() !== '' &&
           review.rating > 0
         );
-      
+
       this.reviewsLoading = false;
-      
+
       // Calculate average rating from reviews
       if (this.reviews.length > 0) {
         this.product.rating = this.calculateAverageRating();
@@ -337,7 +362,7 @@ submitReview() {
 
   goBack() {
     if (window.history.length > 1) {
-      this.router.navigateByUrl('/');
+      this.router.navigateByUrl('/products');
     } else {
       this.router.navigate(['/']);
     }
