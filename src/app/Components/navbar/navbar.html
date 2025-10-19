@@ -69,7 +69,10 @@
 
           <ul class="dropdown-menu dropdown-menu-end">
             @if(isLoggedIn){
-            <li><button class="dropdown-item" (click)="logout()">Profile</button></li>
+              @if(isAdmin){
+                <li><button class="dropdown-item" (click)="goToDashboard()">Dashboard</button></li>
+              }
+            <!-- <li><button class="dropdown-item" (click)="logout()">Profile</button></li> -->
             <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
             } @else {
             <li><a class="dropdown-item" routerLink="/login">LogIn</a></li>
