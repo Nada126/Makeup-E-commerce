@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const dataDir = path.join(__dirname, 'data');
-const usersPath = path.join(dataDir, 'users.json');
-const reviewsPath = path.join(dataDir, 'reviews.json');
+// const dataDir = path.join(__dirname, 'data');
+// const usersPath = path.join(dataDir, 'users.json');
+// const reviewsPath = path.join(dataDir, 'reviews.json');
 const dbPath = path.join(__dirname, 'db.json');
 
 try {
@@ -17,11 +17,11 @@ try {
     }
 
     // Read source files
-    const sourceUsers = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
+    // const sourceUsers = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
     
 
     const finalDb = {
-        users: sourceUsers, // Keep source users
+        users: db.users, // Keep source users
         reviews: db.reviews, // ONLY keep user-added reviews from existing db.json
     };
 

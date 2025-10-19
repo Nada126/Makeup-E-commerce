@@ -13,8 +13,8 @@ export class Register {
   email = '';
   password = '';
   message = '';
-  
-  constructor(private auth: AuthService, private router: Router) {}
+
+  constructor(private auth: AuthService, private router: Router) { }
 
   validateEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,17 +41,25 @@ export class Register {
       this.message = '⚠️ Password must be at least 6 chars, include a number and uppercase letter.';
       return;
     }
-    const success = this.auth.register({
+
+    this.auth.register({
       name: this.name,
       email: this.email,
       password: this.password
+    }).subscribe({
+      next: success => {
+        if (success) {
+          this.message = '✅ Registered successfully!';
+          setTimeout(() => this.router.navigate(['/login']), 1000);
+        } else {
+          this.message = '⚠️ User already exists!';
+        }
+      },
+      error: err => {
+        console.error('Registration error:', err);
+        this.message = '❌ Error while registering!';
+      }
     });
-
-    if (success) {
-      this.message = '✅ Registered successfully!';
-      setTimeout(() => this.router.navigate(['/login']), 1000);
-    } else {
-      this.message = '⚠️ User already exists!';
-    }
   }
+
 }
