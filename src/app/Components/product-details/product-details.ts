@@ -94,28 +94,39 @@ export class ProductDetails implements OnInit {
     });
   }
 
+  // loadAvailableUsers() {
+  //   this.reviewService.getUsers().subscribe({
+  //     next: (users) => {
+  //       console.log('Raw users from API:', users);
+  //       // Ensure all user IDs are numbers
+  //       this.availableUsers = users.map(user => ({
+  //         ...user,
+  //         id: Number(user.id) // Convert ID to number
+  //       }));
+        
+  //       console.log('Normalized users:', this.availableUsers);
+        
+  //       if (this.availableUsers.length > 0) {
+  //         this.selectedUserId = this.availableUsers[0].id;
+  //         console.log('Default selected user ID:', this.selectedUserId);
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading users:', err);
+  //     }
+  //   });
+  // }
   loadAvailableUsers() {
-    this.reviewService.getUsers().subscribe({
-      next: (users) => {
-        console.log('Raw users from API:', users);
-        // Ensure all user IDs are numbers
-        this.availableUsers = users.map(user => ({
-          ...user,
-          id: Number(user.id) // Convert ID to number
-        }));
-        
-        console.log('Normalized users:', this.availableUsers);
-        
-        if (this.availableUsers.length > 0) {
-          this.selectedUserId = this.availableUsers[0].id;
-          console.log('Default selected user ID:', this.selectedUserId);
-        }
-      },
-      error: (err) => {
-        console.error('Error loading users:', err);
-      }
-    });
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  
+  if (currentUser && currentUser.name) {
+    this.availableUsers = [currentUser];
+    this.selectedUserId = currentUser.id;
+  } else {
+    this.availableUsers = [];
   }
+}
+
 
   scrollToReviews() {
     setTimeout(() => {
@@ -202,7 +213,7 @@ submitReview() {
 
   // Find user with proper ID comparison
   const selectedUser = this.availableUsers.find(user => {
-    return user.id === Number(this.selectedUserId);
+    return user.id === this.selectedUserId;
   });
 
   console.log('Found user:', selectedUser);

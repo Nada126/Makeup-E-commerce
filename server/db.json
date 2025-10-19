@@ -49,6 +49,15 @@
       "rating": 3,
       "comment": "Oxidize",
       "productId": 1004
+    },
+    {
+      "id": "1678",
+      "userName": "nada",
+      "userImage": "https://randomuser.me/api/portraits/women/50.jpg",
+      "date": "2025-10-19",
+      "rating": 3,
+      "comment": "good",
+      "productId": 846
     }
   ]
 }
