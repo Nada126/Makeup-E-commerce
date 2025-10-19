@@ -9,6 +9,7 @@ import { NotFound } from './Components/not-found/not-found';
 import { ProductDetails } from './Components/product-details/product-details';
 import { AdminDashboard } from './Components/admin-dashboard/admin-dashboard';
 import { AdminGuard } from './Services/admin-guard';
+import { NotAuthorized } from './Components/not-authorized/not-authorized';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
@@ -20,5 +21,6 @@ export const routes: Routes = [
     { path: 'login', component: Login, title: 'Login' },
     { path: 'register', component: Register, title: 'Register' },
     { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
+    { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },
     { path: '**', component: NotFound, title: 'Not Found' }
 ]

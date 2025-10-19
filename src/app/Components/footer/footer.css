@@ -1,21 +1,48 @@
-footer {
-  font-family: 'Arial', sans-serif;
-  font-size: 0.9rem;
+.footer {
+  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+  color: black;
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  font-family: "Poppins", sans-serif;
+  z-index: 10;
 }
 
-footer a:hover {
+/* Footer links */
+.footer-link {
+  color:black;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #ffe5ec;
   text-decoration: underline;
-  color: #ffc107; /* golden hover */
 }
 
-footer .bi-facebook:hover {
-  color: #3b5998;
+/* Social links */
+.social-link {
+  color: black;
+  font-size: 1.3rem;
+  transition: all 0.3s ease;
 }
 
-footer .bi-instagram:hover {
-  color: #e4405f;
+.social-link:hover {
+  color: black;
+  transform: translateY(-3px) scale(1.1);
 }
 
-.background{
-    background-color: #e65872;
+/* Make sure footer stays at bottom without overlap */
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  flex-shrink: 0;
 }

@@ -1,8 +1,31 @@
-<div class="form-container">
-  <h2>Login</h2>
-  <input type="email" placeholder="Email" [(ngModel)]="email">
-  <input type="password" placeholder="Password" [(ngModel)]="password">
-  <button (click)="login()">Login</button>
+<div class="login-page">
+  <div class="form-container">
+    <h2>Welcome Back 👋</h2>
+    <p class="subtitle">Login to your account</p>
 
-  <p class="msg">{{ message }}</p>
+    <input type="email" placeholder="Email address" [(ngModel)]="email">
+    <input type="password" placeholder="Password" [(ngModel)]="password">
+
+    <button (click)="login()">Login</button>
+
+    <p class="msg">{{ message }}</p>
+
+    <!-- <div class="divider">
+      <span>or</span>
+    </div> -->
+
+    <!-- <div class="social-login">
+      <button class="google" (click)="loginWithGoogle()">
+        <i class="bi bi-google"></i> Continue with Google
+      </button>
+      <button class="facebook" (click)="loginWithFacebook()">
+        <i class="bi bi-facebook"></i> Continue with Facebook
+      </button>
+    </div> -->
+
+    <p class="register-text">
+      Don't have an account?
+      <a routerLink="/register">Register here</a>
+    </p>
+  </div>
 </div>
