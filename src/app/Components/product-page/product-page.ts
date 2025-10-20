@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../../app/modules/Product';
 import { Router, RouterModule } from '@angular/router';
+import {CartService}from '../../Services/cart-service';
 
 @Component({
   selector: 'app-product-page',
@@ -45,7 +46,38 @@ export class ProductPage implements OnInit {
   itemsPerPage = 25;
   loading = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private cartService: CartService) {}
+
+  
+ 
+  addToCart(product: any, event: Event) {
+  
+  event.stopPropagation();
+  event.stopImmediatePropagation();
+  
+  if (!product) return;
+
+  const item = {
+    productId: product.id,
+    name: product.name,
+    price: Number(product.price) || 0,
+    image: product.image_link || product.image,
+    quantity: 1,
+    product: product
+  };
+
+  try {
+    this.cartService.addItem(item);
+    
+    window.alert(`${product.name} added to cart successfully!`);
+    
+    
+  } catch (err) {
+    
+    window.alert('Failed to add product to cart');
+  }
+}
+  
 
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;

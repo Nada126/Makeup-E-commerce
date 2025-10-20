@@ -1,0 +1,49 @@
+<div class="container py-5">
+  <h2 class="mb-4">Your Cart ({{ items.length }} items)</h2>
+
+  <div *ngIf="items.length > 0">
+  <div class="list-group mb-4">
+    <div *ngFor="let item of items; let idx = index"
+         class="list-group-item d-flex align-items-center"
+         style="border:1px dashed #e0e0e0; padding:12px; margin-bottom:8px;">
+      
+      <img [src]="item.image || item.product?.image || 'https://via.placeholder.com/80'"
+           width="80" height="80" class="me-3 rounded" />
+
+      <div class="flex-grow-1">
+        <!-- try several field names -->
+        <h6 class="mb-1">
+          {{ item.name || item.product?.name || item.title || item.product?.title || ('Product #' + (item.productId ?? item.id ?? idx)) }}
+        </h6>
+
+        <p class="mb-1 text-muted">
+          ${{ (item.price ?? item.product?.price ?? item.amount ?? 0) | number:'1.2-2' }}
+        </p>
+
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-outline-secondary" (click)="changeQty(item, -1)">-</button>
+          <span class="qty">{{ item.quantity ?? item.qty ?? 1 }}</span>
+          <button class="btn btn-sm btn-outline-secondary" (click)="changeQty(item, 1)">+</button>
+          <button class="btn btn-sm btn-link text-danger ms-3" (click)="remove(item)">Remove</button>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <p class="mb-0 fw-bold">
+          ${{ ((item.price ?? item.product?.price ?? 0) * (item.quantity ?? item.qty ?? 1)) | number:'1.2-2' }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <button class="btn btn-outline-secondary me-2" (click)="clearCart()">Clear Cart</button>
+      <button class="btn btn-secondary" (click)="goToProducts()">Continue Shopping</button>
+    </div>
+    <div class="text-end">
+      <div class="mb-2">Total: <strong>${{ total | number:'1.2-2' }}</strong></div>
+      <button class="btn btn-primary" (click)="checkout()">Checkout</button>
+    </div>
+  </div>
+</div>

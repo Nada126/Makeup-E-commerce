@@ -1,0 +1,9 @@
+.container { max-width: 1100px; }
+
+.list-group-item img { object-fit: cover; }
+
+.qty { min-width: 28px; display: inline-block; text-align: center; }
+
+.cart-footer { gap: 12px; }
+
+.empty-cart { min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; }

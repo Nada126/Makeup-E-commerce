@@ -10,6 +10,7 @@ import { ProductDetails } from './Components/product-details/product-details';
 import { AdminDashboard } from './Components/admin-dashboard/admin-dashboard';
 import { AdminGuard } from './Services/admin-guard';
 import { NotAuthorized } from './Components/not-authorized/not-authorized';
+import { Cart } from './Components/cart/cart';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
@@ -22,5 +23,6 @@ export const routes: Routes = [
     { path: 'register', component: Register, title: 'Register' },
     { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },
-    { path: '**', component: NotFound, title: 'Not Found' }
+    { path: 'cart', component: Cart },
+    { path: '**', component: NotFound, title: 'Not Found' },
 ]

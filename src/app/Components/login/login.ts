@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../Services/auth-service';
+import { CartService } from '../../Services/cart-service';
 
 import { FormsModule} from '@angular/forms';
 @Component({
@@ -15,13 +16,16 @@ export class Login{
   password = '';
   message = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router,private cartService: CartService) {}
 
   login() {
     this.auth.login(this.email, this.password).subscribe(success => {
       if (success) {
         const user = this.auth.getCurrentUser();
         this.message = '✅ Login successful!';
+
+        this.cartService.reload();
+
         setTimeout(() => {
           if (user.role === 'admin') {
             this.router.navigate(['/admin']);

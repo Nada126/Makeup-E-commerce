@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Admin",
       "email": "admin@test.com",
       "password": "Admin123",
@@ -38,6 +38,22 @@
       "email": "nada@test3.com",
       "password": "1234Aa",
       "avatar": "https://randomuser.me/api/portraits/women/29.jpg",
+      "role": "user"
+    },
+    {
+      "id": "0a39",
+      "name": "Mennatullah Ahmed ",
+      "email": "mennatullahkransho@gmil.com",
+      "password": "Mennatullah2002",
+      "avatar": "https://randomuser.me/api/portraits/women/28.jpg",
+      "role": "user"
+    },
+    {
+      "id": "d979",
+      "name": "Ahmed youssef",
+      "email": "ahmed@gmail.com",
+      "password": "Ahmedkransho13",
+      "avatar": "https://randomuser.me/api/portraits/women/67.jpg",
       "role": "user"
     }
   ],

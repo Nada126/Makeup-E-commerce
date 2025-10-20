@@ -43,8 +43,11 @@
               </ul> -->
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/cart" routerLinkActive="active" ariaCurrentWhenActive="page"><i class="bi bi-cart3 fs-4"></i></a>
-        </li>
+  <a class="nav-link" (click)="goToCart()" role="button">
+    <i class="bi bi-cart3 fs-4"></i>
+    <span *ngIf="cartCount > 0" class="badge bg-danger rounded-pill">{{ cartCount }}</span>
+  </a>
+</li>
         <!-- Account Dropdown -->
         <li class="nav-item dropdown">
           <a
