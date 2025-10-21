@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, switchMap, of } from 'rxjs';
 
@@ -9,6 +9,16 @@ export class AuthService {
   private baseUrl = 'http://localhost:3001/users'; // json-server endpoint
 
   constructor(private http: HttpClient) { }
+
+  // حفظ بيانات مستخدم Google أو Email
+  saveUser(userData: any): Observable<any> {
+    return this.http.get<any[]>(`${this.baseUrl}?email=${userData.email}`).pipe(
+      switchMap(users => users.length === 0 ? this.http.post(this.baseUrl, userData) : of(null))
+    );
+  }
+
+
+
 
   // ✅ Register user → adds to db.json
   register(userData: any): Observable<boolean> {
