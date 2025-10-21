@@ -10,7 +10,6 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // حفظ بيانات مستخدم Google أو Email
   saveUser(userData: any): Observable<any> {
     return this.http
       .get<any[]>(`${this.baseUrl}?email=${userData.email}`)

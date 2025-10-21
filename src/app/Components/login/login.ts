@@ -109,7 +109,7 @@ export class Login {
           FB.api('/me', { fields: 'name,email,picture' }, (userInfo: any) => {
             const userData = {
               name: userInfo.name,
-              email: userInfo.email`${userInfo.id}@facebook.com`,
+              email: userInfo.email||`${userInfo.id}@facebook.com`,
               avatar: userInfo.picture.data.url,
               role: 'user',
             };
@@ -135,7 +135,7 @@ export class Login {
           this.message = '❌ Facebook login cancelled!';
         }
       },
-      { scope: 'email,public_profile' }
+      { scope: 'public_profile' }
     );
   }
 
