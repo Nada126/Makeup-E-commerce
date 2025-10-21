@@ -2,6 +2,7 @@
   "users": [
     {
       "id": "1",
+      "id": "1",
       "name": "Admin",
       "email": "admin@test.com",
       "password": "Admin123",
@@ -38,6 +39,14 @@
       "email": "nada@test3.com",
       "password": "1234Aa",
       "avatar": "https://randomuser.me/api/portraits/women/29.jpg",
+      "role": "user"
+    },
+    {
+      "id": "72b1",
+      "name": "Nour Amr",
+      "email": "noramr@gmail.com",
+      "password": "Nourhan11",
+      "avatar": "https://randomuser.me/api/portraits/women/28.jpg",
       "role": "user"
     },
     {
@@ -84,6 +93,15 @@
       "rating": 3,
       "comment": "good",
       "productId": 846
+    },
+    {
+      "id": "a28e",
+      "userName": "Nour Amr",
+      "userImage": "https://randomuser.me/api/portraits/women/28.jpg",
+      "date": "2025-10-20",
+      "rating": 4,
+      "comment": "wonderful Product",
+      "productId": 845
     }
   ]
 }

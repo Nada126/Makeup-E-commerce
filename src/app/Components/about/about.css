@@ -1,23 +1,59 @@
-.container {
-  max-width: 1000px;
+.about-section {
+  background: linear-gradient(180deg, #fff8fa 0%, #ffeef2 100%);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(255, 182, 193, 0.3);
+  padding: 50px 30px;
 }
 
-h1, h3 {
-  color: #c2185b;
+/* 🌸 Main Title */
+.about-title {
+  font-size: 2.2rem;
+  color: #ff6f91;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(255, 182, 193, 0.5);
 }
 
-p {
-  line-height: 1.6;
+/* 🌷 Subtitle */
+.about-subtitle {
+  color: #6b6b6b;
 }
 
-a {
-  color: #d81b60;
+/* 💫 Section Headings */
+.section-heading {
+  color: #ff6f91;
+  font-size: 1.3rem;
 }
 
-a:hover {
+/* 💖 Text Highlight (links etc.) */
+.text-highlight {
+  color: #ff6f91;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.text-highlight:hover {
+  color: #ffb6b9;
   text-decoration: underline;
 }
 
-img {
-  object-fit: cover;
+/* 🩰 Image Styling */
+.about-img {
+  border: 3px solid #ffb6b9;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(255, 182, 193, 0.5);
+}
+
+/* 🌼 Responsive Tweaks */
+@media (max-width: 768px) {
+  .about-section {
+    padding: 30px 20px;
+  }
+  .about-title {
+    font-size: 1.8rem;
+  }
 }

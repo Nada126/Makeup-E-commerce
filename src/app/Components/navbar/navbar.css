@@ -1,67 +1,133 @@
-.background {
-  background: linear-gradient(45deg, #ff9a9e, #fad0c4, #ffe9d2);
-  border-radius: 15px;
-  /* margin: 10px; */
-  /* padding: 5px 15px; */
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  background-size: 200% 200%;
-  animation: moveGradient 6s ease infinite;
+
+header.background {
+  background: linear-gradient(90deg, #ffc1cc 0%, #ffb6b9 50%, #fad0c4 100%);
+  border-radius: 0 0 18px 18px;
+  padding: 4px 0; /* Smaller height */
+  box-shadow: 0 2px 12px rgba(255, 182, 193, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-@keyframes moveGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* 🌷 Logo */
+.logo-img {
+  width: 70px;
+height: 70px;
+  border-radius: 50%;
+  padding: 3px;
+  transition: transform 0.3s ease;
+  -webkit-transition: transform 0.3s ease;
+  -moz-transition: transform 0.3s ease;
+  -ms-transition: transform 0.3s ease;
+  -o-transition: transform 0.3s ease;
 }
 
-/* Base style */
-.navbar .nav-link {
-  color: #333;
+.logo-img:hover {
+  transform: scale(1.05);
+}
+/* 🌸 Brand Title - Refined & Elegant */
+.brand-name {
+  font-size: 1.1rem;
   font-weight: 500;
-  border-radius: 0;
-  padding: 8px 16px;
+  color: #4a4a4a;
+  letter-spacing: 0.06em;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  text-transform: capitalize;
+  text-shadow:
+    0 0 3px rgba(255, 255, 255, 0.6),
+    0 0 6px rgba(255, 105, 135, 0.4);
+  transition: all 0.3s ease;
+}
+
+.brand-name:hover {
+  text-shadow:
+    0 0 5px rgba(255, 255, 255, 0.7),
+    0 0 12px rgba(255, 105, 135, 0.5);
+  transform: scale(1.03);
+}
+
+/* 🩷 Centered Nav Links */
+.navbar-nav .nav-link {
+  color: #4a4a4a;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 6px 16px;
+  border-radius: 6px;
   position: relative;
   transition: all 0.3s ease;
 }
 
-/* Active link — gradient text only (no background bubble) */
-.navbar .nav-link.active {
-  background: linear-gradient(45deg, #ff758c, #ff7eb3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 600;
-}
-
-/* Animated underline under active link */
-.navbar .nav-link.active::after {
+/* 🎯 Animated Underline on Hover/Active */
+.navbar-nav .nav-link::after {
   content: "";
   position: absolute;
-  bottom: 0;
   left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff6f91, #ffb6b9);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
   width: 50%;
-  height: 2px;
-  background: linear-gradient(45deg, #ff758c, #ff7eb3);
-  transform: translateX(-50%);
-  transition: width 0.3s ease;
 }
 
-/* Hover effect for others (except home) */
-.navbar .nav-link:not([routerLink="/home"]):hover {
-  color: #ff758c;
-  transform: translateY(-2px);
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: #ff6f91;
 }
 
-/* Smooth hover underline animation */
-.navbar .nav-link:not([routerLink="/home"]):hover::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 60%;
-  height: 2px;
-  background: linear-gradient(45deg, #ff758c, #ff7eb3);
-  transform: translateX(-50%);
-  transition: width 0.3s ease;
+/* 🛒 Icon Buttons (Right) */
+.icon-btn {
+  border: none;
+  background: transparent;
+  font-size: 1.3rem;
+  color: #4a4a4a;
+  transition: all 0.3s ease;
 }
 
+.icon-btn:hover {
+  color: #ff6f91;
+  transform: scale(1.15);
+}
 
+/* 👤 User Avatar */
+.nav-link img {
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nav-link img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+}
+
+/* 📱 Toggler Button */
+.navbar-toggler {
+  border: none;
+  padding: 6px;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* 🧁 Dropdown Menu */
+.dropdown-menu {
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 182, 193, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background-color: #ffe4ec;
+  color: #ff6f91;
+}
