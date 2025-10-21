@@ -1,24 +1,36 @@
 import { Component, NgZone } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../Services/auth-service';
-import { FormsModule } from '@angular/forms';
-import { jwtDecode } from "jwt-decode";
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { jwtDecode } from 'jwt-decode';
+import { CommonModule } from '@angular/common';
 
 declare const google: any;
 declare var FB: any;
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, ReactiveFormsModule, CommonModule],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrl: './login.css',
 })
-
 export class Login {
+  loginForm!: FormGroup;
   email = '';
   password = '';
   message = '';
 
-  constructor(private auth: AuthService, private router: Router, private ngZone: NgZone) { }
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router,
+    private ngZone: NgZone
+  ) {}
 
   loadFbSdk(): void {
     (window as any).fbAsyncInit = () => {
@@ -32,25 +44,29 @@ export class Login {
 
   initFb(): void {
     FB.init({
-      appId: '1343163154053468', 
+      appId: '1343163154053468',
       cookie: true,
       xfbml: true,
-      version: 'v18.0'
+      version: 'v18.0',
     });
   }
   ngOnInit() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+    });
     // Initialize Google Identity Services
     google.accounts.id.initialize({
       client_id: '782430391351-uvr9gfcl89alqqdgv2i1vdr71tb4vt80.apps.googleusercontent.com',
-      callback: this.handleCredentialResponse.bind(this)
+      callback: this.handleCredentialResponse.bind(this),
     });
 
-    google.accounts.id.renderButton(
-      document.getElementById('googleBtn'),
-      { theme: 'outline', size: 'large' }
-    );
+    google.accounts.id.renderButton(document.getElementById('googleBtn'), {
+      theme: 'outline',
+      size: 'large',
+    });
 
-    google.accounts.id.prompt(); // optional: يظهر popup تلقائي
+    google.accounts.id.prompt();
 
     // ✅ Facebook SDK Init
     if (!(window as any).FB) {
@@ -59,11 +75,9 @@ export class Login {
       this.initFb();
     }
   }
-
-
-
-
-
+  get f() {
+    return this.loginForm.controls;
+  }
   handleCredentialResponse(response: any) {
     try {
       const decoded: any = jwtDecode(response.credential);
@@ -71,7 +85,7 @@ export class Login {
         name: decoded.name,
         email: decoded.email,
         avatar: decoded.picture,
-        role: 'user'
+        role: 'user',
       };
 
       localStorage.setItem('token', 'google-jwt-token');
@@ -88,40 +102,57 @@ export class Login {
     }
   }
 
-
-
   loginWithFacebook(): void {
-    FB.login((response: any) => {
-      if (response.authResponse) {
-        FB.api('/me', { fields: 'name,email,picture' }, (userInfo: any) => {
-          const userData = {
-            name: userInfo.name,
-            email: userInfo.email,
-            avatar: userInfo.picture.data.url,
-            role: 'user'
-          };
+    FB.login(
+      (response: any) => {
+        if (response.authResponse) {
+          FB.api('/me', { fields: 'name,email,picture' }, (userInfo: any) => {
+            const userData = {
+              name: userInfo.name,
+              email: userInfo.email`${userInfo.id}@facebook.com`,
+              avatar: userInfo.picture.data.url,
+              role: 'user',
+            };
 
-          localStorage.setItem('token', response.authResponse.accessToken);
-          localStorage.setItem('currentUser', JSON.stringify(userData));
+            localStorage.setItem('token', response.authResponse.accessToken);
+            localStorage.setItem('currentUser', JSON.stringify(userData));
 
-          // ✅ احفظ المستخدم في db.json لو مش موجود
-          this.auth.saveUser(userData).subscribe();
-
-          this.ngZone.run(() => {
-            this.message = `✅ Logged in as ${userData.name}`;
-            this.router.navigate(['/home']);
+            // Save user to db.json if not exists
+            this.auth.saveUser(userData).subscribe({
+              next: () => {
+                this.ngZone.run(() => {
+                  this.message = `✅ Logged in as ${userData.name}`;
+                  this.router.navigate(['/home']);
+                });
+              },
+              error: (err) => {
+                console.error('Error saving user:', err);
+                this.message = '❌ Error saving Facebook user.';
+              },
+            });
           });
-        });
-      } else {
-        this.message = '❌ Facebook login cancelled!';
-      }
-    }, { scope: 'email,public_profile' });
+        } else {
+          this.message = '❌ Facebook login cancelled!';
+        }
+      },
+      { scope: 'email,public_profile' }
+    );
   }
 
   login() {
-    this.auth.login(this.email, this.password).subscribe(success => {
+    if (this.loginForm.invalid) {
+      this.message = '❌ Please fix the fields error in the form!';
+      this.loginForm.markAllAsTouched;
+      return;
+    }
+
+    const { email, password } = this.loginForm.value;
+    // Keep your original logic unchanged
+    this.auth.login(email, password).subscribe((success) => {
       if (success) {
         const user = this.auth.getCurrentUser();
+        console.log(user);
+        console.log(user.role);
         this.message = '✅ Login successful!';
         setTimeout(() => {
           if (user.role === 'admin') {
