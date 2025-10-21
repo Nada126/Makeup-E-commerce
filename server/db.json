@@ -2,7 +2,6 @@
   "users": [
     {
       "id": "1",
-      "id": "1",
       "name": "Admin",
       "email": "admin@test.com",
       "password": "Admin123",
@@ -50,10 +49,11 @@
       "role": "user"
     },
     {
-      "id": "eb7f",
-      "name": "Nada Naga",
-      "email": "nadanaga9@gmail.com",
-      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocL2ArExzRcBjfocm8fq55Tue1wxvBx-Xo3cQgo-xR7Xwk-WYA=s96-c",
+      "id": "870c",
+      "name": "nada",
+      "email": "nada@test5.com",
+      "password": "1234Aa",
+      "avatar": "https://randomuser.me/api/portraits/women/79.jpg",
       "role": "user"
     }
   ],

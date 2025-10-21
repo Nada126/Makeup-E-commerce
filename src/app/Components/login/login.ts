@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { jwtDecode } from "jwt-decode";
 
 declare const google: any;
+declare var FB: any;
 @Component({
   selector: 'app-login',
   imports: [FormsModule, RouterModule],
@@ -19,6 +20,24 @@ export class Login {
 
   constructor(private auth: AuthService, private router: Router, private ngZone: NgZone) { }
 
+  loadFbSdk(): void {
+    (window as any).fbAsyncInit = () => {
+      this.initFb();
+    };
+    const script = document.createElement('script');
+    script.src = 'https://connect.facebook.net/en_US/sdk.js';
+    script.async = true;
+    document.body.appendChild(script);
+  }
+
+  initFb(): void {
+    FB.init({
+      appId: '1343163154053468', 
+      cookie: true,
+      xfbml: true,
+      version: 'v18.0'
+    });
+  }
   ngOnInit() {
     // Initialize Google Identity Services
     google.accounts.id.initialize({
@@ -32,7 +51,18 @@ export class Login {
     );
 
     google.accounts.id.prompt(); // optional: يظهر popup تلقائي
+
+    // ✅ Facebook SDK Init
+    if (!(window as any).FB) {
+      this.loadFbSdk();
+    } else {
+      this.initFb();
+    }
   }
+
+
+
+
 
   handleCredentialResponse(response: any) {
     try {
@@ -56,6 +86,36 @@ export class Login {
       console.error('Error decoding JWT:', err);
       this.message = '❌ Google login failed!';
     }
+  }
+
+
+
+  loginWithFacebook(): void {
+    FB.login((response: any) => {
+      if (response.authResponse) {
+        FB.api('/me', { fields: 'name,email,picture' }, (userInfo: any) => {
+          const userData = {
+            name: userInfo.name,
+            email: userInfo.email,
+            avatar: userInfo.picture.data.url,
+            role: 'user'
+          };
+
+          localStorage.setItem('token', response.authResponse.accessToken);
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+
+          // ✅ احفظ المستخدم في db.json لو مش موجود
+          this.auth.saveUser(userData).subscribe();
+
+          this.ngZone.run(() => {
+            this.message = `✅ Logged in as ${userData.name}`;
+            this.router.navigate(['/home']);
+          });
+        });
+      } else {
+        this.message = '❌ Facebook login cancelled!';
+      }
+    }, { scope: 'email,public_profile' });
   }
 
   login() {

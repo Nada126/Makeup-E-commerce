@@ -148,3 +148,16 @@
 .register-text a:hover {
   text-decoration: underline;
 }
+
+.facebook-btn {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.facebook-btn:hover {
+  background-color: #0e63d8;
+}
