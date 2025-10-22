@@ -10,7 +10,8 @@
     "build:db": "node server/build-db.js",
     "json-server": "npm run build:db && json-server server/db.json --port 3001 --watch",
     "dev": "ng serve & npm run json-server",
-    "start:server": "npm run json-server"
+    "start:server": "npm run json-server",
+    "start:https": "ng serve --ssl true --ssl-cert ./ssl/server.crt --ssl-key ./ssl/server.key"
   },
   "prettier": {
     "printWidth": 100,
@@ -34,6 +35,9 @@
     "@angular/router": "^20.3.0",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
+    "gapi-script": "^1.2.0",
+    "jwt-decode": "^4.0.0",
+    "ngx-facebook": "^3.0.0-0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

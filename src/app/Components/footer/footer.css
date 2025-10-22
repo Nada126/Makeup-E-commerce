@@ -1,21 +1,83 @@
-footer {
-  font-family: 'Arial', sans-serif;
-  font-size: 0.9rem;
+.footer {
+  background: linear-gradient(90deg, #ffc1cc 0%, #ffb6b9 50%, #fad0c4 100%);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -2px 12px rgba(255, 182, 193, 0.4);
+  color: #4a4a4a;
+  font-family: "Poppins", "Segoe UI", sans-serif;
 }
 
-footer a:hover {
-  text-decoration: underline;
-  color: #ffc107; /* golden hover */
+/* 🌸 Logo */
+.footer-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
 }
 
-footer .bi-facebook:hover {
-  color: #3b5998;
+.footer-logo:hover {
+  transform: scale(1.05);
 }
 
-footer .bi-instagram:hover {
-  color: #e4405f;
+/* 🌷 Headings */
+.footer-heading {
+  color: #ff6f91;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
 }
 
-.background{
-    background-color: #e65872;
+/* 💄 Footer Links */
+.footer-link {
+  color: #4a4a4a;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 6px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.footer-link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff6f91, #ffb6b9);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+
+.footer-link:hover::after {
+  width: 50%;
+}
+
+.footer-link:hover {
+  color: #ff6f91;
+}
+
+/* 🌼 Social Links */
+.social-link {
+  color: #4a4a4a;
+  font-size: 1.4rem;
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  color: #ff6f91;
+  transform: translateY(-3px) scale(1.15);
+}
+
+/* 🌸 Footer Bottom */
+.footer-bottom {
+  color: #4a4a4a;
+  opacity: 0.9;
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  .footer-logo {
+    width: 70px;
+    height: 70px;
+  }
 }

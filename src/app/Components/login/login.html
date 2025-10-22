@@ -1,8 +1,41 @@
-<div class="form-container">
-  <h2>Login</h2>
-  <input type="email" placeholder="Email" [(ngModel)]="email">
-  <input type="password" placeholder="Password" [(ngModel)]="password">
-  <button (click)="login()">Login</button>
+<div class="login-page">
+  <div class="form-container">
+    <h2>Welcome Back 👋</h2>
+    <p class="subtitle">Login to your account</p>
 
-  <p class="msg">{{ message }}</p>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+      <!-- Email input -->
+      <div class="input-group">
+        <input type="email" placeholder="Email address" formControlName="email" />
+        <span class="msg" *ngIf="f['email'].invalid && (f['email'].touched || f['email'].dirty)">
+          <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+          <span *ngIf="f['email'].errors?.['email']">Enter a valid email.</span>
+        </span>
+      </div>
+
+      <!-- Password input -->
+      <div class="input-group">
+        <input type="password" placeholder="Password" formControlName="password" />
+        <span class="msg" *ngIf="f['password'].invalid && (f['password'].touched || f['password'].dirty)">
+          <span *ngIf="f['password'].errors?.['required']">Password is required.</span>
+          <span *ngIf="f['password'].errors?.['minlength']">Password must be at least 6 characters.</span>
+        </span>
+      </div>
+
+      <!-- Login button -->
+      <button type="submit" [disabled]="!loginForm.valid">Login</button>
+    </form>
+
+    <p class="error-msg">{{ message }}</p>
+
+    <p class="register-text">
+      Don't have an account?
+      <a routerLink="/register">Register here</a>
+    </p>
+    <div id="googleBtn"></div>
+    <button (click)="loginWithFacebook()" class="facebook-btn">
+  Login with Facebook
+</button>
+  </div>
 </div>

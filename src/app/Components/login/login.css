@@ -1,24 +1,182 @@
-.form-container {
-  width: 300px;
-  margin: 50px auto;
+/* Full page center */
+.login-page {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+  background: linear-gradient(135deg, #f3ebee, #fed6e3);
+  font-family: 'Poppins', sans-serif;
+  padding-top: 60px;
 }
 
-input, button {
-  padding: 10px;
+/* Card container */
+.form-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 30px 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 500px; /* wider */
+  max-width: 90%;
+  text-align: center;
+}
+
+/* Title and subtitle */
+.form-container h2 {
+  color: #333;
+  margin-bottom: 5px;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.form-container .subtitle {
+  color: #777;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+/* Inputs */
+.form-container input {
+  width: 100%;
+  padding: 12px 16px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-container input:focus {
+  outline: none;
+  border-color: #6a11cb;
+  box-shadow: 0 0 8px rgba(106, 17, 203, 0.3);
+}
+
+/* Login button */
+.form-container button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 154, 158, 0.6);
+}
+
+/* Message text */
+.msg {
+  display: block;
+  color: #e63946;
+  font-size: 14px;
+  font-weight: 500;
+  /* margin-top: 3px; */
+  margin-left: 15px;
+  text-align: left; /* aligned with input */
+}
+/* Message text */
+.error-msg {
+  display: block;
+  color: #e63946;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 8px;
+  text-align: center; /* aligned with input */
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+.divider span {
+  padding: 0 12px;
+  color: #888;
+  font-size: 13px;
+}
+
+/* Social buttons */
+.social-login button,
+.social-login .google,
+.social-login .facebook {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.social-login .google {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  color: #444;
+}
+
+.social-login .facebook {
+  background-color: #1877f2;
+  color: #fff;
+}
+
+.social-login .google:hover {
+  background-color: #f5f5f5;
+}
+
+.social-login .facebook:hover {
+  background-color: #145dbf;
+}
+
+.social-login i {
+  margin-right: 10px;
   font-size: 16px;
 }
 
-button {
-  background: #28a745;
-  color: white;
-  border: none;
-  cursor: pointer;
+/* Register link */
+.register-text {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #555;
+}
+.register-text a {
+  color: #ff9a9e;
+  text-decoration: none;
+  font-weight: 600;
+}
+.register-text a:hover {
+  text-decoration: underline;
 }
 
-.msg {
-  text-align: center;
-  color: red;
+/* Facebook button fallback */
+.facebook-btn {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.
 }
