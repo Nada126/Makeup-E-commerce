@@ -1,3 +1,4 @@
+<!-- generic-product-page.html - FIXED -->
 <div class="container my-5" style="margin-top: 100px">
   <!-- Back Button -->
   <button class="btn btn-outline-secondary mb-3" (click)="navigateToProducts()">
@@ -73,23 +74,33 @@
     <div class="col">
       <div class="card h-100 shadow-sm position-relative text-center" (click)="openDetail(product)" role="button" tabindex="0">
         <!-- ❤️ Favorite Icon -->
-        <i
-  class="bi favorite-icon"
-  [ngClass]="
-    favoriteService.isFavorite(product.id)
-      ? 'bi-heart-fill text-danger'
-      : 'bi-heart'
-  "
-  (click)="toggleFavorite(product, $event)"
-  title="Add to favorites"
->
-</i>
+        @if (isLoggedIn) {
+          <i
+            class="bi favorite-icon"
+            [ngClass]="
+              favoriteService.isFavorite(product.id)
+                ? 'bi-heart-fill text-danger'
+                : 'bi-heart'
+            "
+            (click)="toggleFavorite(product, $event)"
+            [title]="favoriteService.isFavorite(product.id) ? 'Remove from favorites' : 'Add to favorites'"
+          >
+          </i>
+        } @else {
+          <i
+            class="bi bi-heart favorite-icon"
+            (click)="toggleFavorite(product, $event)"
+            title="Login to add favorites"
+            style="cursor: pointer;"
+          >
+          </i>
+        }
 
         <!-- Product Image -->
         <div class="image-container">
           <img
             [src]="product.image_link || 'https://via.placeholder.com/200'"
-            alt="{{ product.name }}"
+            [alt]="product.name"
             class="card-img-top"
           />
         </div>

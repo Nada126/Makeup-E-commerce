@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../Services/auth-service';
 
 import { FormsModule} from '@angular/forms';
 @Component({
   selector: 'app-login',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -18,13 +18,20 @@ export class Login{
   constructor(private auth: AuthService, private router: Router) {}
 
   login() {
-    const success = this.auth.login(this.email, this.password);
-
-    if (success) {
-      this.message = '✅ Login successful!';
-      setTimeout(() => this.router.navigate(['/home']), 1000);
-    } else {
-      this.message = '❌ Invalid credentials!';
-    }
+    this.auth.login(this.email, this.password).subscribe(success => {
+      if (success) {
+        const user = this.auth.getCurrentUser();
+        this.message = '✅ Login successful!';
+        setTimeout(() => {
+          if (user.role === 'admin') {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/home']);
+          }
+        }, 1000);
+      } else {
+        this.message = '❌ Invalid credentials!';
+      }
+    });
   }
 }

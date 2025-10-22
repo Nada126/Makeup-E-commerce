@@ -1,72 +1,137 @@
+// favorite.service.ts - FIXED
 import { Injectable } from '@angular/core';
 import { Product } from '../modules/Product';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
+import { AuthService } from './auth-service';
+import { map, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FavoriteService {
-  private favoritesKey = 'favoriteProducts';
-  private favoritesSubject = new BehaviorSubject<Product[]>(this.getFavorites());
-  favorites$ = this.favoritesSubject.asObservable();
+  private favoritesKey = 'userFavorites';
+  private favoritesSubject: BehaviorSubject<Map<number, Product[]>>;
 
-  constructor() {}
+  // Public observables - initialized in constructor
+  userFavorites$: any;
+  favoritesCount$: any;
 
-  // Get favorites from localStorage
-  private getFavorites(): Product[] {
+  constructor(private authService: AuthService) {
+    // Initialize the BehaviorSubject first
+    this.favoritesSubject = new BehaviorSubject<Map<number, Product[]>>(this.loadAllUsersFavorites());
+
+    // Then initialize the observables that depend on authService and favoritesSubject
+    this.userFavorites$ = combineLatest([
+      this.authService.loginState$,
+      this.favoritesSubject.asObservable()
+    ]).pipe(
+      map(([isLoggedIn, allFavorites]) => {
+        if (!isLoggedIn) return [];
+        const userId = this.authService.getCurrentUserId();
+        return userId ? allFavorites.get(userId) || [] : [];
+      }),
+      distinctUntilChanged((prev, curr) =>
+        prev.length === curr.length &&
+        prev.every((p, i) => p.id === curr[i]?.id)
+      )
+    );
+
+    this.favoritesCount$ = this.userFavorites$.pipe(
+      map((favorites: Product[]) => favorites.length)
+    );
+  }
+
+  // Load all users' favorites from localStorage
+  private loadAllUsersFavorites(): Map<number, Product[]> {
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return new Map();
+    }
+
+    const stored = localStorage.getItem(this.favoritesKey);
+    if (stored) {
+      try {
+        const arrayData = JSON.parse(stored);
+        return new Map(arrayData);
+      } catch {
+        return new Map();
+      }
+    }
+    return new Map();
+  }
+
+  // Save all users' favorites to localStorage
+  private saveAllFavorites(favoritesMap: Map<number, Product[]>): void {
     if (typeof window !== 'undefined' && window.localStorage) {
-      const favorites = localStorage.getItem(this.favoritesKey);
-      return favorites ? JSON.parse(favorites) : [];
-    }
-    return [];
-  }
-
-  // Save favorites to localStorage
-  private saveFavorites(favorites: Product[]): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(this.favoritesKey, JSON.stringify(favorites));
-      this.favoritesSubject.next(favorites);
+      const arrayData = Array.from(favoritesMap.entries());
+      localStorage.setItem(this.favoritesKey, JSON.stringify(arrayData));
+      this.favoritesSubject.next(new Map(favoritesMap));
     }
   }
 
-  // Add product to favorites
-  addToFavorites(product: Product): void {
-    const favorites = this.getFavorites();
+  // Add to favorites with user context
+  addToFavorites(product: Product): boolean {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) return false;
 
-    // Check if product already exists
-    const exists = favorites.some(fav => fav.id === product.id);
+    const allFavorites = this.loadAllUsersFavorites();
+    const userFavorites = allFavorites.get(userId) || [];
 
-    if (!exists) {
-      favorites.push({ ...product, isFavorite: true });
-      this.saveFavorites(favorites);
+    // Check if already favorited
+    if (userFavorites.some(fav => fav.id === product.id)) {
+      return false;
     }
+
+    userFavorites.push({ ...product, isFavorite: true });
+    allFavorites.set(userId, userFavorites);
+    this.saveAllFavorites(allFavorites);
+    return true;
   }
 
-  // Remove product from favorites
-  removeFromFavorites(productId: number): void {
-    const favorites = this.getFavorites();
-    const updatedFavorites = favorites.filter(fav => fav.id !== productId);
-    this.saveFavorites(updatedFavorites);
+  // Remove from favorites with user context
+  removeFromFavorites(productId: number): boolean {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) return false;
+
+    const allFavorites = this.loadAllUsersFavorites();
+    const userFavorites = allFavorites.get(userId) || [];
+    const updatedFavorites = userFavorites.filter(fav => fav.id !== productId);
+
+    allFavorites.set(userId, updatedFavorites);
+    this.saveAllFavorites(allFavorites);
+    return true;
   }
 
-  // Check if product is in favorites
+  // Check if product is in user's favorites
   isFavorite(productId: number): boolean {
-    const favorites = this.getFavorites();
-    return favorites.some(fav => fav.id === productId);
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) return false;
+
+    const allFavorites = this.loadAllUsersFavorites();
+    const userFavorites = allFavorites.get(userId) || [];
+    return userFavorites.some(fav => fav.id === productId);
   }
 
-  // Get all favorites
+  // Get current user's favorites
   getFavoritesList(): Product[] {
-    return this.getFavorites();
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) return [];
+
+    const allFavorites = this.loadAllUsersFavorites();
+    return allFavorites.get(userId) || [];
   }
 
-  // Clear all favorites
-  clearFavorites(): void {
-    this.saveFavorites([]);
-  }
-
-  // Get favorites count
+  // Get favorites count for current user
   getFavoritesCount(): number {
-    return this.getFavorites().length;
+    return this.getFavoritesList().length;
+  }
+
+  // Clear current user's favorites
+  clearFavorites(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (!userId) return;
+
+    const allFavorites = this.loadAllUsersFavorites();
+    allFavorites.set(userId, []);
+    this.saveAllFavorites(allFavorites);
   }
 }

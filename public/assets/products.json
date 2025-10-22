@@ -1,0 +1,114 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Matte Lipstick - Ruby Red",
+      "brand": "Maybelline",
+      "price": 12.99,
+      "rating": 4.5,
+      "image_link": "https://via.placeholder.com/300x300/FF6B6B/FFFFFF?text=Lipstick",
+      "product_type": "lipstick",
+      "product_category": "lipstick",
+      "category": "lipstick"
+    },
+    {
+      "id": 2,
+      "name": "Liquid Foundation - Natural Beige",
+      "brand": "L'Oreal",
+      "price": 14.50,
+      "rating": 4.2,
+      "image_link": "https://via.placeholder.com/300x300/4ECDC4/FFFFFF?text=Foundation",
+      "product_type": "foundation",
+      "product_category": "foundation",
+      "category": "foundation"
+    },
+    {
+      "id": 3,
+      "name": "Eyeshadow Palette - Nude",
+      "brand": "NYX",
+      "price": 18.75,
+      "rating": 4.7,
+      "image_link": "https://via.placeholder.com/300x300/45B7D1/FFFFFF?text=Eyeshadow",
+      "product_type": "eyeshadow",
+      "product_category": "eyeshadow",
+      "category": "eyeshadow"
+    },
+    {
+      "id": 4,
+      "name": "Mascara - Volume Boost",
+      "brand": "Covergirl",
+      "price": 8.99,
+      "rating": 4.0,
+      "image_link": "https://via.placeholder.com/300x300/F7DC6F/FFFFFF?text=Mascara",
+      "product_type": "mascara",
+      "product_category": "mascara",
+      "category": "mascara"
+    },
+    {
+      "id": 5,
+      "name": "Blush - Pink Glow",
+      "brand": "Revlon",
+      "price": 10.25,
+      "rating": 4.3,
+      "image_link": "https://via.placeholder.com/300x300/FF9FF3/FFFFFF?text=Blush",
+      "product_type": "blush",
+      "product_category": "blush",
+      "category": "blush"
+    },
+    {
+      "id": 6,
+      "name": "Lip Gloss - Clear Shine",
+      "brand": "ELF",
+      "price": 6.50,
+      "rating": 3.8,
+      "image_link": "https://via.placeholder.com/300x300/F368E0/FFFFFF?text=Lip+Gloss",
+      "product_type": "lip_gloss",
+      "product_category": "lip_gloss",
+      "category": "lip_gloss"
+    },
+    {
+      "id": 7,
+      "name": "Concealer - Light Medium",
+      "brand": "Maybelline",
+      "price": 9.99,
+      "rating": 4.4,
+      "image_link": "https://via.placeholder.com/300x300/FF9F43/FFFFFF?text=Concealer",
+      "product_type": "concealer",
+      "product_category": "concealer",
+      "category": "concealer"
+    },
+    {
+      "id": 8,
+      "name": "Eyebrow Pencil - Dark Brown",
+      "brand": "Anastasia",
+      "price": 22.00,
+      "rating": 4.6,
+      "image_link": "https://via.placeholder.com/300x300/54A0FF/FFFFFF?text=Eyebrow",
+      "product_type": "eyebrow",
+      "product_category": "eyebrow",
+      "category": "eyebrow"
+    },
+    {
+      "id": 9,
+      "name": "Highlighter - Golden Pearl",
+      "brand": "Fenty Beauty",
+      "price": 32.00,
+      "rating": 4.8,
+      "image_link": "https://via.placeholder.com/300x300/FFDD59/FFFFFF?text=Highlighter",
+      "product_type": "highlighter",
+      "product_category": "highlighter",
+      "category": "highlighter"
+    },
+    {
+      "id": 10,
+      "name": "Setting Spray - Matte Finish",
+      "brand": "Urban Decay",
+      "price": 15.75,
+      "rating": 4.5,
+      "image_link": "https://via.placeholder.com/300x300/1DD1A1/FFFFFF?text=Spray",
+      "product_type": "setting_spray",
+      "product_category": "setting_spray",
+      "category": "setting_spray"
+    }
+  ]
+}

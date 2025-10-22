@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+// generic-product-page.ts - UPDATED
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../modules/Product';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FavoriteService } from '../../Services/favorite.service';
-
+import { AuthService } from '../../Services/auth-service'; // ADD THIS
+import { Subject } from 'rxjs'; // ADD THIS
+import { takeUntil } from 'rxjs/operators'; // ADD THIS
 
 @Component({
   selector: 'app-generic-product-page',
@@ -13,7 +16,7 @@ import { FavoriteService } from '../../Services/favorite.service';
   templateUrl: './generic-product-page.html',
   styleUrls: ['./generic-product-page.css']
 })
-export class GenericProductPage implements OnInit {
+export class GenericProductPage implements OnInit, OnDestroy {
   products: Product[] = [];
   filteredProducts: Product[] = [];
 
@@ -25,6 +28,9 @@ export class GenericProductPage implements OnInit {
   currentPage = 1;
   itemsPerPage = 25;
   loading = false;
+
+  isLoggedIn = false;
+  private destroy$ = new Subject<void>();
 
   // Map product types to display names
   productTypeNames: { [key: string]: string } = {
@@ -45,25 +51,39 @@ export class GenericProductPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     public favoriteService: FavoriteService,
+    private authService: AuthService // ADD THIS
   ) {}
 
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;
     this.router.navigate(['/product', product.id], { state: { product } });
   }
-toggleFavorite(product: Product, event?: Event) {
-  if (event) {
-    event.stopPropagation(); // Prevent card click when clicking favorite
+
+  toggleFavorite(product: Product, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (!this.isLoggedIn) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    if (this.favoriteService.isFavorite(product.id)) {
+      this.favoriteService.removeFromFavorites(product.id);
+      product.isFavorite = false;
+    } else {
+      if (this.favoriteService.addToFavorites(product)) {
+        product.isFavorite = true;
+      }
+    }
   }
 
-  if (this.favoriteService.isFavorite(product.id)) {
-    this.favoriteService.removeFromFavorites(product.id);
-    product.isFavorite = false;
-  } else {
-    this.favoriteService.addToFavorites(product);
-    product.isFavorite = true;
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
-}
+
   navigateToProducts() {
     this.router.navigate(['/products']);
   }
@@ -73,15 +93,17 @@ toggleFavorite(product: Product, event?: Event) {
       const type = params.get('type');
       if(type){
         this.productType = type;
-        this.pageTitle = this.productTypeNames[type] ||this.formatProductType(type)
+        this.pageTitle = this.productTypeNames[type] || this.formatProductType(type);
         this.fetchProducts();
       }
     });
-      if (this.products) {
-    this.products.forEach(product => {
-      product.isFavorite = this.favoriteService.isFavorite(product.id);
-    });
-  }
+
+    // Subscribe to login state
+    this.authService.loginState$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((loggedIn: boolean) => {
+        this.isLoggedIn = loggedIn;
+      });
   }
 
   private formatProductType(type: string): string {
@@ -96,37 +118,66 @@ toggleFavorite(product: Product, event?: Event) {
 
     this.http.get<Product[]>(url).subscribe({
       next: (data) => {
-        const validProducts: Product[] = [];
-
         // Convert price/rating to numbers
         const allProducts = data.map(p => ({
           ...p,
           price: Number(p.price) || 0,
           rating: Number(p.rating) || 0,
-          isFavorite: false
+          isFavorite: this.favoriteService.isFavorite(p.id)
         }));
 
-        // Check if image exists
-        const checkImagePromises = allProducts.map(product =>
-          this.http.head(product.image_link || '', { observe: 'response' }).toPromise()
-            .then(() => validProducts.push(product))
-            .catch(() => null)
-        );
-
-        Promise.all(checkImagePromises).then(() => {
-          this.products = validProducts;
+        // If API fails, use local products as fallback
+        if (allProducts.length === 0) {
+          console.warn('API returned no products, using local data');
+          this.http.get<{products: Product[]}>('/assets/products.json').subscribe({
+            next: (localData) => {
+              const localProducts = localData.products.map(p => ({
+                ...p,
+                price: Number(p.price) || 0,
+                rating: Number(p.rating) || 0,
+                isFavorite: this.favoriteService.isFavorite(p.id)
+              }));
+              this.products = localProducts;
+              this.filteredProducts = this.products;
+              this.categories = [...new Set(this.products.map(p => p.category).filter(Boolean))];
+              console.log(`Available categories for ${this.productType}:`, this.categories);
+              this.loading = false;
+            },
+            error: (localErr) => {
+              console.error('Error loading local products:', localErr);
+              this.loading = false;
+            }
+          });
+        } else {
+          this.products = allProducts;
           this.filteredProducts = this.products;
-
-          // Extract unique categories from the products
           this.categories = [...new Set(this.products.map(p => p.category).filter(Boolean))];
-
           console.log(`Available categories for ${this.productType}:`, this.categories);
           this.loading = false;
-        });
+        }
       },
       error: (err) => {
         console.error(`Error fetching ${this.productType} products:`, err);
-        this.loading = false;
+        // Fallback to local products
+        this.http.get<{products: Product[]}>('/assets/products.json').subscribe({
+          next: (localData) => {
+            const localProducts = localData.products.map(p => ({
+              ...p,
+              price: Number(p.price) || 0,
+              rating: Number(p.rating) || 0,
+              isFavorite: this.favoriteService.isFavorite(p.id)
+            }));
+            this.products = localProducts;
+            this.filteredProducts = this.products;
+            this.categories = [...new Set(this.products.map(p => p.category).filter(Boolean))];
+            console.log(`Available categories for ${this.productType}:`, this.categories);
+            this.loading = false;
+          },
+          error: (localErr) => {
+            console.error('Error loading local products:', localErr);
+            this.loading = false;
+          }
+        });
       }
     });
   }
@@ -169,27 +220,45 @@ toggleFavorite(product: Product, event?: Event) {
   }
 
   addToCart(product: Product) {
-    alert(`${product.name} added to cart!`);
-  }
-sortByPrice(event: any) {
-  const value = event.target.value;
-  if (value === 'low-high') {
-    this.filteredProducts.sort((a, b) => Number(a.price) - Number(b.price));
-  } else if (value === 'high-low') {
-    this.filteredProducts.sort((a, b) => Number(b.price) - Number(a.price));
-  }
-  this.currentPage = 1;
-}
+    // Get existing cart from localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-sortByRating(event: any) {
-  const value = event.target.value;
-  if (value === 'low-high') {
-    this.filteredProducts.sort((a, b) => Number(a.rating) - Number(b.rating));
-  } else if (value === 'high-low') {
-    this.filteredProducts.sort((a, b) => Number(b.rating) - Number(a.rating));
+    // Check if product already exists in cart
+    const existingProductIndex = cart.findIndex((item: any) => item.id === product.id);
+
+    if (existingProductIndex > -1) {
+      // Product already in cart, could increment quantity here if needed
+      alert(`${product.name} is already in your cart.`);
+    } else {
+      // Add new product to cart
+      cart.push(product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`${product.name} has been added to the cart.`);
+    }
+
+    // Navigate to cart page
+    this.router.navigate(['/cart']);
   }
-  this.currentPage = 1;
-}
+
+  sortByPrice(event: any) {
+    const value = event.target.value;
+    if (value === 'low-high') {
+      this.filteredProducts.sort((a, b) => Number(a.price) - Number(b.price));
+    } else if (value === 'high-low') {
+      this.filteredProducts.sort((a, b) => Number(b.price) - Number(a.price));
+    }
+    this.currentPage = 1;
+  }
+
+  sortByRating(event: any) {
+    const value = event.target.value;
+    if (value === 'low-high') {
+      this.filteredProducts.sort((a, b) => Number(a.rating) - Number(b.rating));
+    } else if (value === 'high-low') {
+      this.filteredProducts.sort((a, b) => Number(b.rating) - Number(a.rating));
+    }
+    this.currentPage = 1;
+  }
 
   getStarsArray(rating: any): boolean[] {
     const stars = Math.round(Number(rating) || 0);

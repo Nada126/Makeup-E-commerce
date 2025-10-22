@@ -6,10 +6,10 @@ import { CommonModule } from '@angular/common';
   selector: 'app-slide-show',
   imports: [CommonModule],
   templateUrl: './slide-show.html',
-  styleUrl: './slide-show.css'
+  styleUrls: ['./slide-show.css']
 })
 export class SlideShow implements OnInit, OnDestroy {
-  slides: { src: string, brand: string }[] = [
+  slides: { src: string; brand: string }[] = [
     { src: 'images/benefit.png', brand: 'benefit' },
     { src: 'images/dior.png', brand: 'dior' },
     { src: 'images/essie.jpg', brand: 'essie' },
@@ -22,7 +22,7 @@ export class SlideShow implements OnInit, OnDestroy {
     { src: 'images/stila.png', brand: 'stila' }
   ];
 
-  idx: number = 0;
+  idx = 0;
   currentSlide = this.slides[0];
   timer: any = null;
 
@@ -47,8 +47,8 @@ export class SlideShow implements OnInit, OnDestroy {
   }
 
   startSlide() {
-    this.stopSlide(); // prevent duplicate intervals
-    this.timer = setInterval(() => this.next(), 3000); // auto-slide every 3 seconds
+    this.stopSlide();
+    this.timer = setInterval(() => this.next(), 4000);
   }
 
   stopSlide() {
@@ -58,12 +58,10 @@ export class SlideShow implements OnInit, OnDestroy {
     }
   }
 
-  // Navigate to brand page
   goToBrand() {
     this.router.navigate(['/brand', this.currentSlide.brand]);
   }
 
-  // optional: restart slide show after hover ends
   onMouseEnter() {
     this.stopSlide();
   }

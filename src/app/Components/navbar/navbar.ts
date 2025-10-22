@@ -11,26 +11,46 @@ import { FavoriteService } from '../../Services/favorite.service';
 })
 export class Navbar implements OnInit {
   favoriteCount = 0;
+  user: any = {};
+  isAdmin = false;
+  isLoggedIn = false;
+
 
   constructor(
     private auth: AuthService,
     private router: Router,
     public favoriteService: FavoriteService
-  ) { }
+  ) {}
 
-  // Use only the getter, remove the property declaration
-  get isLoggedIn(): boolean {
-    return this.auth.isLoggedIn();
-  }
+  ngOnInit(): void {
+    // Subscribe to login state changes
+    this.auth.loginState$.subscribe(loggedIn => {
+      this.isLoggedIn = loggedIn;
+      this.user = this.auth.getCurrentUser();
+      this.isAdmin = this.auth.isAdmin();
+    });
 
-  ngOnInit() {
-    this.favoriteService.favorites$.subscribe(favorites => {
-      this.favoriteCount = favorites.length;
+    // Subscribe to favorites count
+    this.favoriteService.favoritesCount$.subscribe((count: number) => {
+      this.favoriteCount = count;
     });
   }
 
+  // get isLoggedIn(): boolean {
+  //   if (this.auth.isAdmin()) {
+  //     this.isAdmin = true;
+  //   }
+  //   return this.auth.isLoggedIn();
+  // }
+
   logout() {
     this.auth.logout();
+    this.user = null;
+    this.isAdmin = false;
     this.router.navigate(['/login']);
+  }
+
+  goToDashboard() {
+    this.router.navigate(['/admin']);
   }
 }

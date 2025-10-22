@@ -1,0 +1,36 @@
+<div class="payment-container">
+  <h2>Payment Details</h2>
+
+  <div class="payment-form" *ngIf="!paymentSuccess">
+    <div class="form-group">
+      <label for="card-element">Credit or Debit Card</label>
+      <div id="card-element" class="card-element"></div>
+      <div id="card-errors" class="card-errors" *ngIf="paymentError">{{ paymentError }}</div>
+    </div>
+
+    <button
+      class="pay-button"
+      (click)="onSubmit()"
+      [disabled]="isProcessing"
+    >
+      <span *ngIf="isProcessing">Processing...</span>
+      <span *ngIf="!isProcessing">Pay $10.00</span>
+    </button>
+  </div>
+
+  <div class="success-message" *ngIf="paymentSuccess">
+    <div class="success-icon">✓</div>
+    <h3>Payment Successful!</h3>
+    <p>Your payment has been processed successfully.</p>
+  </div>
+
+  <div class="test-cards-info">
+    <h4>Test Cards for Development</h4>
+    <ul>
+      <li><strong>Success:</strong> 4242 4242 4242 4242</li>
+      <li><strong>Authentication Required:</strong> 4000 0025 0000 3155</li>
+      <li><strong>Declined:</strong> 4000 0000 0000 9995</li>
+    </ul>
+    <p>Use any future expiration date, any 3-digit CVC, and any postal code.</p>
+  </div>
+</div>

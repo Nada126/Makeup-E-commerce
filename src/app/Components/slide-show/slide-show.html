@@ -1,19 +1,21 @@
 <div class="slideShow" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-    <!-- Make the image clickable -->
-    <img
-        [src]="currentSlide.src"
-        alt="Slide"
-        class="slide-img clickable"
-        (click)="goToBrand()"
-    >
+  <!-- Image -->
+  <img
+    [src]="currentSlide.src"
+    alt="Slide"
+    class="slide-img fade-in"
+    (click)="goToBrand()"
+  />
 
-    <!-- Prev Arrow -->
-    <button class="arrow left" (click)="prev()">
-      &#10094;
-    </button>
+  <!-- Overlay gradient for style -->
+  <div class="overlay"></div>
 
-    <!-- Next Arrow -->
-    <button class="arrow right" (click)="next()">
-      &#10095;
-    </button>
+  <!-- Navigation arrows -->
+  <button class="arrow left" (click)="prev()">&#10094;</button>
+  <button class="arrow right" (click)="next()">&#10095;</button>
+
+  <!-- Optional text (brand name) -->
+  <div class="slide-text">
+    <h2>{{ currentSlide.brand | titlecase }}</h2>
+  </div>
 </div>

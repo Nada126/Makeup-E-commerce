@@ -28,7 +28,7 @@ export class GenericBrandPage implements OnInit {
 
   // Only 10 carefully selected working brands
   brandNames: { [key: string]: string } = {
-    'almay': 'Almay',                    
+    'almay': 'Almay',
     'annabelle': 'Annabelle',
     'essie': 'Essie',
     'covergirl': 'CoverGirl',
@@ -182,7 +182,24 @@ export class GenericBrandPage implements OnInit {
   }
 
   addToCart(product: Product) {
-    alert(`${product.name} added to cart!`);
+    // Get existing cart from localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+    // Check if product already exists in cart
+    const existingProductIndex = cart.findIndex((item: any) => item.id === product.id);
+
+    if (existingProductIndex > -1) {
+      // Product already in cart, could increment quantity here if needed
+      alert(`${product.name} is already in your cart.`);
+    } else {
+      // Add new product to cart
+      cart.push(product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`${product.name} has been added to the cart.`);
+    }
+
+    // Navigate to cart page
+    this.router.navigate(['/cart']);
   }
 
   sortByPrice(event: any) {

@@ -1,0 +1,120 @@
+.payment-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.payment-form {
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.card-element {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 16px;
+}
+
+.card-element.StripeElement--focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.card-errors {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 0.5rem;
+}
+
+.pay-button {
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.pay-button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.pay-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+}
+
+.success-icon {
+  font-size: 3rem;
+  color: #28a745;
+  margin-bottom: 1rem;
+}
+
+.success-message h3 {
+  color: #28a745;
+  margin-bottom: 1rem;
+}
+
+.success-message p {
+  color: #666;
+}
+
+.test-cards-info {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.test-cards-info h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #495057;
+}
+
+.test-cards-info ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.test-cards-info li {
+  margin-bottom: 0.5rem;
+  color: #6c757d;
+}
+
+.test-cards-info p {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  font-size: 14px;
+  color: #6c757d;
+}

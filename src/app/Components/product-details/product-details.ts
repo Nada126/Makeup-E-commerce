@@ -51,6 +51,7 @@ export class ProductDetails implements OnInit {
 
     if (stateProduct) {
       this.product = this.normalizeProduct(stateProduct);
+      this.product.isFavorite = this.favoriteService.isFavorite(this.product.id);
       this.loadAvailableUsers();
       return;
     }
@@ -89,6 +90,7 @@ export class ProductDetails implements OnInit {
           return;
         }
         this.product = this.normalizeProduct(data);
+        this.product.isFavorite = this.favoriteService.isFavorite(this.product.id);
         console.log('Product loaded:', this.product);
         this.loading = false;
         this.loadAvailableUsers();
@@ -127,20 +129,6 @@ export class ProductDetails implements OnInit {
       }
     });
   }
-
-toggleFavorite(product: Product, event?: Event) {
-  if (event) {
-    event.stopPropagation(); // Prevent card click when clicking favorite
-  }
-
-  if (this.favoriteService.isFavorite(product.id)) {
-    this.favoriteService.removeFromFavorites(product.id);
-    product.isFavorite = false;
-  } else {
-    this.favoriteService.addToFavorites(product);
-    product.isFavorite = true;
-  }
-}
 
   scrollToReviews() {
     setTimeout(() => {
@@ -227,7 +215,7 @@ submitReview() {
 
   // Find user with proper ID comparison
   const selectedUser = this.availableUsers.find(user => {
-    return user.id === Number(this.selectedUserId);
+    return user.id === this.selectedUserId;
   });
 
   console.log('Found user:', selectedUser);
@@ -357,7 +345,25 @@ submitReview() {
 
   addToCart() {
     if (!this.product) return;
-    alert(`${this.product.name} has been added to the cart.`);
+
+    // Get existing cart from localStorage
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+    // Check if product already exists in cart
+    const existingProductIndex = cart.findIndex((item: any) => item.id === this.product.id);
+
+    if (existingProductIndex > -1) {
+      // Product already in cart, could increment quantity here if needed
+      alert(`${this.product.name} is already in your cart.`);
+    } else {
+      // Add new product to cart
+      cart.push(this.product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`${this.product.name} has been added to the cart.`);
+    }
+
+    // Navigate to cart page
+    this.router.navigate(['/cart']);
   }
 
   goBack() {
@@ -372,6 +378,18 @@ submitReview() {
     const target = event.target as HTMLImageElement | null;
     if (target) {
       target.src = 'https://via.placeholder.com/600';
+    }
+  }
+
+  toggleFavorite() {
+    if (!this.product) return;
+
+    if (this.product.isFavorite) {
+      this.favoriteService.removeFromFavorites(this.product.id);
+      this.product.isFavorite = false;
+    } else {
+      this.favoriteService.addToFavorites(this.product);
+      this.product.isFavorite = true;
     }
   }
 }

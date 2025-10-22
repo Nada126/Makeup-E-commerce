@@ -1,3 +1,4 @@
+// favorite.component.ts - SEPARATE FILE
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -21,7 +22,7 @@ export class Favorite implements OnInit {
     this.loadFavorites();
 
     // Subscribe to favorites changes
-    this.favoriteService.favorites$.subscribe(favorites => {
+    this.favoriteService.userFavorites$.subscribe((favorites: Product[]) => {
       this.favoriteProducts = favorites;
     });
   }
@@ -35,7 +36,6 @@ export class Favorite implements OnInit {
   removeFromFavorites(product: Product, event: Event) {
     event.stopPropagation();
     this.favoriteService.removeFromFavorites(product.id);
-    product.isFavorite = false;
   }
 
   clearAllFavorites() {
@@ -54,10 +54,9 @@ export class Favorite implements OnInit {
   }
 
   get totalValue(): number {
-  return this.favoriteProducts.reduce((total, product) => {
-    const price = Number(product.price) || 0;  // safely convert
-    return total + price;
-  }, 0);
-}
-
+    return this.favoriteProducts.reduce((total, product) => {
+      const price = Number(product.price) || 0;
+      return total + price;
+    }, 0);
+  }
 }

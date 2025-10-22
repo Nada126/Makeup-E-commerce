@@ -1,20 +1,47 @@
 .slideShow {
   position: relative;
-  width: auto;
-  height: 400px;
+  width: 100%;
+  max-width: 100%;
+  height: 450px;
   margin: auto;
   overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
-
+/* Smooth fade and scale animation */
 .slide-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; 
-  transition: opacity 0.6s ease-in-out;
-  display: block;
+  object-fit: contain; /* keeps the image ratio without zooming */
+  background-color: #fff; /* fallback for transparent images */
+  transition: opacity 1s ease, transform 1.5s ease;
+  cursor: pointer;
+}
+
+.fade-in {
+  animation: fadeZoom 6s infinite ease-in-out;
+}
+
+@keyframes fadeZoom {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.05);
+  }
+}
+
+/* Gradient overlay */
+.overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+  pointer-events: none;
 }
 
 /* Arrows */
@@ -22,25 +49,61 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #333;
   border: none;
   font-size: 2rem;
-  padding: 8px 12px;
+  padding: 10px 14px;
   cursor: pointer;
   border-radius: 50%;
   z-index: 10;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .arrow:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #fff;
+  transform: translateY(-50%) scale(1.15);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 .arrow.left {
-  left: 15px;
+  left: 20px;
 }
 
 .arrow.right {
-  right: 15px;
+  right: 20px;
+}
+
+/* Brand text overlay */
+.slide-text {
+  position: absolute;
+  bottom: 30px;
+  left: 40px;
+  color: pink;
+  font-size: 2rem;
+  font-weight: 600;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .slideShow {
+    height: 300px;
+    border-radius: 10px;
+  }
+
+  .slide-text {
+    font-size: 1.4rem;
+    left: 20px;
+    color: palevioletred;
+
+  }
+
+  .slide-text h2{
+
+  }
+  .arrow {
+    font-size: 1.5rem;
+    padding: 8px 10px;
+  }
 }
