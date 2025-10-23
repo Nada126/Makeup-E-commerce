@@ -3,15 +3,17 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../modules/Product';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-generic-product-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,FormsModule],
   templateUrl: './generic-product-page.html',
   styleUrls: ['./generic-product-page.css']
 })
 export class GenericProductPage implements OnInit {
+  searchQuery: string = '';
   products: Product[] = [];
   filteredProducts: Product[] = [];
 
@@ -202,4 +204,16 @@ sortByRating(event: any) {
     const stars = Math.round(Number(rating) || 0);
     return Array.from({ length: 5 }, (_, i) => i < stars);
   }
+  onSearch(event: any) {
+  const searchValue = event.target.value.toLowerCase().trim();
+  
+  this.filteredProducts = this.products.filter(p =>
+    p.name?.toLowerCase().includes(searchValue) ||
+    p.brand?.toLowerCase().includes(searchValue) ||
+    p.category?.toLowerCase().includes(searchValue)
+  );
+  
+  this.currentPage = 1;
+}
+
 }
