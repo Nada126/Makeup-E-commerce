@@ -10,6 +10,7 @@ import { ProductDetails } from './Components/product-details/product-details';
 import { AdminDashboard } from './Components/admin-dashboard/admin-dashboard';
 import { AdminGuard } from './Services/admin-guard';
 import { NotAuthorized } from './Components/not-authorized/not-authorized';
+import { DataDeletion } from './Components/data-deletion/data-deletion';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
@@ -22,6 +23,7 @@ export const routes: Routes = [
     { path: 'register', component: Register, title: 'Register' },
     // { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },
+<<<<<<< HEAD
 // ✅ Admin routes
 {
   path: 'admin',
@@ -36,3 +38,8 @@ export const routes: Routes = [
 
     { path: '**', component: NotFound, title: 'Not Found' },
 ];
+=======
+    { path: 'data-deletion', component: DataDeletion, title: 'Data-Deletion' },
+    { path: '**', component: NotFound, title: 'Not Found' }
+]
+>>>>>>> b601b4a8f7cf20530ccd706749cbc7aeb4b51e8b
