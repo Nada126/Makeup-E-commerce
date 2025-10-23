@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ReviewService, User } from '../../Services/review-service';
 import { Review } from '../../modules/review';
+import { CartService } from '../../Services/cart-service';
 
 @Component({
   selector: 'app-product-details',
@@ -34,11 +35,14 @@ export class ProductDetails implements OnInit {
   selectedUserId: number | null = null;
 
   constructor(
-    private route: ActivatedRoute,
-    private http: HttpClient,
-    private router: Router,
-    private reviewService: ReviewService
-  ) { }
+  private route: ActivatedRoute,
+  private http: HttpClient,
+  private router: Router,
+  private reviewService: ReviewService,
+  private cartService: CartService   
+) { }
+
+
 
   ngOnInit() {
     const nav = (this.router as any).getCurrentNavigation ? (this.router as any).getCurrentNavigation() : null;
@@ -342,9 +346,21 @@ submitReview() {
   }
 
   addToCart() {
-    if (!this.product) return;
-    alert(`${this.product.name} has been added to the cart.`);
-  }
+  if (!this.product) return;
+
+  
+  const item = {
+    productId: this.product.id,
+    name: this.product.name,
+    price: Number(this.product.price) || 0,
+    image: this.product.image,
+    quantity: 1,
+    product: this.product
+  };
+
+  this.cartService.addItem(item);
+  alert(`${this.product.name} added to cart`);
+}
 
   goBack() {
     if (window.history.length > 1) {

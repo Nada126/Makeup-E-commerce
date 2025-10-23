@@ -11,6 +11,8 @@ import { AdminDashboard } from './Components/admin-dashboard/admin-dashboard';
 import { AdminGuard } from './Services/admin-guard';
 import { NotAuthorized } from './Components/not-authorized/not-authorized';
 import { DataDeletion } from './Components/data-deletion/data-deletion';
+import { Cart } from './Components/cart/cart';
+import { Favourites } from './Components/favourite/favourite';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
@@ -24,5 +26,8 @@ export const routes: Routes = [
     { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },
     { path: 'data-deletion', component: DataDeletion, title: 'Data-Deletion' },
+    { path: 'cart', component: Cart, title:'Cart' },
+    { path: 'favourites', component: Favourites },
+
     { path: '**', component: NotFound, title: 'Not Found' }
 ]

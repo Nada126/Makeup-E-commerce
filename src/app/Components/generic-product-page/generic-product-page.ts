@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../modules/Product';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { CartService } from '../../Services/cart-service';
+import { ChangeDetectorRef } from '@angular/core';
+import { FavoriteService } from '../../Services/favourite-service';
 import { FormsModule } from '@angular/forms';
-
 @Component({
   selector: 'app-generic-product-page',
   standalone: true,
@@ -40,19 +42,23 @@ export class GenericProductPage implements OnInit {
     'nail_polish': 'Nail Polish'
   };
 
+    favoriteIds = new Set<number>();
+
+
   constructor(
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cartService: CartService,
+    private favService: FavoriteService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;
     this.router.navigate(['/product', product.id], { state: { product } });
   }
-  toggleFavorite(product: Product) {
-    product.isFavorite = !product.isFavorite;
-  }
+  
   navigateToProducts() {
     this.router.navigate(['/products']);
   }
@@ -66,6 +72,16 @@ export class GenericProductPage implements OnInit {
         this.fetchProducts();
       }
     });
+    this.favService.items$.subscribe(items => {
+    const ids = new Set<number>();
+    (items || []).forEach(i => {
+      const idNum = Number(i?.productId);
+      if (!Number.isNaN(idNum)) ids.add(idNum);
+    });
+    this.favoriteIds = ids;
+
+    this.cdr.detectChanges();
+  });
   }
 
   private formatProductType(type: string): string {
@@ -177,9 +193,65 @@ processProducts(data: Product[]) {
     }
   }
 
-  addToCart(product: Product) {
-    alert(`${product.name} added to cart!`);
+  addToCart(product: Product, event?: MouseEvent) {
+  if (event) event.stopPropagation(); 
+  if (!product || product.id == null) return;
+  const item = {
+    productId: product.id,
+    name: product.name,
+    price: Number(product.price) || 0,
+    image: product.image_link ,
+    quantity: 1,
+    product
+  };
+  this.cartService.addItem(item);
+  alert(`${product.name} added to cart`);
+}
+
+isFavorite(product: any): boolean {
+  const rawId = product?.id ?? product?.productId;
+  const id = rawId == null ? null : Number(rawId);
+  if (id == null || Number.isNaN(id)) return false;
+  return this.favoriteIds.has(id);
+}
+
+toggleFavorite(product: any, event?: MouseEvent) {
+  if (event) {
+    event.stopPropagation();
+    event.stopImmediatePropagation?.();
   }
+
+  const rawId = product?.id ?? product?.productId;
+  const id = rawId == null ? null : Number(rawId);
+  if (id == null || Number.isNaN(id)) return;
+
+  if (this.favoriteIds.has(id)) {
+    this.favoriteIds.delete(id);
+  } else {
+    this.favoriteIds.add(id);
+  }
+
+  this.cdr.detectChanges();
+
+  try {
+    const newState = this.favService.toggle(product); // returns boolean
+
+    if (newState !== this.favoriteIds.has(id)) {
+      if (newState) this.favoriteIds.add(id);
+      else this.favoriteIds.delete(id);
+      this.cdr.detectChanges();
+    }
+  } catch (err) {
+    
+    console.error('fav toggle error', err);
+    // revert optimistic
+    if (this.favoriteIds.has(id)) this.favoriteIds.delete(id);
+    else this.favoriteIds.add(id);
+    this.cdr.detectChanges();
+  }
+}
+
+
 sortByPrice(event: any) {
   const value = event.target.value;
   if (value === 'low-high') {

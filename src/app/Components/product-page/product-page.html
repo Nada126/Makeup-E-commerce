@@ -65,10 +65,18 @@
         <div class="card h-100 shadow-sm text-center position-relative d-flex flex-column" (click)="openDetail(product)"
           role="button" tabindex="0">
 
-          <!-- ❤ Favorite -->
-          <i class="bi" [ngClass]="product.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"
-            (click)="toggleFavorite(product)" class="favorite-icon">
-          </i>
+            <!-- ❤ Favorite -->
+           <!-- أيقونة الفافوريت في الكارت -->
+<i
+  class="favorite-icon position-absolute"
+  role="button"
+  aria-label="Toggle favorite"
+  (click)="toggleFavorite(product, $event)"
+  [ngClass]="isFavorite(product) ? 'bi-heart-fill text-danger' : 'bi-heart' "
+  style="top:8px; right:12px; z-index:5;">
+</i>
+
+
 
           <div class="image-container">
             <img [src]="product.image_link || 'https://via.placeholder.com/200'" alt="{{ product.name }}"
@@ -88,10 +96,11 @@
               </div>
             </div>
 
-            <button class="btn btn-sm btn-outline-dark w-100 mt-auto">
-              Add to Cart
-            </button>
-          </div>
+              <button class="btn btn-sm btn-outline-dark w-100 mt-auto" (click)="addToCart(product, $event)">
+  Add to Cart
+</button>
+
+            </div>
 
         </div>
       </div>

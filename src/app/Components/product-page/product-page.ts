@@ -4,6 +4,9 @@ import { HttpClient } from '@angular/common/http';
 import { Product } from '../../../app/modules/Product';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CartService } from '../../Services/cart-service';
+import { ChangeDetectorRef } from '@angular/core';
+import { FavoriteService } from '../../Services/favourite-service';
 
 @Component({
   selector: 'app-product-page',
@@ -29,6 +32,8 @@ export class ProductPage implements OnInit {
       'nail_polish',
     ];
 
+    
+
     if (specialProductTypes.includes(category)) {
       this.navigateToProductType(category);
     } else {
@@ -47,7 +52,15 @@ export class ProductPage implements OnInit {
   itemsPerPage = 25;
   loading = false;
 
-  constructor(private http: HttpClient, private router: Router) { }
+  favoriteIds = new Set<number>();
+
+constructor(
+  private http: HttpClient,
+  private router: Router,
+  private cartService: CartService,
+  private favService: FavoriteService,
+  private cdr: ChangeDetectorRef
+) {}
 
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;
@@ -60,6 +73,16 @@ export class ProductPage implements OnInit {
 
   ngOnInit() {
     this.fetchProducts();
+    this.favService.items$.subscribe(items => {
+    const ids = new Set<number>();
+    (items || []).forEach(i => {
+      const idNum = Number(i?.productId);
+      if (!Number.isNaN(idNum)) ids.add(idNum);
+    });
+    this.favoriteIds = ids;
+
+    this.cdr.detectChanges();
+  });
   }
 
   fetchProducts() {
@@ -121,9 +144,49 @@ export class ProductPage implements OnInit {
     });
   }
 
-  toggleFavorite(product: Product) {
-    product.isFavorite = !product.isFavorite;
+  isFavorite(product: any): boolean {
+  const rawId = product?.id ?? product?.productId;
+  const id = rawId == null ? null : Number(rawId);
+  if (id == null || Number.isNaN(id)) return false;
+  return this.favoriteIds.has(id);
+}
+
+toggleFavorite(product: any, event?: MouseEvent) {
+  if (event) {
+    event.stopPropagation();
+    event.stopImmediatePropagation?.();
   }
+
+  const rawId = product?.id ?? product?.productId;
+  const id = rawId == null ? null : Number(rawId);
+  if (id == null || Number.isNaN(id)) return;
+
+  if (this.favoriteIds.has(id)) {
+    this.favoriteIds.delete(id);
+  } else {
+    this.favoriteIds.add(id);
+  }
+
+  this.cdr.detectChanges();
+
+  try {
+    const newState = this.favService.toggle(product); // returns boolean
+
+    if (newState !== this.favoriteIds.has(id)) {
+      if (newState) this.favoriteIds.add(id);
+      else this.favoriteIds.delete(id);
+      this.cdr.detectChanges();
+    }
+  } catch (err) {
+    
+    console.error('fav toggle error', err);
+    // revert optimistic
+    if (this.favoriteIds.has(id)) this.favoriteIds.delete(id);
+    else this.favoriteIds.add(id);
+    this.cdr.detectChanges();
+  }
+}
+
 
   // pagination
   // ... rest of your existing methods
@@ -184,9 +247,20 @@ export class ProductPage implements OnInit {
     }
   }
 
-  // addToCart(product: Product) {
-  //   alert(${product.name} added to cart!);
-  // }
+  addToCart(product: Product, event?: MouseEvent) {
+  if (event) event.stopPropagation(); 
+  if (!product || product.id == null) return;
+  const item = {
+    productId: product.id,
+    name: product.name,
+    price: Number(product.price) || 0,
+    image: product.image_link ,
+    quantity: 1,
+    product
+  };
+  this.cartService.addItem(item);
+  alert(`${product.name} added to cart`);
+}
 
   sortByPrice(event: any) {
     const value = event.target.value;
