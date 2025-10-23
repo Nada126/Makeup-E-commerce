@@ -20,7 +20,19 @@ export const routes: Routes = [
     { path: 'about', component: About, title: 'About' },
     { path: 'login', component: Login, title: 'Login' },
     { path: 'register', component: Register, title: 'Register' },
-    { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
+    // { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },
-    { path: '**', component: NotFound, title: 'Not Found' }
-]
+// ✅ Admin routes
+{
+  path: 'admin',
+  canActivate: [AdminGuard],
+  children: [
+    { path: '', loadComponent: () => import('./Components/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard) },
+    { path: 'add-product', loadComponent: () => import('./Components/admin-dashboard/add-product/add-product').then(m => m.AddProduct) },
+    { path: 'products', loadComponent: () => import('./Components/admin-dashboard/view-products/view-products').then(m => m.ViewProducts) },
+    { path: 'reviews', loadComponent: () => import('./Components/admin-dashboard/manage-reviews/manage-reviews').then(m => m.ManageReviews) },
+  ],
+},
+
+    { path: '**', component: NotFound, title: 'Not Found' },
+];

@@ -57,7 +57,8 @@
       "date": "2025-10-18",
       "rating": 4,
       "comment": "Great, it has high coverage",
-      "productId": 1004
+      "productId": 1004,
+      "status": "approved"
     },
     {
       "id": "e85b",
@@ -66,16 +67,8 @@
       "date": "2025-10-18",
       "rating": 3,
       "comment": "It covers my dark circles all over the day",
-      "productId": 1004
-    },
-    {
-      "id": "aa1c",
-      "userName": "Isabella Brown",
-      "userImage": "https://randomuser.me/api/portraits/women/38.jpg",
-      "date": "2025-10-18",
-      "rating": 3,
-      "comment": "Oxidize",
-      "productId": 1004
+      "productId": 1004,
+      "status": "pending"
     },
     {
       "id": "1678",
@@ -84,7 +77,8 @@
       "date": "2025-10-19",
       "rating": 3,
       "comment": "good",
-      "productId": 846
+      "productId": 846,
+      "status": "pending"
     },
     {
       "id": "a28e",
@@ -93,7 +87,108 @@
       "date": "2025-10-20",
       "rating": 4,
       "comment": "wonderful Product",
-      "productId": 845
+      "productId": 845,
+      "status": "approved"
+    }
+  ],
+  "products": [
+    {
+      "id": "2a23",
+      "name": "Wear Everywhere Neutrals All About Shadow&trade; 8-Pan Palette",
+      "brand": "clinique",
+      "price": 37,
+      "category": "palette",
+      "rating": 4,
+      "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_ZCAE02_181x209.png",
+      "description": "Versatile eye shadow palettes are perfect for day… amped up for night when you layer multiple shades for extra depth and dimension. Long-wearing shades are crease- and fade-resistant. Ophthalmologist tested, too.",
+      "product_type": "eyeshadow",
+      "source": "db"
+    },
+    {
+      "id": 1761253389421,
+      "name": "foundation bronze",
+      "brand": "Maybiline",
+      "price": 500,
+      "category": "foundation",
+      "image": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.ubuy.com.eg%2Fen%2Fproduct%2F1GYEK3DE8-maybelline-fit-me-matte-poreless-liquid-foundation-makeup-1-fl-oz%3Fsrsltid%3DAfmBOoo-78dvp30XGFqC3Y353o4QspSwnonUYULAvR9DqkYgwi0pkw1Y&psig=AOvVaw1_DuzEYRqgd55Ik5I3ik9D&ust=1761339752060000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJCCsIicu5ADFQAAAAAdAAAAABAE",
+      "description": "",
+      "stock": 6
+    },
+    {
+      "id": "ca03",
+      "name": "Chubby&trade; Plump & Shine Liquid Lip Plumping Gloss",
+      "brand": "clinique",
+      "price": 55,
+      "category": "lip_gloss",
+      "rating": null,
+      "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_ZWP101_181x209.png",
+      "product_type": "lipstick",
+      "source": "db"
+    },
+    {
+      "id": "8845",
+      "name": "Instant Lift For Brows",
+      "brand": "clinique",
+      "price": 30,
+      "category": "eyebrow",
+      "rating": 0,
+      "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_71FJ02_181x209.png",
+      "product_type": "eyebrow"
+    },
+    {
+      "id": "5cc2",
+      "name": "Haloscope",
+      "brand": "glossier",
+      "price": 50,
+      "category": "highlighter",
+      "rating": 4,
+      "image": "https://static-assets.glossier.com/production/spree/images/attachments/000/001/109/portrait_normal/Haloscope_01-compressor.jpg?1498613775",
+      "product_type": "foundation",
+      "source": "db"
+    },
+    {
+      "id": "1761261078873",
+      "name": "pink blush",
+      "brand": "Maybiline",
+      "price": 55,
+      "category": "blush",
+      "rating": 0,
+      "image": "https://www.google.com/imgres?q=blush&imgurl=https%3A%2F%2Fwww.conecosmetics.com%2Fmedia%2F56%2F51%2Fcc%2F1636914150%2FPOWDER%2520BLUSH%2520-%2520PEACHY%2520PEACH%2520-%25201000x1000px.jpg&imgrefurl=https%3A%2F%2Fwww.conecosmetics.com%2FPowder-Blush%2FPBB22%3Fsrsltid%3DAfmBOooF-PpZMKiuaU_WpusGCH7TSllMBjF_qJJMHlMAikjy-K9oxydC&docid=tjUxhaEofmVZ_M&tbnid=2bWDg7EnjaVntM&vet=12ahUKEwjq_sTguLuQAxV0g_0HHQeyFfEQM3oECCUQAA..i&w=1000&h=1000&hcb=2&ved=2ahUKEwjq_sTguLuQAxV0g_0HHQeyFfEQM3oECCUQAA",
+      "description": "",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "1761261589926",
+      "name": "purple blush",
+      "brand": "Maybiline",
+      "price": 55,
+      "category": "blush",
+      "rating": 0,
+      "image": "https://www.google.com/imgres?q=blush&imgurl=https%3A%2F%2Fwww.conecosmetics.com%2Fmedia%2F56%2F51%2Fcc%2F1636914150%2FPOWDER%2520BLUSH%2520-%2520PEACHY%2520PEACH%2520-%25201000x1000px.jpg&imgrefurl=https%3A%2F%2Fwww.conecosmetics.com%2FPowder-Blush%2FPBB22%3Fsrsltid%3DAfmBOooF-PpZMKiuaU_WpusGCH7TSllMBjF_qJJMHlMAikjy-K9oxydC&docid=tjUxhaEofmVZ_M&tbnid=2bWDg7EnjaVntM&vet=12ahUKEwjq_sTguLuQAxV0g_0HHQeyFfEQM3oECCUQAA..i&w=1000&h=1000&hcb=2&ved=2ahUKEwjq_sTguLuQAxV0g_0HHQeyFfEQM3oECCUQAA",
+      "description": "",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "f206",
+      "name": "Cream Shaper&trade; For Eyes",
+      "brand": "clinique",
+      "price": 44,
+      "category": "eyeliner",
+      "rating": 0,
+      "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_6FP2_181x209.png",
+      "product_type": "eyeliner"
+    },
+    {
+      "id": "db8f",
+      "name": "Sculptionary&trade; Cheek Contouring Palette",
+      "brand": "clinique",
+      "price": 50,
+      "category": "blush",
+      "rating": 0,
+      "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_ZAMN_181x209.png",
+      "product_type": "blush"
     }
   ]
 }

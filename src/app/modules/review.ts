@@ -5,5 +5,7 @@ export interface Review {
     date: string;
     rating: number;
     comment: string;
-    productId: number;   
+    productId: number;
+      status?: 'approved' | 'pending' | 'rejected';
+      productName?: string;
 }

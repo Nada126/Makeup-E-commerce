@@ -13,7 +13,6 @@ import { Router, RouterModule } from '@angular/router';
 })
 export class ProductPage implements OnInit {
   handleCategoryClick(category: string) {
-    // List of product types that should navigate to their own pages
     const specialProductTypes = [
       'lipstick',
       'lip_liner',

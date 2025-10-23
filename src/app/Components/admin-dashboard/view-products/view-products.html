@@ -1,0 +1,123 @@
+<div class="manage-products-container">
+  <h2 class="page-title">Manage Products</h2>
+  <p class="page-subtitle">View, edit, and delete existing products</p>
+
+  <!-- Search Bar -->
+  <input
+    type="text"
+    placeholder="Search by name..."
+    [(ngModel)]="searchText"
+    (input)="applyFilters()"
+    class="search-input"
+  />
+
+  <!-- Category Buttons -->
+  <div class="category-buttons">
+    <button
+      class="category-btn"
+      [class.active]="selectedCategory === 'All'"
+      (click)="filterByCategory('All')"
+    >
+      <i class="bi bi-grid"></i> All
+    </button>
+    <button
+      *ngFor="let category of categories"
+      class="category-btn"
+      [class.active]="selectedCategory === category"
+      (click)="filterByCategory(category)"
+    >
+      <i class="bi bi-tag"></i> {{ category }}
+    </button>
+  </div>
+
+  <!-- Message Box -->
+  <div *ngIf="message" class="message-box" [ngClass]="messageType">{{ message }}</div>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="custom-spinner"></div>
+    <p class="loading-text">Loading products, please wait...</p>
+  </div>
+  <!-- Products Table -->
+  <div *ngIf="!loading && filteredProducts.length > 0" class="products-card-container">
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Brand</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Rate</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of filteredProducts">
+          <td>
+            <img [src]="getProductImage(product)" [alt]="product.name" class="product-image" />
+          </td>
+
+          <!-- Inline Edit Mode -->
+          <ng-container *ngIf="editingProduct?.id === product.id; else viewMode">
+            <td><input [(ngModel)]="editingProduct.name" type="text" class="edit-input" /></td>
+            <td><input [(ngModel)]="editingProduct.brand" type="text" class="edit-input" /></td>
+            <td>
+              <input [(ngModel)]="editingProduct.product_type" type="text" class="edit-input" />
+            </td>
+            <td><input [(ngModel)]="editingProduct.price" type="number" class="edit-input" /></td>
+            <td>
+              <input [(ngModel)]="editingProduct.rating" type="number" class="edit-input" />
+            </td>
+
+            <td class="actions-cell">
+              <button (click)="saveEdit()" class="icon-btn save-btn" title="Save">
+                <i class="bi bi-check-circle"></i>
+              </button>
+              <button (click)="cancelEdit()" class="icon-btn cancel-btn" title="Cancel">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- View Mode -->
+
+          <ng-template #viewMode>
+            <td>{{ product.name }}</td>
+            <td>{{ product.brand }}</td>
+            <td>{{ product.product_type || 'N/A' }}</td>
+            <td>{{ product.price ? '$' + product.price : 'N/A' }}</td>
+            <td>{{ product.rating ?? 'N/A' }}</td>
+            <!-- Added rate column -->
+            <td class="actions-cell">
+              <button (click)="startEdit(product)" class="icon-btn edit-btn" title="Edit">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+              <button (click)="confirmDelete(product)" class="icon-btn delete-btn" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </ng-template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && filteredProducts.length === 0" class="no-products">
+    <p>No products found.</p>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div *ngIf="confirmVisible" class="confirm-overlay">
+    <div class="confirm-box">
+      <p>
+        Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong
+        >?
+      </p>
+      <div class="confirm-buttons">
+        <button class="confirm-yes" (click)="deleteConfirmed()">Yes</button>
+        <button class="confirm-no" (click)="cancelDelete()">No</button>
+      </div>
+    </div>
+  </div>
+</div>
