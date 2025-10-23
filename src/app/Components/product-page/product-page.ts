@@ -61,42 +61,63 @@ export class ProductPage implements OnInit {
   }
 
   fetchProducts() {
-    this.loading = true;
-    const url = 'https://makeup-api.herokuapp.com/api/v1/products.json';
+  this.loading = true;
+  const apiUrl = 'https://makeup-api.herokuapp.com/api/v1/products.json';
 
-    this.http.get<Product[]>(url).subscribe({
-      next: (data) => {
-        const validProducts: Product[] = [];
+  this.http.get<Product[]>(apiUrl).subscribe({
+    next: (data) => {
+      this.processProducts(data);
+    },
+    error: (err) => {
+      console.error('Error fetching products from API, trying local data:', err);
+      this.fetchLocalProducts();
+    },
+  });
+}
 
-        const allProducts = data.map((p) => ({
-          ...p,
-          price: Number(p.price) || 0,
-          rating: Number(p.rating) || 0,
-          isFavorite: false,
-        }));
+fetchLocalProducts() {
+  const localUrl = './data.json'; // Path to public folder
+  
+  this.http.get<Product[]>(localUrl).subscribe({
+    next: (data) => {
+      this.processProducts(data);
+    },
+    error: (err) => {
+      console.error('Error fetching local products:', err);
+      this.loading = false;
+      this.products = [];
+      this.filteredProducts = [];
+      this.categories = [];
+    },
+  });
+}
 
-        // Check if image exists
-        const checkImagePromises = allProducts.map((product) =>
-          this.http
-            .head(product.image_link || '', { observe: 'response' })
-            .toPromise()
-            .then(() => validProducts.push(product))
-            .catch(() => null)
-        );
+processProducts(data: Product[]) {
+  const validProducts: Product[] = [];
 
-        Promise.all(checkImagePromises).then(() => {
-          this.products = validProducts;
-          this.filteredProducts = this.products;
-          this.categories = [...new Set(this.products.map((p) => p.product_type).filter(Boolean))];
-          this.loading = false;
-        });
-      },
-      error: (err) => {
-        console.error('Error fetching products:', err);
-        this.loading = false;
-      },
-    });
-  }
+  const allProducts = data.map((p) => ({
+    ...p,
+    price: Number(p.price) || 0,
+    rating: Number(p.rating) || 0,
+    isFavorite: false,
+  }));
+
+  // Check if image exists
+  const checkImagePromises = allProducts.map((product) =>
+    this.http
+      .head(product.image_link || '', { observe: 'response' })
+      .toPromise()
+      .then(() => validProducts.push(product))
+      .catch(() => null)
+  );
+
+  Promise.all(checkImagePromises).then(() => {
+    this.products = validProducts;
+    this.filteredProducts = this.products;
+    this.categories = [...new Set(this.products.map((p) => p.product_type).filter(Boolean))];
+    this.loading = false;
+  });
+}
 
   toggleFavorite(product: Product) {
     product.isFavorite = !product.isFavorite;
