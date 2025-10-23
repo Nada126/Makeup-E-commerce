@@ -18,7 +18,6 @@ import { FavoriteService } from '../../Services/favourite-service';
 export class ProductPage implements OnInit {
   searchQuery: string = '';
   handleCategoryClick(category: string) {
-    // List of product types that should navigate to their own pages
     const specialProductTypes = [
       'lipstick',
       'lip_liner',

@@ -1,0 +1,106 @@
+<div class="admin-reviews-container">
+  <!-- Header with your gradient theme -->
+  <header class="reviews-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>⭐ Manage Reviews</h1>
+        <p>Review and moderate customer feedback</p>
+      </div>
+      <div class="header-actions">
+        <a routerLink="/admin" class="back-btn">
+          ← Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Controls Section -->
+  <div class="controls-section">
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="filterReviews()"
+        placeholder="Search reviews by user, product, or comment..."
+        class="search-input"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="filter-controls">
+      <select
+        [(ngModel)]="selectedStatus"
+        (ngModelChange)="filterReviews()"
+        class="status-filter"
+      >
+        <option value="all">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+
+      <div class="stats">
+        <span class="stat-total">Total: {{totalReviews}}</span>
+        <span class="stat-pending">Pending: {{pendingReviewsCount}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews List -->
+  <div class="reviews-list">
+    <div *ngIf="filteredReviews.length === 0" class="no-reviews">
+      <p>🎉 No reviews found matching your criteria.</p>
+    </div>
+
+    <div *ngFor="let review of filteredReviews" class="review-card">
+      <div class="review-header">
+        <div class="reviewer-info">
+          <span class="user-name">{{review.userName}}</span>
+          <div class="rating">
+            <span *ngFor="let star of getStars(review.rating)" class="star">⭐</span>
+            <span class="rating-text">({{review.rating}}/5)</span>
+          </div>
+        </div>
+        <div class="review-meta">
+          <span class="review-date">{{review.date}}</span>
+          <span [class]="'status-badge ' + getStatusBadgeClass(review.status || 'pending')">
+            {{review.status || 'pending'}}
+          </span>
+        </div>
+      </div>
+
+      <div class="review-content">
+        <p class="review-comment">"{{review.comment}}"</p>
+        <div class="product-info">
+          <strong>📦 Product:</strong>
+          <span>{{review.productName || 'Loading product...'}}</span>
+        </div>
+      </div>
+
+      <div class="review-actions">
+        <div class="action-buttons">
+          <button
+            *ngIf="(review.status || 'pending') !== 'approved'"
+            (click)="updateReviewStatus(review.id!, 'approved')"
+            class="btn-approve"
+          >
+            ✅ Approve
+          </button>
+          <button
+            *ngIf="(review.status || 'pending') !== 'rejected'"
+            (click)="updateReviewStatus(review.id!, 'rejected')"
+            class="btn-reject"
+          >
+            ❌ Reject
+          </button>
+          <button
+            (click)="deleteReview(review.id!)"
+            class="btn-delete"
+          >
+            🗑 Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

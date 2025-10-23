@@ -1,22 +1,24 @@
-<div class="container mt-4">
-      <h2 class="fw-bold text-primary">Admin Dashboard</h2>
-      <p class="text-muted">Manage all users below:</p>
-      <table class="table table-bordered">
-        <thead class="table-light">
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let user of users">
-            <td>{{user.id}}</td>
-            <td>{{user.name}}</td>
-            <td>{{user.email}}</td>
-            <td>{{user.role}}</td>
-          </tr>
-        </tbody>
-      </table>
+<div class="dashboard-container">
+  <h2 class="dashboard-title">Admin Dashboard</h2>
+  <p class="dashboard-subtitle">Welcome back! Choose an action below:</p>
+
+  <div class="dashboard-cards">
+    <div class="card" routerLink="/admin/add-product">
+      <h3>➕ Add Product</h3>
+      <p>Add new makeup products to your catalog.</p>
     </div>
+
+    <div class="card" routerLink="/admin/products">
+      <h3>🛍 Manage Products</h3>
+      <p>View, edit, or delete existing products.</p>
+    </div>
+
+    <div class="card" routerLink="/admin/reviews">
+      <h3>⭐ Manage Reviews</h3>
+      <p>Review and moderate customer feedback.</p>
+    </div>
+
+  </div>
+</div>
+
+

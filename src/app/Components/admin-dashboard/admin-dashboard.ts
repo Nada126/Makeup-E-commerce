@@ -1,20 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './admin-dashboard.html',
-  styleUrl: './admin-dashboard.css'
+  styleUrls: ['./admin-dashboard.css']
 })
-export class AdminDashboard implements OnInit{
-users: any[] = [];
-  private baseUrl = 'http://localhost:3001/users';
+export class AdminDashboard {
+  
+  constructor(private router: Router) {}
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.http.get<any[]>(this.baseUrl).subscribe(data => this.users = data);
+  logout() {
+    // Clear admin authentication
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userRole');
+    
+    // Redirect to login page
+    this.router.navigate(['/login']);
   }
 }
