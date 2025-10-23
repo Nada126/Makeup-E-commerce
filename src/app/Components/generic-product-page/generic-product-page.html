@@ -15,23 +15,24 @@
 
   <!-- Categories -->
   <div class="d-flex flex-wrap gap-2 mb-3 justify-content-center">
-    <button
-      class="btn btn-outline-dark"
-      [class.active]="selectedType === 'All'"
-      (click)="filterByType('All')"
-    >
+    <button class="btn btn-outline-dark" [class.active]="selectedType === 'All'" (click)="filterByType('All')">
       All {{ pageTitle }}
     </button>
     @for (category of categories; track $index) {
-    <button
-      class="btn btn-outline-dark"
-      [class.active]="selectedType === category"
-      (click)="filterByType(category)"
-    >
+    <button class="btn btn-outline-dark" [class.active]="selectedType === category" (click)="filterByType(category)">
       {{ category.replace('_', ' ') | titlecase }}
     </button>
     }
   </div>
+  <!-- <div class="search-bar mb-3 d-flex justify-content-center">
+  <input
+    type="text"
+    class="form-control w-50"
+    placeholder="Search for products..."
+    [(ngModel)]="searchQuery"
+    (input)="filterBySearch()"
+  />
+</div> -->
   <!-- 🔹 Filter Bar (Price Left, Rating Right) -->
   <div class="filter-bar">
     <div class="filter-item price-filter">
@@ -43,6 +44,11 @@
       </select>
     </div>
 
+    <div class="filter-item search-filter">
+      <label for="searchInput" class="me-2">Search:</label>
+      <input type="text" id="searchInput" placeholder="Search products..." (input)="onSearch($event)" />
+    </div>
+
     <div class="filter-item rating-filter">
       <label for="ratingFilter" class="me-2">Filter by Rating:</label>
       <select id="ratingFilter" (change)="sortByRating($event)">
@@ -51,6 +57,7 @@
         <option value="high-low">High to Low</option>
       </select>
     </div>
+
   </div>
 
   <!-- Results Info -->
@@ -71,9 +78,10 @@
   <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3">
     @for (product of pagedProducts; track product.id ?? $index) {
     <div class="col">
-      <div class="card h-100 shadow-sm position-relative text-center" (click)="openDetail(product)" role="button" tabindex="0">
+      <div class="card h-100 shadow-sm position-relative text-center" (click)="openDetail(product)" role="button"
+        tabindex="0">
         <!-- ❤️ Favorite Icon -->
-        <i
+<i
   class="bi favorite-icon"
   [ngClass]="
     favoriteService.isFavorite(product.id)
@@ -81,17 +89,12 @@
       : 'bi-heart'
   "
   (click)="toggleFavorite(product, $event)"
-  title="Add to favorites"
->
+  title="Add to favorites">
 </i>
-
         <!-- Product Image -->
         <div class="image-container">
-          <img
-            [src]="product.image_link || 'https://via.placeholder.com/200'"
-            alt="{{ product.name }}"
-            class="card-img-top"
-          />
+          <img [src]="product.image_link || 'https://via.placeholder.com/200'" alt="{{ product.name }}"
+            class="card-img-top" />
         </div>
 
         <!-- Product Info -->

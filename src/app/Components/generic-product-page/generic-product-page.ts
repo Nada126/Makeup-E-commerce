@@ -5,15 +5,17 @@ import { Product } from '../../modules/Product';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FavoriteService } from '../../Services/favorite.service';
 
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-generic-product-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule,FormsModule],
   templateUrl: './generic-product-page.html',
   styleUrls: ['./generic-product-page.css']
 })
 export class GenericProductPage implements OnInit {
+  searchQuery: string = '';
   products: Product[] = [];
   filteredProducts: Product[] = [];
 
@@ -91,45 +93,70 @@ toggleFavorite(product: Product, event?: Event) {
   }
 
   fetchProducts() {
-    this.loading = true;
-    const url = `https://makeup-api.herokuapp.com/api/v1/products.json?product_type=${this.productType}`;
+  this.loading = true;
+  const apiUrl = `https://makeup-api.herokuapp.com/api/v1/products.json?product_type=${this.productType}`;
 
-    this.http.get<Product[]>(url).subscribe({
-      next: (data) => {
-        const validProducts: Product[] = [];
+  this.http.get<Product[]>(apiUrl).subscribe({
+    next: (data) => {
+      this.processProducts(data);
+    },
+    error: (err) => {
+      console.error(`Error fetching ${this.productType} products from API, trying local data:`, err);
+      this.fetchLocalProducts();
+    }
+  });
+}
 
-        // Convert price/rating to numbers
-        const allProducts = data.map(p => ({
-          ...p,
-          price: Number(p.price) || 0,
-          rating: Number(p.rating) || 0,
-          isFavorite: false
-        }));
+fetchLocalProducts() {
+  const localUrl = './data.json';
 
-        // Check if image exists
-        const checkImagePromises = allProducts.map(product =>
-          this.http.head(product.image_link || '', { observe: 'response' }).toPromise()
-            .then(() => validProducts.push(product))
-            .catch(() => null)
-        );
+  this.http.get<Product[]>(localUrl).subscribe({
+    next: (data) => {
+      // Filter local data by product type
+      const filteredData = data.filter(product =>
+        product.product_type?.toLowerCase() === this.productType.toLowerCase()
+      );
+      this.processProducts(filteredData);
+    },
+    error: (err) => {
+      console.error('Error fetching local products:', err);
+      this.loading = false;
+      this.products = [];
+      this.filteredProducts = [];
+      this.categories = [];
+    }
+  });
+}
 
-        Promise.all(checkImagePromises).then(() => {
-          this.products = validProducts;
-          this.filteredProducts = this.products;
+processProducts(data: Product[]) {
+  const validProducts: Product[] = [];
 
-          // Extract unique categories from the products
-          this.categories = [...new Set(this.products.map(p => p.category).filter(Boolean))];
+  // Convert price/rating to numbers
+  const allProducts = data.map(p => ({
+    ...p,
+    price: Number(p.price) || 0,
+    rating: Number(p.rating) || 0,
+    isFavorite: false
+  }));
 
-          console.log(`Available categories for ${this.productType}:`, this.categories);
-          this.loading = false;
-        });
-      },
-      error: (err) => {
-        console.error(`Error fetching ${this.productType} products:`, err);
-        this.loading = false;
-      }
-    });
-  }
+  // Check if image exists
+  const checkImagePromises = allProducts.map(product =>
+    this.http.head(product.image_link || '', { observe: 'response' }).toPromise()
+      .then(() => validProducts.push(product))
+      .catch(() => null)
+  );
+
+  Promise.all(checkImagePromises).then(() => {
+    this.products = validProducts;
+    this.filteredProducts = this.products;
+
+    // Extract unique categories from the products
+    this.categories = [...new Set(this.products.map(p => p.category).filter(Boolean))];
+
+    console.log(`Available categories for ${this.productType}:`, this.categories);
+    this.loading = false;
+  });
+}
 
   get totalPages(): number {
     return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
@@ -195,4 +222,16 @@ sortByRating(event: any) {
     const stars = Math.round(Number(rating) || 0);
     return Array.from({ length: 5 }, (_, i) => i < stars);
   }
+  onSearch(event: any) {
+  const searchValue = event.target.value.toLowerCase().trim();
+
+  this.filteredProducts = this.products.filter(p =>
+    p.name?.toLowerCase().includes(searchValue) ||
+    p.brand?.toLowerCase().includes(searchValue) ||
+    p.category?.toLowerCase().includes(searchValue)
+  );
+
+  this.currentPage = 1;
+}
+
 }

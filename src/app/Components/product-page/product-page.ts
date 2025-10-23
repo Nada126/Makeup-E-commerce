@@ -4,16 +4,35 @@ import { HttpClient } from '@angular/common/http';
 import { Product } from '../../../app/modules/Product';
 import { Router, RouterModule } from '@angular/router';
 import { FavoriteService } from '../../Services/favorite.service';
-
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './product-page.html',
   styleUrls: ['./product-page.css'],
 })
 export class ProductPage implements OnInit {
+  searchQuery: string = '';
+
+  products: Product[] = [];
+  filteredProducts: Product[] = [];
+  categories: string[] = [];
+  subCategories: string[] = [];
+  selectedCategory = 'All';
+  selectedSubCategory = 'All';
+
+  currentPage = 1;
+  itemsPerPage = 25;
+  loading = false;
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    public favoriteService: FavoriteService,
+  ) {}
+
   handleCategoryClick(category: string) {
     // List of product types that should navigate to their own pages
     const specialProductTypes = [
@@ -36,19 +55,6 @@ export class ProductPage implements OnInit {
     }
   }
 
-  products: Product[] = [];
-  filteredProducts: Product[] = [];
-  categories: string[] = [];
-  subCategories: string[] = [];
-  selectedCategory = 'All';
-  selectedSubCategory = 'All';
-
-  currentPage = 1;
-  itemsPerPage = 25;
-  loading = false;
-
-  constructor(private http: HttpClient, private router: Router,public favoriteService: FavoriteService,) {}
-
   openDetail(product: Product | undefined) {
     if (!product || product.id == null) return;
     this.router.navigate(['/product', product.id], { state: { product } });
@@ -60,67 +66,85 @@ export class ProductPage implements OnInit {
 
   ngOnInit() {
     this.fetchProducts();
-      if (this.products) {
-    this.products.forEach(product => {
-      product.isFavorite = this.favoriteService.isFavorite(product.id);
-    });
-  }
   }
 
   fetchProducts() {
     this.loading = true;
-    const url = 'https://makeup-api.herokuapp.com/api/v1/products.json';
+    const apiUrl = 'https://makeup-api.herokuapp.com/api/v1/products.json';
 
-    this.http.get<Product[]>(url).subscribe({
+    this.http.get<Product[]>(apiUrl).subscribe({
       next: (data) => {
-        const validProducts: Product[] = [];
-
-        const allProducts = data.map((p) => ({
-          ...p,
-          price: Number(p.price) || 0,
-          rating: Number(p.rating) || 0,
-          isFavorite: false,
-        }));
-
-        // Check if image exists
-        const checkImagePromises = allProducts.map((product) =>
-          this.http
-            .head(product.image_link || '', { observe: 'response' })
-            .toPromise()
-            .then(() => validProducts.push(product))
-            .catch(() => null)
-        );
-
-        Promise.all(checkImagePromises).then(() => {
-          this.products = validProducts;
-          this.filteredProducts = this.products;
-          this.categories = [...new Set(this.products.map((p) => p.product_type).filter(Boolean))];
-          this.loading = false;
-        });
+        this.processProducts(data);
       },
       error: (err) => {
-        console.error('Error fetching products:', err);
-        this.loading = false;
+        console.error('Error fetching products from API, trying local data:', err);
+        this.fetchLocalProducts();
       },
     });
   }
 
-toggleFavorite(product: Product, event?: Event) {
-  if (event) {
-    event.stopPropagation(); // Prevent card click when clicking favorite
+  // Favorite toggle with proper event handling and service integration
+  toggleFavorite(product: Product, event?: Event) {
+    if (event) {
+      event.stopPropagation(); // Prevent card click when clicking favorite
+    }
+
+    if (this.favoriteService.isFavorite(product.id)) {
+      this.favoriteService.removeFromFavorites(product.id);
+      product.isFavorite = false;
+    } else {
+      this.favoriteService.addToFavorites(product);
+      product.isFavorite = true;
+    }
   }
 
-  if (this.favoriteService.isFavorite(product.id)) {
-    this.favoriteService.removeFromFavorites(product.id);
-    product.isFavorite = false;
-  } else {
-    this.favoriteService.addToFavorites(product);
-    product.isFavorite = true;
+  // Local products fallback
+  fetchLocalProducts() {
+    const localUrl = './data.json';
+
+    this.http.get<Product[]>(localUrl).subscribe({
+      next: (data) => {
+        this.processProducts(data);
+      },
+      error: (err) => {
+        console.error('Error fetching local products:', err);
+        this.loading = false;
+        this.products = [];
+        this.filteredProducts = [];
+        this.categories = [];
+      },
+    });
   }
-}
+
+  // Process products with proper favorite state initialization
+  processProducts(data: Product[]) {
+    const validProducts: Product[] = [];
+
+    const allProducts = data.map((p) => ({
+      ...p,
+      price: Number(p.price) || 0,
+      rating: Number(p.rating) || 0,
+      isFavorite: this.favoriteService.isFavorite(p.id), // Sync with service
+    }));
+
+    // Image validation
+    const checkImagePromises = allProducts.map((product) =>
+      this.http
+        .head(product.image_link || '', { observe: 'response' })
+        .toPromise()
+        .then(() => validProducts.push(product))
+        .catch(() => null)
+    );
+
+    Promise.all(checkImagePromises).then(() => {
+      this.products = validProducts;
+      this.filteredProducts = this.products;
+      this.categories = [...new Set(this.products.map((p) => p.product_type).filter(Boolean))];
+      this.loading = false;
+    });
+  }
 
   // pagination
-  // ... rest of your existing methods
   get totalPages(): number {
     return Math.ceil(this.filteredProducts.length / this.itemsPerPage);
   }
@@ -138,6 +162,7 @@ toggleFavorite(product: Product, event?: Event) {
     this.filteredProducts = this.products;
     this.selectedCategory = 'All';
     this.subCategories = [];
+    this.currentPage = 1;
   }
 
   filterByCategory(category: string) {
@@ -178,10 +203,6 @@ toggleFavorite(product: Product, event?: Event) {
     }
   }
 
-  // addToCart(product: Product) {
-  //   alert(${product.name} added to cart!);
-  // }
-
   sortByPrice(event: any) {
     const value = event.target.value;
     if (value === 'low-high') {
@@ -206,6 +227,7 @@ toggleFavorite(product: Product, event?: Event) {
     const stars = Math.round(Number(rating) || 0);
     return Array.from({ length: 5 }, (_, i) => i < stars);
   }
+
   getCategoryIcon(category: string): string {
     switch (category.toLowerCase()) {
       case 'lipstick':
@@ -219,5 +241,34 @@ toggleFavorite(product: Product, event?: Event) {
       default:
         return 'bi bi-tag';
     }
+  }
+
+  filterBySearch() {
+    const query = this.searchQuery.toLowerCase().trim();
+    if (!query) {
+      this.filteredProducts = this.products.filter(
+        (p) => this.selectedCategory === 'All' || p.product_type === this.selectedCategory
+      );
+    } else {
+      this.filteredProducts = this.products.filter(
+        (p) =>
+          (this.selectedCategory === 'All' || p.product_type === this.selectedCategory) &&
+          (p.name?.toLowerCase().includes(query) ||
+            p.brand?.toLowerCase().includes(query))
+      );
+    }
+    this.currentPage = 1;
+  }
+
+  onSearch(event: any) {
+    const searchValue = event.target.value.toLowerCase().trim();
+
+    this.filteredProducts = this.products.filter(p =>
+      p.name?.toLowerCase().includes(searchValue) ||
+      p.brand?.toLowerCase().includes(searchValue) ||
+      p.category?.toLowerCase().includes(searchValue)
+    );
+
+    this.currentPage = 1;
   }
 }

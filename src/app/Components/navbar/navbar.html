@@ -1,11 +1,101 @@
 <!-- ***** Header Area Start ***** -->
 <header class="sticky-top fw-bold shadow-sm background">
   <nav class="navbar navbar-expand-lg navbar-light container py-2">
+<!-- <header class="background sticky-top fw-bold shadow-sm">
+  <nav class="navbar navbar-expand-lg container py-2">
+
+    <a class="navbar-brand fw-bold d-flex align-items-center" routerLink="/home">
+      <img src="images/Logo1.png" alt="Glow Up Logo" class="logo-img me-2" />
+      <span class="brand-name d-none d-md-block">Glow Up</span>
+    </a>
+
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarMenu"
+      aria-controls="navbarMenu"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+
+    <div class="collapse navbar-collapse justify-content-center" id="navbarMenu">
+      <ul class="navbar-nav mb-2 mb-lg-0 text-center">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products" routerLinkActive="active" ariaCurrentWhenActive="page">Products</a>
+        </li>
+
+      </ul>
+    </div>
+
+
+    <div class="d-flex align-items-center gap-3">
+      <a class="nav-link icon-btn" routerLink="/favourites" routerLinkActive="active">
+        <i class="bi bi-heart"></i>
+      </a>
+      <a class="nav-link icon-btn" routerLink="/cart" routerLinkActive="active">
+        <i class="bi bi-cart3"></i>
+      </a>
+
+
+      <div class="nav-item dropdown">
+        <a
+          class="nav-link dropdown-toggle d-flex align-items-center"
+          href="#"
+          id="userDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          @if(isLoggedIn){
+            <img
+              [src]="user?.avatar"
+              alt="User Avatar"
+              class="rounded-circle"
+              width="35"
+              height="35"
+            />
+          } @else {
+            <i class="bi bi-person-circle fs-4"></i>
+          }
+        </a>
+
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+          @if(isLoggedIn){
+            @if(isAdmin){
+              <li><button class="dropdown-item" (click)="goToDashboard()">Dashboard</button></li>
+            }
+            <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
+          } @else {
+            <li><a class="dropdown-item" routerLink="/login">Login</a></li>
+            <li><a class="dropdown-item" routerLink="/register">Register</a></li>
+          }
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header> -->
+
+
+
+<header class="background sticky-top fw-bold shadow-sm">
+  <nav class="navbar navbar-expand-lg container py-2">
     <!-- 🌸 Logo (Left) -->
     <a class="navbar-brand fw-bold d-flex align-items-center" routerLink="/home">
       <img src="images/Logo1.png" alt="Glow Up Logo" class="logo-img me-2" />
       <span class="brand-name d-none d-md-block">Glow Up</span>
     </a>
+@if(!isLoggedIn || !isAdmin){
 
     <!-- Mobile Toggler -->
     <button
@@ -141,7 +231,15 @@
           }
         </ul>
       </div>
-    </div>
+       </div>
+      }
+      @else{
+      <button class="dropdown-item" (click)="goToDashboard()">Dashboard</button>
+
+      <button class="dropdown-item" (click)="logout()">Logout</button>
+
+      }
+
   </nav>
 </header>
 <!-- ***** Header Area End ***** -->
