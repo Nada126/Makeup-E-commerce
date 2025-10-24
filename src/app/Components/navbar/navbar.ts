@@ -17,7 +17,7 @@ export class Navbar implements OnInit {
   isAdmin = false;
   favoriteCount = 0;
   cartCount = 0;
-  favCount = 0; 
+  favCount = 0;
 
   constructor(
     private auth: AuthService,
@@ -41,10 +41,27 @@ export class Navbar implements OnInit {
     });
 
     // ✅ Subscribe to favoriteService for favorites count
-    this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
-      this.favCount = favorites.length;
-      this.favoriteCount = favorites.length; // Keep both for compatibility
-    });
+    // Use userFavorites$ if available, otherwise use the appropriate observable
+    if (this.favoriteService.userFavorites$) {
+      this.favoriteService.userFavorites$.subscribe((favorites: Product[]) => {
+        this.favCount = favorites.length;
+        this.favoriteCount = favorites.length;
+      });
+    } else if (this.favoriteService.favorites$) {
+      this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
+        this.favCount = favorites.length;
+        this.favoriteCount = favorites.length;
+      });
+    } else {
+      // Fallback: use method call and set up polling if needed
+      this.updateFavoritesCount();
+      setInterval(() => this.updateFavoritesCount(), 1000);
+    }
+  }
+
+  private updateFavoritesCount() {
+    this.favCount = this.favoriteService.getFavoritesCount();
+    this.favoriteCount = this.favCount;
   }
 
   get isLoggedIn(): boolean {
@@ -53,8 +70,12 @@ export class Navbar implements OnInit {
 
   logout() {
     this.auth.logout();
-    this.cartService.reload();
-    // this.favoriteService.clearFavorites(); // Optional: clear favorites on logout
+
+    // Only call reload if the method exists
+    if (this.cartService.reload) {
+      this.cartService.reload();
+    }
+
     this.user = null;
     this.isAdmin = false;
     this.router.navigate(['/login']);
