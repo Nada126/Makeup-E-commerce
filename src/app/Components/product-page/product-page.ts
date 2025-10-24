@@ -5,6 +5,8 @@ import { Product } from '../../../app/modules/Product';
 import { Router, RouterModule } from '@angular/router';
 import { FavoriteService } from '../../Services/favorite.service';
 import { FormsModule } from '@angular/forms';
+import { CartService } from '../../Services/cart-service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-product-page',
@@ -15,7 +17,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProductPage implements OnInit {
   searchQuery: string = '';
-
   products: Product[] = [];
   filteredProducts: Product[] = [];
   categories: string[] = [];
@@ -27,14 +28,17 @@ export class ProductPage implements OnInit {
   itemsPerPage = 25;
   loading = false;
 
+  favoriteIds = new Set<number>();
+
   constructor(
     private http: HttpClient,
     private router: Router,
     public favoriteService: FavoriteService,
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   handleCategoryClick(category: string) {
-    // List of product types that should navigate to their own pages
     const specialProductTypes = [
       'lipstick',
       'lip_liner',
@@ -66,6 +70,18 @@ export class ProductPage implements OnInit {
 
   ngOnInit() {
     this.fetchProducts();
+    
+    // Subscribe to favorites for real-time updates
+    this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
+      this.favoriteIds.clear();
+      favorites.forEach((fav: Product) => {
+        const id = Number(fav.id);
+        if (!Number.isNaN(id)) {
+          this.favoriteIds.add(id);
+        }
+      });
+      this.cdr.detectChanges();
+    });
   }
 
   fetchProducts() {
@@ -83,19 +99,34 @@ export class ProductPage implements OnInit {
     });
   }
 
-  // Favorite toggle with proper event handling and service integration
+  // Unified toggleFavorite method
   toggleFavorite(product: Product, event?: Event) {
     if (event) {
       event.stopPropagation(); // Prevent card click when clicking favorite
     }
 
+    // Use service-based approach (primary)
     if (this.favoriteService.isFavorite(product.id)) {
       this.favoriteService.removeFromFavorites(product.id);
       product.isFavorite = false;
+      this.favoriteIds.delete(product.id);
     } else {
       this.favoriteService.addToFavorites(product);
       product.isFavorite = true;
+      this.favoriteIds.add(product.id);
     }
+
+    this.cdr.detectChanges();
+  }
+
+  // Check if product is favorite using both methods
+  isFavorite(product: any): boolean {
+    const rawId = product?.id ?? product?.productId;
+    const id = rawId == null ? null : Number(rawId);
+    if (id == null || Number.isNaN(id)) return false;
+    
+    // Use service as primary, local state as fallback
+    return this.favoriteService.isFavorite(id) || this.favoriteIds.has(id);
   }
 
   // Local products fallback
@@ -124,7 +155,7 @@ export class ProductPage implements OnInit {
       ...p,
       price: Number(p.price) || 0,
       rating: Number(p.rating) || 0,
-      isFavorite: this.favoriteService.isFavorite(p.id), // Sync with service
+      isFavorite: this.isFavorite(p), // Use unified isFavorite method
     }));
 
     // Image validation
@@ -201,6 +232,21 @@ export class ProductPage implements OnInit {
       this.currentPage = page;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+
+  addToCart(product: Product, event?: Event) {
+    if (event) event.stopPropagation(); 
+    if (!product || product.id == null) return;
+    const item = {
+      productId: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      image: product.image_link,
+      quantity: 1,
+      product
+    };
+    this.cartService.addItem(item);
+    alert(`${product.name} added to cart`);
   }
 
   sortByPrice(event: any) {

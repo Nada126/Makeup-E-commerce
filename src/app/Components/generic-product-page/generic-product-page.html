@@ -82,14 +82,18 @@
         tabindex="0">
         <!-- ❤️ Favorite Icon -->
 <i
-  class="bi favorite-icon"
+  class="bi favorite-icon position-absolute"
+  role="button"
+  aria-label="Toggle favorite"
   [ngClass]="
     favoriteService.isFavorite(product.id)
       ? 'bi-heart-fill text-danger'
       : 'bi-heart'
   "
   (click)="toggleFavorite(product, $event)"
-  title="Add to favorites">
+  title="Add to favorites"
+  style="top:8px; right:12px; z-index:5;"
+>
 </i>
         <!-- Product Image -->
         <div class="image-container">
@@ -113,9 +117,9 @@
           </div>
 
           <!-- Add to Cart Button -->
-          <button class="btn btn-outline-dark w-100" (click)="addToCart(product)">
-            Add to Cart
-          </button>
+          <button class="btn btn-sm btn-outline-dark w-100 mt-auto" (click)="addToCart(product, $event)">
+  Add to Cart
+</button>
         </div>
       </div>
     </div>

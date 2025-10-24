@@ -8,7 +8,7 @@ const dbPath = path.join(__dirname, 'db.json');
 
 try {
     // Read current db.json (with user-added reviews)
-    let db = { users: [], reviews: [] };
+    let db = { users: [], reviews: [] ,products: []};
     try {
         const existingDb = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
         db = existingDb;
@@ -18,11 +18,12 @@ try {
 
     // Read source files
     // const sourceUsers = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
-    
+
 
     const finalDb = {
         users: db.users, // Keep source users
-        reviews: db.reviews, // ONLY keep user-added reviews from existing db.json
+        reviews: db.reviews,
+        products: db.products
     };
 
     // Write the cleaned db.json

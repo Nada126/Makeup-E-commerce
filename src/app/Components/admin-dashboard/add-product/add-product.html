@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <div class="form-card">
+    <h2 class="form-title">Add New Product</h2>
+    <form (ngSubmit)="addProduct()" #productForm="ngForm" class="product-form">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label">Product Name*</label>
+            <input type="text" [(ngModel)]="product.name" name="name" required class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Brand</label>
+            <input type="text" [(ngModel)]="product.brand" name="brand" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Price ($)*</label>
+            <input type="number" [(ngModel)]="product.price" name="price" required class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category*</label>
+            <select [(ngModel)]="product.category" name="category" required class="form-select">
+              <option value="">Select category</option>
+              <option value="lipstick">Lipstick</option>
+              <option value="foundation">Foundation</option>
+              <option value="eyeshadow">Eyeshadow</option>
+                <option value="eyeliner">eyeliner</option>
+              <option value="LipLinear">LipLinear</option>
+              <option value="Bronzer">Bronzer</option>
+              <option value="eyebrow">eyebrow</option>
+              <option value="nail_polish">nail_polish</option>
+              <option value="blush">Blush</option>
+              <option value="mascara">Mascara</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="form-group">
+            <label class="form-label">Image URL</label>
+            <input type="text" [(ngModel)]="product.image" name="image" class="form-control" />
+            <div class="image-preview" *ngIf="product.image">
+              <img [src]="product.image" alt="Product preview" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea [(ngModel)]="product.description" name="description" rows="3" class="form-control"></textarea>
+          </div>
+<div class="form-group">
+  <label class="form-label">Rate (0-5)</label>
+  <input type="number" [(ngModel)]="product.rating" name="rating" min="0" max="5" class="form-control" />
+</div>
+
+
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>

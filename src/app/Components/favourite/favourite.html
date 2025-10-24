@@ -1,0 +1,35 @@
+<div class="container py-5">
+  <h2 class="mb-4">Favorites ({{ count }})</h2>
+
+  <div *ngIf="items.length === 0" class="text-center py-5">
+    <p>No favorites yet.</p>
+    <button class="btn btn-primary" (click)="router.navigate(['/products'])">Browse Products</button>
+  </div>
+
+  <div *ngIf="items.length > 0">
+    <div class="list-group mb-4">
+      <div *ngFor="let item of items" class="list-group-item d-flex align-items-center">
+        <img [src]="item.image || 'https://via.placeholder.com/80'" width="80" height="80" class="me-3 rounded" />
+        <div class="flex-grow-1">
+          <h6 class="mb-1">{{ item.name }}</h6>
+          <p class="mb-1 text-muted" *ngIf="item.price"> ${{ item.price | number:'1.2-2' }}</p>
+        </div>
+
+        <div class="d-flex flex-column align-items-end">
+          <button class="btn btn-sm btn-outline-primary mb-2" (click)="goToProduct(item)">View</button>
+          <button class="btn btn-sm btn-link text-danger" (click)="remove(item)">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <button class="btn btn-outline-secondary me-2" (click)="clearAll()">Clear All</button>
+        <button class="btn btn-secondary" (click)="router.navigate(['/products'])">Continue Shopping</button>
+      </div>
+      <div class="text-end">
+        <div class="mb-2">Total favorites: <strong>{{ count }}</strong></div>
+      </div>
+    </div>
+  </div>
+</div>

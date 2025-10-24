@@ -7,6 +7,7 @@ import { ReviewService, User } from '../../Services/review-service';
 import { Review } from '../../modules/review';
 import { FavoriteService } from '../../Services/favorite.service';
 import { Product } from '../../modules/Product';
+import { CartService } from '../../Services/cart-service';
 
 @Component({
   selector: 'app-product-details',
@@ -43,6 +44,8 @@ export class ProductDetails implements OnInit {
     private router: Router,
     private reviewService: ReviewService,
     private favoriteService: FavoriteService,
+    private cartService: CartService   
+
   ) { }
 
   ngOnInit() {
@@ -387,9 +390,21 @@ submitReview() {
   }
 
   addToCart() {
-    if (!this.product) return;
-    alert(`${this.product.name} has been added to the cart.`);
-  }
+  if (!this.product) return;
+
+  
+  const item = {
+    productId: this.product.id,
+    name: this.product.name,
+    price: Number(this.product.price) || 0,
+    image: this.product.image,
+    quantity: 1,
+    product: this.product
+  };
+
+  this.cartService.addItem(item);
+  alert(`${this.product.name} added to cart`);
+}
 
   goBack() {
     if (window.history.length > 1) {
