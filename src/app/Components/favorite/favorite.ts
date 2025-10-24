@@ -21,7 +21,7 @@ export class Favorite implements OnInit {
     this.loadFavorites();
 
     // Subscribe to favorites changes
-    this.favoriteService.favorites$.subscribe(favorites => {
+    this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
       this.favoriteProducts = favorites;
     });
   }

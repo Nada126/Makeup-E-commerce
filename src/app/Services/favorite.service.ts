@@ -34,7 +34,7 @@ export class FavoriteService {
     const favorites = this.getFavorites();
 
     // Check if product already exists
-    const exists = favorites.some(fav => fav.id === product.id);
+    const exists = favorites.some((fav: Product) => fav.id === product.id);
 
     if (!exists) {
       favorites.push({ ...product, isFavorite: true });

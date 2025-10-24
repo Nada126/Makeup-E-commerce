@@ -29,7 +29,8 @@ export const routes: Routes = [
     { path: 'register', component: Register, title: 'Register' },
     // { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },
-<<<<<<< HEAD
+    
+// <<<<<<< HEAD
 // ✅ Admin routes
 {
   path: 'admin',
@@ -44,11 +45,11 @@ export const routes: Routes = [
 
     { path: '**', component: NotFound, title: 'Not Found' },
 ];
-=======
-    { path: 'data-deletion', component: DataDeletion, title: 'Data-Deletion' },
-    { path: 'cart', component: Cart, title:'Cart' },
-    { path: 'favourites', component: Favourites },
+// =======
+//     { path: 'data-deletion', component: DataDeletion, title: 'Data-Deletion' },
+//     { path: 'cart', component: Cart, title:'Cart' },
+//     { path: 'favourites', component: Favourites },
 
-    { path: '**', component: NotFound, title: 'Not Found' }
-]
->>>>>>> b601b4a8f7cf20530ccd706749cbc7aeb4b51e8b
+//     { path: '**', component: NotFound, title: 'Not Found' }
+// ]
+// >>>>>>> b601b4a8f7cf20530ccd706749cbc7aeb4b51e8b
