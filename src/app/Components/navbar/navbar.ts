@@ -26,12 +26,10 @@ export class Navbar implements OnInit {
   ngOnInit(): void {
     this.user = this.auth.getCurrentUser();
 
-    // ✅ اشتراك في cartService لعرض عدد عناصر الكارت
     this.cartService.items$.subscribe(items => {
       this.cartCount = items.reduce((s, i) => s + i.quantity, 0);
     });
 
-    // ✅ اشتراك في favService لعرض عدد المفضلات
     this.favService.items$.subscribe(items => {
       this.favCount = (items || []).length;
     });
@@ -47,7 +45,7 @@ export class Navbar implements OnInit {
   logout() {
     this.auth.logout();
     this.cartService.reload();
-    this.favService.reload(); // ✅ نعمل reload عشان نفضي المفضلات عند تسجيل الخروج
+    this.favService.reload(); 
     this.user = null;
     this.isAdmin = false;
     this.router.navigate(['/login']);
@@ -61,7 +59,7 @@ export class Navbar implements OnInit {
     this.router.navigate(['/cart']);
   }
 
-  goToFavorites() { // ✅ زر المفضلات
+  goToFavorites() { 
     this.router.navigate(['/favourites']);
   }
 }
