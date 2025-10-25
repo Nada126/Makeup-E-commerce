@@ -1,0 +1,206 @@
+<div class="payment-container">
+  <!-- Success State -->
+  <div *ngIf="orderPlaced" class="success-state">
+    <div class="success-icon">✓</div>
+    <h2>Payment Successful!</h2>
+    <p>Order ID: {{orderId}}</p>
+    <button routerLink="/" class="btn-primary">Continue Shopping</button>
+  </div>
+
+  <!-- Payment Form -->
+  <div *ngIf="!orderPlaced" class="payment-form">
+    <h2>Checkout</h2>
+
+    <div class="checkout-layout">
+      <!-- Left Column - Forms -->
+      <div class="left-column">
+        <!-- Customer Information -->
+        <form [formGroup]="checkoutForm" class="customer-form">
+          <h3>Customer Information</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name *</label>
+              <input type="text" formControlName="fullName"
+                     [class.error]="isFieldInvalid(checkoutForm, 'fullName')">
+              <div *ngIf="isFieldInvalid(checkoutForm, 'fullName')" class="error-message">
+                Valid name required (min 3 characters)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" formControlName="email"
+                     [class.error]="isFieldInvalid(checkoutForm, 'email')">
+              <div *ngIf="isFieldInvalid(checkoutForm, 'email')" class="error-message">
+                Valid email required
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Phone *</label>
+            <input type="tel" formControlName="phone"
+                   [class.error]="isFieldInvalid(checkoutForm, 'phone')">
+            <div *ngIf="isFieldInvalid(checkoutForm, 'phone')" class="error-message">
+              Valid phone number required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Address Line 1 *</label>
+            <input type="text" formControlName="addressLine1"
+                   [class.error]="isFieldInvalid(checkoutForm, 'addressLine1')">
+            <div *ngIf="isFieldInvalid(checkoutForm, 'addressLine1')" class="error-message">
+              Address Line 1 is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Address Line 2</label>
+            <input type="text" formControlName="addressLine2">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>City *</label>
+              <input type="text" formControlName="city"
+                     [class.error]="isFieldInvalid(checkoutForm, 'city')">
+              <div *ngIf="isFieldInvalid(checkoutForm, 'city')" class="error-message">
+                City is required
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Postal Code *</label>
+              <input type="text" formControlName="postalCode"
+                     [class.error]="isFieldInvalid(checkoutForm, 'postalCode')">
+              <div *ngIf="isFieldInvalid(checkoutForm, 'postalCode')" class="error-message">
+                Postal code is required
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Country *</label>
+            <input type="text" formControlName="country"
+                   [class.error]="isFieldInvalid(checkoutForm, 'country')">
+            <div *ngIf="isFieldInvalid(checkoutForm, 'country')" class="error-message">
+              Country is required
+            </div>
+          </div>
+        </form>
+
+        <!-- Payment Information -->
+        <form [formGroup]="paymentForm" class="payment-details">
+          <h3>Payment Details</h3>
+
+          <!-- Test Card Selector -->
+          <!-- <div class="test-cards">
+            <label>Test Cards:</label>
+            <div class="test-card-buttons">
+              <button type="button" *ngFor="let card of testCards"
+                      (click)="selectTestCard(card.number)"
+                      class="test-card-btn">
+                {{card.name}}
+              </button>
+            </div>
+          </div> -->
+
+          <div class="form-group">
+            <label>Card Number *</label>
+            <input type="text" formControlName="cardNumber" placeholder="4242 4242 4242 4242"
+                   [class.error]="isFieldInvalid(paymentForm, 'cardNumber')">
+            <div *ngIf="isFieldInvalid(paymentForm, 'cardNumber')" class="error-message">
+              Valid card number required (16 digits)
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Expiry Date *</label>
+              <input type="text" formControlName="expiryDate" placeholder="MM/YY"
+                     [class.error]="isFieldInvalid(paymentForm, 'expiryDate')">
+              <div *ngIf="isFieldInvalid(paymentForm, 'expiryDate')" class="error-message">
+                Valid expiry date required (MM/YY)
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>CVC *</label>
+              <input type="text" formControlName="cvc" placeholder="123"
+                     [class.error]="isFieldInvalid(paymentForm, 'cvc')">
+              <div *ngIf="isFieldInvalid(paymentForm, 'cvc')" class="error-message">
+                Valid CVC required (3-4 digits)
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Name on Card *</label>
+            <input type="text" formControlName="cardName"
+                   [class.error]="isFieldInvalid(paymentForm, 'cardName')">
+            <div *ngIf="isFieldInvalid(paymentForm, 'cardName')" class="error-message">
+              Name on card is required
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right Column - Order Summary -->
+      <div class="right-column">
+        <div class="order-summary-card">
+          <h3>Order Summary</h3>
+
+          <div class="order-items">
+            <div *ngFor="let item of items" class="order-item">
+              <img [src]="item.image" [alt]="item.name" class="item-image">
+              <div class="item-details">
+                <h4>{{item.name}}</h4>
+                <p class="item-quantity">Quantity: {{item.quantity}}</p>
+                <p class="item-unit-price">${{item.price}} each</p>
+              </div>
+              <div class="item-total">${{(item.price * item.quantity).toFixed(2)}}</div>
+            </div>
+          </div>
+
+          <div class="summary-totals">
+            <div class="total-line">
+              <span>Subtotal:</span>
+              <span>${{subtotal.toFixed(2)}}</span>
+            </div>
+            <div class="total-line">
+              <span>Tax:</span>
+              <span>${{tax.toFixed(2)}}</span>
+            </div>
+            <div class="total-line">
+              <span>Shipping:</span>
+              <span>{{shipping === 0 ? 'FREE' : '$' + shipping.toFixed(2)}}</span>
+            </div>
+            <div class="total-line grand-total">
+              <span>Total:</span>
+              <span>${{total.toFixed(2)}}</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button type="button" (click)="cancel()" class="btn-secondary" [disabled]="paymentProcessing">
+              Cancel
+            </button>
+            <button type="button" (click)="processPayment()" class="btn-primary" [disabled]="paymentProcessing">
+              <span *ngIf="!paymentProcessing">Pay ${{total.toFixed(2)}}</span>
+              <span *ngIf="paymentProcessing">Processing...</span>
+            </button>
+          </div>
+
+          <!-- Security Notice -->
+          <!-- <div class="security-notice">
+            <p>🔒 This is a demo store. No real payments will be processed.</p>
+            <p>Use the test card numbers provided above.</p>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

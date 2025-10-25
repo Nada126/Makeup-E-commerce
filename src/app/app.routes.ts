@@ -15,6 +15,7 @@ import { NotAuthorized } from './Components/not-authorized/not-authorized';
 import { DataDeletion } from './Components/data-deletion/data-deletion';
 import { Cart } from './Components/cart/cart';
 import { Favourites } from './Components/favourite/favourite';
+import { Payment } from './Components/payment/payment';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full', title: 'Home' },
@@ -30,6 +31,8 @@ export const routes: Routes = [
     { path: 'data-deletion', component: DataDeletion, title: 'Data-Deletion' },
     { path: 'cart', component: Cart, title:'Cart' },
     { path: 'favourites', component: Favourites },
+    { path: 'payment', component: Payment },
+
 
     // { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },

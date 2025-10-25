@@ -8,6 +8,7 @@ import { Review } from '../../modules/review';
 import { FavoriteService } from '../../Services/favorite.service';
 import { Product } from '../../modules/Product';
 import { CartService } from '../../Services/cart-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-details',
@@ -26,7 +27,7 @@ export class ProductDetails implements OnInit {
   reviewsLoading = false;
   reviewsError: string | null = null;
   products: Product[] = [];
-
+  isFavorite: boolean = false;
 
   // New properties for adding reviews
   showAddReviewForm = false;
@@ -44,8 +45,7 @@ export class ProductDetails implements OnInit {
     private router: Router,
     private reviewService: ReviewService,
     private favoriteService: FavoriteService,
-    private cartService: CartService   
-
+    private cartService: CartService
   ) { }
 
   ngOnInit() {
@@ -54,6 +54,7 @@ export class ProductDetails implements OnInit {
 
     if (stateProduct) {
       this.product = this.normalizeProduct(stateProduct);
+      this.checkIfFavorite();
       this.loadAvailableUsers();
       return;
     }
@@ -70,12 +71,54 @@ export class ProductDetails implements OnInit {
     } else {
       this.errorMessage = 'No product id provided.';
     }
-
-      if (this.products) {
-    this.products.forEach(product => {
-      product.isFavorite = this.favoriteService.isFavorite(product.id);
-    });
   }
+
+  // Check if product is in favorites
+  checkIfFavorite() {
+    if (this.product && this.product.id) {
+      this.isFavorite = this.favoriteService.isFavorite(this.product.id);
+    }
+  }
+
+  // Toggle favorite status
+  toggleFavorite(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    if (!this.product || !this.product.id) return;
+
+    if (this.isFavorite) {
+      this.favoriteService.removeFromFavorites(this.product.id);
+      this.isFavorite = false;
+
+      Swal.fire({
+        position: 'top-end',
+        icon: 'info',
+        title: 'Removed from Favorites',
+        text: `${this.product.name} has been removed from your favorites`,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        background: '#f8f9fa',
+        iconColor: '#ff6f91'
+      });
+    } else {
+      this.favoriteService.addToFavorites(this.product);
+      this.isFavorite = true;
+
+      Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Added to Favorites!',
+        text: `${this.product.name} has been added to your favorites`,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        background: '#f8f9fa',
+        iconColor: '#ff6f91'
+      });
+    }
   }
 
   fetchProductDetails(id: number) {
@@ -92,6 +135,7 @@ export class ProductDetails implements OnInit {
           return;
         }
         this.product = this.normalizeProduct(data);
+        this.checkIfFavorite();
         console.log('Product loaded:', this.product);
         this.loading = false;
         this.loadAvailableUsers();
@@ -108,28 +152,6 @@ export class ProductDetails implements OnInit {
     });
   }
 
-  // loadAvailableUsers() {
-  //   this.reviewService.getUsers().subscribe({
-  //     next: (users) => {
-  //       console.log('Raw users from API:', users);
-  //       // Ensure all user IDs are numbers
-  //       this.availableUsers = users.map(user => ({
-  //         ...user,
-  //         id: Number(user.id) // Convert ID to number
-  //       }));
-
-  //       console.log('Normalized users:', this.availableUsers);
-
-  //       if (this.availableUsers.length > 0) {
-  //         this.selectedUserId = this.availableUsers[0].id;
-  //         console.log('Default selected user ID:', this.selectedUserId);
-  //       }
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading users:', err);
-  //     }
-  //   });
-  // }
   loadAvailableUsers() {
     this.reviewService.getUsers().subscribe({
       next: (users) => {
@@ -151,30 +173,16 @@ export class ProductDetails implements OnInit {
         console.error('Error loading users:', err);
       }
     });
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-  if (currentUser && currentUser.name) {
-    this.availableUsers = [currentUser];
-    this.selectedUserId = currentUser.id;
-  } else {
-    this.availableUsers = [];
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (currentUser && currentUser.name) {
+      this.availableUsers = [currentUser];
+      this.selectedUserId = currentUser.id;
+    } else {
+      this.availableUsers = [];
+    }
   }
-}
-
-
-toggleFavorite(product: Product, event?: Event) {
-  if (event) {
-    event.stopPropagation(); // Prevent card click when clicking favorite
-  }
-
-  if (this.favoriteService.isFavorite(product.id)) {
-    this.favoriteService.removeFromFavorites(product.id);
-    product.isFavorite = false;
-  } else {
-    this.favoriteService.addToFavorites(product);
-    product.isFavorite = true;
-  }
-}
 
   scrollToReviews() {
     setTimeout(() => {
@@ -239,117 +247,142 @@ toggleFavorite(product: Product, event?: Event) {
   }
 
   // FIXED: Submit review with proper user handling
-submitReview() {
-  console.log('=== SUBMIT REVIEW DEBUG ===');
-  console.log('Product ID:', this.product.id);
-  console.log('Product Name:', this.product.name);
+  submitReview() {
+    console.log('=== SUBMIT REVIEW DEBUG ===');
+    console.log('Product ID:', this.product.id);
+    console.log('Product Name:', this.product.name);
 
-  if (!this.product) {
-    console.error('No product selected');
-    return;
-  }
-
-  if (!this.selectedUserId) {
-    console.error('No user selected');
-    return;
-  }
-
-  if (!this.newReview.comment?.trim()) {
-    console.error('No review comment');
-    return;
-  }
-
-  // Find user with proper ID comparison
-  const selectedUser = this.availableUsers.find(user => {
-    return user.id === this.selectedUserId;
-  });
-
-  console.log('Found user:', selectedUser);
-
-  if (!selectedUser) {
-    console.error('User not found. Available IDs:', this.availableUsers.map(u => u.id));
-    return;
-  }
-
-  this.submittingReview = true;
-
-  const review: Review = {
-    userName: selectedUser.name,
-    userImage: selectedUser.avatar,
-    date: new Date().toISOString().split('T')[0],
-    rating: this.newReview.rating || 5,
-    comment: this.newReview.comment.trim(),
-    productId: this.product.id
-  };
-
-  console.log('Submitting review:', review);
-
-  this.reviewService.addReview(review).subscribe({
-    next: (newReview) => {
-      console.log('Review added successfully:', newReview);
-
-      // Add to local reviews
-      this.reviews.unshift(newReview);
-
-      // Clear error message
-      this.reviewsError = null;
-
-      // Update product rating
-      this.product.rating = this.calculateAverageRating();
-
-      // Reset and close form
-      this.showAddReviewForm = false;
-      this.resetReviewForm();
-      this.submittingReview = false;
-    },
-    error: (err) => {
-      console.error('Error submitting review:', err);
-      this.submittingReview = false;
+    if (!this.product) {
+      console.error('No product selected');
+      return;
     }
-  });
-}
+
+    if (!this.selectedUserId) {
+      console.error('No user selected');
+      return;
+    }
+
+    if (!this.newReview.comment?.trim()) {
+      console.error('No review comment');
+      return;
+    }
+
+    // Find user with proper ID comparison
+    const selectedUser = this.availableUsers.find(user => {
+      return user.id === this.selectedUserId;
+    });
+
+    console.log('Found user:', selectedUser);
+
+    if (!selectedUser) {
+      console.error('User not found. Available IDs:', this.availableUsers.map(u => u.id));
+      return;
+    }
+
+    this.submittingReview = true;
+
+    const review: Review = {
+      userName: selectedUser.name,
+      userImage: selectedUser.avatar,
+      date: new Date().toISOString().split('T')[0],
+      rating: this.newReview.rating || 5,
+      comment: this.newReview.comment.trim(),
+      productId: this.product.id
+    };
+
+    console.log('Submitting review:', review);
+
+    this.reviewService.addReview(review).subscribe({
+      next: (newReview) => {
+        console.log('Review added successfully:', newReview);
+
+        // Add to local reviews
+        this.reviews.unshift(newReview);
+
+        // Clear error message
+        this.reviewsError = null;
+
+        // Update product rating
+        this.product.rating = this.calculateAverageRating();
+
+        // Reset and close form
+        this.showAddReviewForm = false;
+        this.resetReviewForm();
+        this.submittingReview = false;
+
+        // Show success message
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: 'Review Submitted!',
+          text: 'Thank you for your review!',
+          showConfirmButton: false,
+          timer: 2000,
+          toast: true,
+          background: '#f8f9fa',
+          iconColor: '#28a745'
+        });
+      },
+      error: (err) => {
+        console.error('Error submitting review:', err);
+        this.submittingReview = false;
+
+        Swal.fire({
+          position: 'top-end',
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to submit review. Please try again.',
+          showConfirmButton: false,
+          timer: 3000,
+          toast: true,
+          background: '#f8f9fa',
+          iconColor: '#dc3545'
+        });
+      }
+    });
+  }
 
   loadReviews() {
-  if (!this.product) return;
+    if (!this.product) return;
 
-  this.reviewsLoading = true;
-  this.reviewsError = null;
+    this.reviewsLoading = true;
+    this.reviewsError = null;
 
-  console.log('Loading reviews for product ID:', this.product.id);
+    console.log('Loading reviews for product ID:', this.product.id);
 
-  // CHANGE: Use productId instead of category
-  this.reviewService.getReviewsByProduct(this.product.id).subscribe({
-    next: (reviews) => {
-      console.log('Reviews loaded for product:', reviews);
+    // CHANGE: Use productId instead of category
+    this.reviewService.getReviewsByProduct(this.product.id).subscribe({
+      next: (reviews) => {
+        console.log('Reviews loaded for product:', reviews);
 
-      // Filter out invalid reviews
-      this.reviews = (reviews || [])
-        .filter(review =>
-          review &&
-          review.userName &&
-          review.userName !== 'Anonymous' &&
-          review.comment &&
-          review.comment.trim() !== '' &&
-          review.rating > 0
-        );
+        // Filter out invalid reviews
+        this.reviews = (reviews || [])
+          .filter(review =>
+            review &&
+            review.userName &&
+            review.userName !== 'Anonymous' &&
+            review.comment &&
+            review.comment.trim() !== '' &&
+            review.rating > 0
+          );
 
-      this.reviewsLoading = false;
+        this.reviewsLoading = false;
 
-      // Calculate average rating from reviews
-      if (this.reviews.length > 0) {
-        this.product.rating = this.calculateAverageRating();
-        this.reviewsError = null;
-      } else {
-        this.reviewsError = 'No reviews available for this product yet.';
+        // Calculate average rating from reviews
+        if (this.reviews.length > 0) {
+          this.product.rating = this.calculateAverageRating();
+          this.reviewsError = null;
+        } else {
+          this.reviewsError = 'No reviews available for this product yet.';
+        }
+      },
+      error: (err) => {
+        console.error('Error loading reviews:', err);
+        this.reviewsError = 'Failed to load reviews. Please try again later.';
+        this.reviewsLoading = false;
       }
-    },
-    error: (err) => {
-      console.error('Error loading reviews:', err);
-      this.reviewsError = 'Failed to load reviews. Please try again later.';
-      this.reviewsLoading = false;
-    }
-  });
-}
+    });
+  }
 
   calculateAverageRating(): number {
     if (!this.reviews || this.reviews.length === 0) return 0;
@@ -390,21 +423,32 @@ submitReview() {
   }
 
   addToCart() {
-  if (!this.product) return;
+    if (!this.product) return;
 
-  
-  const item = {
-    productId: this.product.id,
-    name: this.product.name,
-    price: Number(this.product.price) || 0,
-    image: this.product.image,
-    quantity: 1,
-    product: this.product
-  };
+    const item = {
+      productId: this.product.id,
+      name: this.product.name,
+      price: Number(this.product.price) || 0,
+      image: this.product.image,
+      quantity: 1,
+      product: this.product
+    };
 
-  this.cartService.addItem(item);
-  alert(`${this.product.name} added to cart`);
-}
+    this.cartService.addItem(item);
+
+    // SweetAlert notification
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Added to Cart!',
+      text: `${this.product.name} has been added to your cart`,
+      showConfirmButton: false,
+      timer: 2000,
+      toast: true,
+      background: '#f8f9fa',
+      iconColor: '#28a745'
+    });
+  }
 
   goBack() {
     if (window.history.length > 1) {

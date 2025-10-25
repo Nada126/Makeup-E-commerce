@@ -82,6 +82,17 @@ export class Cart implements OnInit {
   }
 
   checkout() {
-    alert('Checkout not implemented yet.');
+    if (this.items.length === 0) {
+      alert('Your cart is empty. Please add items to proceed to checkout.');
+      return;
+    }
+
+    // Navigate to payment page with cart data
+    this.router.navigate(['/payment'], {
+      state: {
+        items: this.items,
+        total: this.total
+      }
+    });
   }
 }

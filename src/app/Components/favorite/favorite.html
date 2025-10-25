@@ -42,7 +42,8 @@
       <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-3">
         @for (product of favoriteProducts; track product.id) {
         <div class="col">
-          <div class="card h-100 shadow-sm position-relative text-center">
+          <div class="card h-100 shadow-sm position-relative text-center" (click)="openDetail(product)" role="button" tabindex="0">
+
             <!-- Remove from Favorites Button -->
             <i
               class="bi bi-heart-fill text-danger favorite-icon"
@@ -73,11 +74,12 @@
               </div>
 
               <!-- Action Buttons -->
-              <div class="d-flex gap-1">
-                <button class="btn btn-outline-dark btn-sm flex-fill">
+              <div class="action-buttons">
+                <button class="btn btn-outline-dark btn-sm flex-fill" (click)="addToCart(product, $event)">
                   Add to Cart
                 </button>
-                <button class="btn btn-outline-secondary btn-sm" [routerLink]="['/product', product.id]"
+                <button class="btn btn-outline-secondary btn-sm"
+                  (click)="viewProductDetails(product, $event)"
                   title="View details">
                   <i class="bi bi-eye"></i>
                 </button>

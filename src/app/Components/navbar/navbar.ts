@@ -40,14 +40,8 @@ export class Navbar implements OnInit {
       this.cartCount = items.reduce((s, i) => s + i.quantity, 0);
     });
 
-    // ✅ Subscribe to favoriteService for favorites count
-    // Use userFavorites$ if available, otherwise use the appropriate observable
-    if (this.favoriteService.userFavorites$) {
-      this.favoriteService.userFavorites$.subscribe((favorites: Product[]) => {
-        this.favCount = favorites.length;
-        this.favoriteCount = favorites.length;
-      });
-    } else if (this.favoriteService.favorites$) {
+    // ✅ Subscribe to favoriteService for favorites count - FIXED: using favorites$
+    if (this.favoriteService.favorites$) {
       this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
         this.favCount = favorites.length;
         this.favoriteCount = favorites.length;

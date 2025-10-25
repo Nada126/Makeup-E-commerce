@@ -132,9 +132,9 @@
   flex-wrap: wrap;
 }
 
-.price-filter {
+/* .price-filter {
   order: 1;
-}
+} */
 
 .rating-filter {
   order: 2;

@@ -3,8 +3,12 @@
   <div class="row justify-content-center align-items-center g-5">
     <div class="col-md-6 text-center">
       <div class="product-image-wrapper shadow-sm rounded-4 overflow-hidden position-relative">
-        <button class="fav-btn" type="button" aria-label="Add to favorites" title="Add to favorites">
-          <i class="bi bi-heart"></i>
+        <!-- Favorite Button - Updated with dynamic icon -->
+        <button class="fav-btn" type="button"
+                (click)="toggleFavorite($event)"
+                [attr.aria-label]="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+                [title]="isFavorite ? 'Remove from favorites' : 'Add to favorites'">
+          <i class="bi" [ngClass]="isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart'"></i>
         </button>
 
         <img [src]="product.image" alt="{{ product.name }}" class="img-fluid product-img"
@@ -93,19 +97,6 @@
           <h5 class="card-title mb-4">Write Your Review</h5>
 
           <!-- User Selection -->
-          <!-- @if (availableUsers.length > 0) {
-          <div class="mb-3">
-            <label class="form-label">Post as:</label>
-            <select class="form-select" [(ngModel)]="selectedUserId">
-              @for (user of availableUsers; track user.id) {
-              <option [value]="user.id">
-                {{ user.name }}
-              </option>
-              }
-            </select>
-            <small class="text-muted">Select a guest user for demo purposes</small>
-          </div>
-          } -->
           @if (availableUsers.length > 0) {
           <div class="mb-3">
             <div class="d-flex align-items-center gap-2">

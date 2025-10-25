@@ -7,6 +7,7 @@ import { FavoriteService } from '../../Services/favorite.service';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../Services/cart-service';
 import { ChangeDetectorRef } from '@angular/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-page',
@@ -70,7 +71,7 @@ export class ProductPage implements OnInit {
 
   ngOnInit() {
     this.fetchProducts();
-    
+
     // Subscribe to favorites for real-time updates
     this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
       this.favoriteIds.clear();
@@ -124,7 +125,7 @@ export class ProductPage implements OnInit {
     const rawId = product?.id ?? product?.productId;
     const id = rawId == null ? null : Number(rawId);
     if (id == null || Number.isNaN(id)) return false;
-    
+
     // Use service as primary, local state as fallback
     return this.favoriteService.isFavorite(id) || this.favoriteIds.has(id);
   }
@@ -234,20 +235,33 @@ export class ProductPage implements OnInit {
     }
   }
 
-  addToCart(product: Product, event?: Event) {
-    if (event) event.stopPropagation(); 
-    if (!product || product.id == null) return;
-    const item = {
-      productId: product.id,
-      name: product.name,
-      price: Number(product.price) || 0,
-      image: product.image_link,
-      quantity: 1,
-      product
-    };
-    this.cartService.addItem(item);
-    alert(`${product.name} added to cart`);
-  }
+// In the addToCart method of product-page.ts, replace the alert with:
+addToCart(product: Product, event?: Event) {
+  if (event) event.stopPropagation();
+  if (!product || product.id == null) return;
+  const item = {
+    productId: product.id,
+    name: product.name,
+    price: Number(product.price) || 0,
+    image: product.image_link,
+    quantity: 1,
+    product
+  };
+  this.cartService.addItem(item);
+
+  // SweetAlert notification instead of alert
+  Swal.fire({
+    position: 'top-end',
+    icon: 'success',
+    title: 'Added to Cart!',
+    text: `${product.name} has been added to your cart`,
+    showConfirmButton: false,
+    timer: 2000,
+    toast: true,
+    background: '#f8f9fa',
+    iconColor: '#28a745'
+  });
+}
 
   sortByPrice(event: any) {
     const value = event.target.value;
