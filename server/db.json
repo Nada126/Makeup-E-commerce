@@ -57,13 +57,6 @@
       "role": "user"
     },
     {
-      "id": "6671",
-      "name": "Maryam Ahmed",
-      "email": "www.mlaight@gmail.com",
-      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocKUV9gP6FNuqdu68Es7qswEmWW4joZU7XXly28L0mJW89NSTQ=s96-c",
-      "role": "user"
-    },
-    {
       "id": "faa3",
       "name": "Maryam Ahmed",
       "email": "4123071421247226@facebook.com",
@@ -75,6 +68,21 @@
       "name": "Nada Emad",
       "email": "nadaemad011@gmail.com",
       "avatar": "https://lh3.googleusercontent.com/a/ACg8ocK05YXJrkhVELGQSujRYKSAzz_MJk5EvM0hE7Ywuj-42taLyUg=s96-c",
+      "role": "user"
+    },
+    {
+      "id": "988b",
+      "name": "Maryam Ahmed",
+      "email": "www.mlaight@gmail.com",
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocKUV9gP6FNuqdu68Es7qswEmWW4joZU7XXly28L0mJW89NSTQ=s96-c",
+      "role": "user"
+    },
+    {
+      "id": "780e",
+      "name": "Hafsa AHmed",
+      "email": "hafsa@mail.com",
+      "password": "147852A",
+      "avatar": "https://randomuser.me/api/portraits/women/60.jpg",
       "role": "user"
     }
   ],

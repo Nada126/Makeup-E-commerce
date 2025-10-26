@@ -28,7 +28,7 @@ export class Navbar implements OnInit {
 
   ngOnInit(): void {
     // Initialize user data
-    this.user = this.auth.getCurrentUser();
+    this.auth.currentUser$.subscribe((user) => this.user = user)
 
     // Check if user is admin
     if (this.auth.isAdmin()) {

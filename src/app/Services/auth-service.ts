@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, switchMap, of } from 'rxjs';
+import { Observable, map, switchMap, of, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,16 +8,32 @@ import { Observable, map, switchMap, of } from 'rxjs';
 export class AuthService {
   private baseUrl = 'http://localhost:3001/users'; // json-server endpoint
 
+  private currentUserSubject = new BehaviorSubject<any>(this.getCurrentUser());
+  currentUser$ = this.currentUserSubject.asObservable();
+
   constructor(private http: HttpClient) {}
 
+  private updateCurrentUser(user: any) {
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    this.currentUserSubject.next(user);
+  }
+
   saveUser(userData: any): Observable<any> {
-    return this.http
-      .get<any[]>(`${this.baseUrl}?email=${userData.email}`)
-      .pipe(
-        switchMap((users) =>
-          users.length === 0 ? this.http.post(this.baseUrl, userData) : of(null)
-        )
-      );
+    return this.http.get<any[]>(`${this.baseUrl}?email=${userData.email}`).pipe(
+      switchMap((users) => {
+        if (users.length === 0) {
+          return this.http.post(this.baseUrl, userData).pipe(
+            map((savedUser) => {
+              this.updateCurrentUser(savedUser);
+              return savedUser;
+            })
+          );
+        } else {
+          this.updateCurrentUser(users[0]);
+          return of(users[0]);
+        }
+      })
+    );
   }
 
   // ✅ Register user → adds to db.json
@@ -47,7 +63,8 @@ export class AuthService {
         if (users && users.length > 0) {
           const user = users[0];
           localStorage.setItem('token', 'fake-jwt-token');
-          localStorage.setItem('currentUser', JSON.stringify(user));
+          // localStorage.setItem('currentUser', JSON.stringify(user));
+          this.updateCurrentUser(user)
           return true;
         }
         return false;
