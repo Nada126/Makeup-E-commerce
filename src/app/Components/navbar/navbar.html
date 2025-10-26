@@ -1,7 +1,7 @@
 <!-- ***** Header Area Start ***** -->
 <header class="sticky-top fw-bold shadow-sm background">
   <nav class="navbar navbar-expand-lg navbar-light container py-2">
-    <!-- 🌸 Logo (Left) -->
+    <!-- 🌸 Logo -->
     <a class="navbar-brand fw-bold d-flex align-items-center" routerLink="/home">
       <img src="images/Logo1.png" alt="Glow Up Logo" class="logo-img me-2" />
       <span class="brand-name d-none d-md-block">Glow Up</span>
@@ -20,44 +20,44 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Menu - Centered on desktop, full width on mobile -->
+    <!-- Menu -->
     <div class="collapse navbar-collapse justify-content-center" id="navbarMenu">
       <ul class="navbar-nav mb-2 mb-lg-0 text-center">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a>
+          <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">About Us</a>
+          <a class="nav-link" routerLink="/about" routerLinkActive="active">About Us</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/products" routerLinkActive="active" ariaCurrentWhenActive="page">Products</a>
+          <a class="nav-link" routerLink="/products" routerLinkActive="active">Products</a>
         </li>
       </ul>
 
-      <!-- Right Icons - Visible in mobile menu -->
+      <!-- Right Section (Mobile) -->
       <div class="d-flex align-items-center gap-3 ms-auto d-lg-none justify-content-center mt-3">
-        <!-- Favorites with badge -->
+        <!-- Favorites -->
         <a class="nav-link icon-btn position-relative" (click)="goToFavorites()" role="button">
           <i class="bi bi-heart"></i>
           @if (favCount > 0) {
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {{ favCount }}
-            </span>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ favCount }}
+          </span>
           }
         </a>
 
-        <!-- Cart with badge -->
+        <!-- Cart -->
         <a class="nav-link icon-btn position-relative" (click)="goToCart()" role="button">
           <i class="bi bi-cart3"></i>
           @if (cartCount > 0) {
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {{ cartCount }}
-            </span>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ cartCount }}
+          </span>
           }
         </a>
 
-        <!-- Account Dropdown for mobile -->
-        <div class="nav-item dropdown">
+        <!-- Account Dropdown (Mobile) -->
+        <div class="nav-item dropdown user-dropdown">
           <a
             class="nav-link dropdown-toggle d-flex align-items-center"
             href="#"
@@ -66,58 +66,80 @@
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            @if(isLoggedIn){
-              <img
-                [src]="user?.avatar"
-                alt="User Avatar"
-                class="rounded-circle"
-                width="35"
-                height="35"
-              />
+            @if (isLoggedIn) {
+            <img
+              [src]="user?.avatar || 'assets/images/default-avatar.png'"
+              alt="User Avatar"
+              class="rounded-circle shadow-sm user-avatar"
+              width="38"
+              height="38"
+            />
             } @else {
-              <i class="bi bi-person-circle fs-4"></i>
+            <i class="bi bi-person-circle fs-4 text-secondary"></i>
             }
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownMobile">
-            @if(isLoggedIn){
-              @if(isAdmin){
-                <li><button class="dropdown-item" (click)="goToDashboard()">Dashboard</button></li>
-              }
-              <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
+          <ul class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="userDropdownMobile">
+            @if (isLoggedIn) {
+            <li class="dropdown-user-info text-center mb-2">
+              <img
+                [src]="user?.avatar || 'assets/images/default-avatar.png'"
+                alt="User Avatar"
+                class="rounded-circle mb-2 user-avatar-lg"
+                width="60"
+                height="60"
+              />
+              <div class="fw-semibold text-dark">{{ user?.name }}</div>
+              <small class="text-muted">{{ user?.email }}</small>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+
+            @if (isAdmin) {
+            <li>
+              <button class="dropdown-item d-flex align-items-center gap-2" (click)="goToDashboard()">
+                <i class="bi bi-speedometer2 text-pink"></i> Dashboard
+              </button>
+            </li>
+            }
+
+            <li>
+              <button class="dropdown-item d-flex align-items-center gap-2" (click)="logout()">
+                <i class="bi bi-box-arrow-right text-danger"></i> Logout
+              </button>
+            </li>
             } @else {
-              <li><a class="dropdown-item" routerLink="/login">Login</a></li>
-              <li><a class="dropdown-item" routerLink="/register">Register</a></li>
+            <li><a class="dropdown-item" routerLink="/login">Login</a></li>
+            <li><a class="dropdown-item" routerLink="/register">Register</a></li>
             }
           </ul>
         </div>
       </div>
     </div>
 
-    <!-- Right Icons - Hidden on mobile, visible on desktop -->
+    <!-- Right Section (Desktop) -->
     <div class="d-none d-lg-flex align-items-center gap-3 ms-auto">
-      <!-- Favorites with badge -->
+      <!-- Favorites -->
       <a class="nav-link icon-btn position-relative" (click)="goToFavorites()" role="button">
         <i class="bi bi-heart"></i>
         @if (favCount > 0) {
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            {{ favCount }}
-          </span>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{ favCount }}
+        </span>
         }
       </a>
 
-      <!-- Cart with badge -->
+      <!-- Cart -->
       <a class="nav-link icon-btn position-relative" (click)="goToCart()" role="button">
         <i class="bi bi-cart3"></i>
         @if (cartCount > 0) {
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            {{ cartCount }}
-          </span>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          {{ cartCount }}
+        </span>
         }
       </a>
 
-      <!-- Account Dropdown for desktop -->
-      <div class="nav-item dropdown">
+      <!-- Account Dropdown (Desktop) -->
+      <div class="nav-item dropdown user-dropdown">
         <a
           class="nav-link dropdown-toggle d-flex align-items-center"
           href="#"
@@ -126,28 +148,50 @@
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          @if(isLoggedIn){
-            <img
-              [src]="user?.avatar"
-              alt="User Avatar"
-              class="rounded-circle"
-              width="35"
-              height="35"
-            />
+          @if (isLoggedIn) {
+          <img
+            [src]="user?.avatar || 'assets/images/default-avatar.png'"
+            alt="User Avatar"
+            class="rounded-circle shadow-sm user-avatar"
+            width="38"
+            height="38"
+          />
           } @else {
-            <i class="bi bi-person-circle fs-4"></i>
+          <i class="bi bi-person-circle fs-4 text-secondary"></i>
           }
         </a>
 
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownDesktop">
-          @if(isLoggedIn){
-            @if(isAdmin){
-              <li><button class="dropdown-item" (click)="goToDashboard()">Dashboard</button></li>
-            }
-            <li><button class="dropdown-item" (click)="logout()">Logout</button></li>
+        <ul class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="userDropdownDesktop">
+          @if (isLoggedIn) {
+          <li class="dropdown-user-info text-center mb-2">
+            <img
+              [src]="user?.avatar || 'assets/images/default-avatar.png'"
+              alt="User Avatar"
+              class="rounded-circle mb-2 user-avatar-lg"
+              width="60"
+              height="60"
+            />
+            <div class="fw-semibold text-dark">{{ user?.name }}</div>
+            <small class="text-muted">{{ user?.email }}</small>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+
+          @if (isAdmin) {
+          <li>
+            <button class="dropdown-item d-flex align-items-center gap-2" (click)="goToDashboard()">
+              <i class="bi bi-speedometer2 text-pink"></i> Dashboard
+            </button>
+          </li>
+          }
+
+          <li>
+            <button class="dropdown-item d-flex align-items-center gap-2" (click)="logout()">
+              <i class="bi bi-box-arrow-right text-danger"></i> Logout
+            </button>
+          </li>
           } @else {
-            <li><a class="dropdown-item" routerLink="/login">Login</a></li>
-            <li><a class="dropdown-item" routerLink="/register">Register</a></li>
+          <li><a class="dropdown-item" routerLink="/login">Login</a></li>
+          <li><a class="dropdown-item" routerLink="/register">Register</a></li>
           }
         </ul>
       </div>

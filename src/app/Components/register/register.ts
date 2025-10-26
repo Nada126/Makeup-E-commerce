@@ -1,66 +1,53 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../Services/auth-service';
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule,CommonModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class Register {
-  name = '';
-  email = '';
-  password = '';
+  registerForm!: FormGroup;
   message = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {}
 
-  validateEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  ngOnInit() {
+    this.registerForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: [
+        '',
+        [Validators.required, Validators.minLength(6), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{6,}$/)],
+      ],
+    });
   }
-
-  validatePassword(password: string): boolean {
-    const passRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-    return passRegex.test(password);
+  get f() {
+    return this.registerForm.controls;
   }
 
   register() {
-    if (!this.name || !this.email || !this.password) {
-      this.message = '⚠️ All fields are required!';
-      return;
-    }
+    if (this.registerForm.invalid) return;
 
-    if (!this.validateEmail(this.email)) {
-      this.message = '⚠️ Invalid email format!';
-      return;
-    }
+    const { name, email, password } = this.registerForm.value;
 
-    if (!this.validatePassword(this.password)) {
-      this.message = '⚠️ Password must be at least 6 chars, include a number and uppercase letter.';
-      return;
-    }
-
-    this.auth
-      .register({
-        name: this.name,
-        email: this.email,
-        password: this.password,
-      })
-      .subscribe({
-        next: (success) => {
-          if (success) {
-            this.message = '✅ Registered successfully!';
-            setTimeout(() => this.router.navigate(['/login']), 1000);
-          } else {
-            this.message = '⚠️ User already exists!';
-          }
-        },
-        error: (err) => {
-          console.error('Registration error:', err);
-          this.message = '❌ Error while registering!';
-        },
-      });
+    this.auth.register({ name, email, password }).subscribe({
+      next: (success) => {
+        if (success) {
+          this.message = '✅ Registered successfully!';
+          setTimeout(() => this.router.navigate(['/login']), 1000);
+        } else {
+          this.message = '⚠️ User already exists!';
+        }
+      },
+      error: (err) => {
+        console.error('Registration error:', err);
+        this.message = '❌ Error while registering!';
+      },
+    });
   }
 }
