@@ -30,10 +30,10 @@ export class Navbar implements OnInit {
     // Initialize user data
     this.auth.currentUser$.subscribe((user) => this.user = user)
 
-    // Check if user is admin
-    if (this.auth.isAdmin()) {
-      this.isAdmin = true;
-    }
+this.auth.currentUser$.subscribe(user => {
+  this.user = user;
+  this.isAdmin = this.auth.isAdmin(); // updates immediately after login/logout
+});
 
     // ✅ Subscribe to cartService for cart items count
     this.cartService.items$.subscribe(items => {

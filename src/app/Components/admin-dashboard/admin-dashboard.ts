@@ -19,8 +19,8 @@ export class AdminDashboard implements OnInit, OnDestroy {
   productsCount: number = 0;
   reviewsCount: number = 0;
   pendingReviewsCount: number = 0;
-  categoriesCount: number = 10;
-  
+  categoriesCount: number = 0;
+
   // Analytics data
   topRatedProducts: any[] = [];
   reviewDistribution: any = {};
@@ -51,18 +51,21 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   async loadStatistics() {
     try {
-      const allProducts = await this.loadAllProducts();
-      this.productsCount = allProducts.length;
+      // Load ONLY from JSON file for accurate counts
+      const jsonProducts = await this.loadJsonProducts();
+      this.productsCount = jsonProducts.length;
 
-      // Load reviews
+      // Load reviews from DB
       try {
         const reviews = await firstValueFrom(this.http.get<any[]>(`${this.dbUrl}/reviews`));
         this.reviewsCount = reviews.length;
-        this.pendingReviewsCount = reviews.filter(review => 
+        this.pendingReviewsCount = reviews.filter(review =>
           review.status === 'pending' || !review.status
         ).length;
       } catch (error) {
         console.error('Error loading reviews:', error);
+        this.reviewsCount = 0;
+        this.pendingReviewsCount = 0;
       }
 
     } catch (error) {
@@ -72,30 +75,40 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   async loadAnalytics() {
     try {
-      const allProducts = await this.loadAllProducts();
+      // Load products from JSON file ONLY
+      const jsonProducts = await this.loadJsonProducts();
 
-      // Calculate average rating
-      const productsWithRating = allProducts.filter(p => p.rating);
+      console.log('=== ANALYZING JSON DATA ===');
+      console.log('Total products in JSON:', jsonProducts.length);
+
+      // Show first product structure to understand data format
+      if (jsonProducts.length > 0) {
+        console.log('First product structure:', jsonProducts[0]);
+        console.log('All keys in first product:', Object.keys(jsonProducts[0]));
+      }
+
+      // Calculate average rating from JSON products
+      const productsWithRating = jsonProducts.filter(p => p.rating !== undefined && p.rating !== null);
       if (productsWithRating.length > 0) {
         this.averageRating = productsWithRating.reduce((sum, product) => sum + (product.rating || 0), 0) / productsWithRating.length;
       }
 
-      // Get top rated products
-      this.topRatedProducts = allProducts
-        .filter(p => p.rating)
+      // Get top rated products from JSON
+      this.topRatedProducts = jsonProducts
+        .filter(p => p.rating !== undefined && p.rating !== null)
         .sort((a, b) => (b.rating || 0) - (a.rating || 0))
         .slice(0, 5);
 
-      // Calculate category distribution
-      this.calculateCategoryDistribution(allProducts);
+      // Calculate category distribution from JSON products only
+      this.calculateCategoryDistribution(jsonProducts);
 
-      // Calculate rating distribution
-      this.calculateRatingDistribution(allProducts);
+      // Calculate rating distribution from JSON products
+      this.calculateRatingDistribution(jsonProducts);
 
       // Load reviews for distribution
       try {
         const reviews = await firstValueFrom(this.http.get<any[]>(`${this.dbUrl}/reviews`));
-        
+
         this.reviewDistribution = {
           approved: reviews.filter(r => r.status === 'approved').length,
           pending: reviews.filter(r => r.status === 'pending' || !r.status).length,
@@ -103,6 +116,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
         };
       } catch (error) {
         console.error('Error loading reviews for analytics:', error);
+        this.reviewDistribution = { approved: 0, pending: 0, rejected: 0 };
       }
 
     } catch (error) {
@@ -110,38 +124,107 @@ export class AdminDashboard implements OnInit, OnDestroy {
     }
   }
 
-  async loadAllProducts(): Promise<any[]> {
-    const allProducts: any[] = [];
-
-    // DB products
-    try {
-      const dbProducts = await firstValueFrom(this.http.get<any[]>(`${this.dbUrl}/products`));
-      allProducts.push(...dbProducts);
-    } catch (error) {
-      console.error('Error loading DB products:', error);
-    }
-
-    // JSON products
+  async loadJsonProducts(): Promise<any[]> {
     try {
       const jsonData = await firstValueFrom(this.http.get<any>(this.jsonUrl));
-      const jsonProducts = jsonData.products || jsonData || [];
-      allProducts.push(...jsonProducts);
+      console.log('=== RAW JSON DATA STRUCTURE ===');
+      console.log('Full JSON data:', jsonData);
+
+      // Handle different possible JSON structures
+      let products: any[] = [];
+
+      if (Array.isArray(jsonData)) {
+        // If the JSON file is directly an array of products
+        products = jsonData;
+      } else if (jsonData.products && Array.isArray(jsonData.products)) {
+        // If the JSON has a products array
+        products = jsonData.products;
+      } else {
+        // If it's a single product or different structure
+        products = [jsonData];
+      }
+
+      console.log('Final products array length:', products.length);
+      return products;
+
     } catch (error) {
       console.error('Error loading JSON products:', error);
+      return [];
+    }
+  }
+calculateCategoryDistribution(products: any[]) {
+  const categories: { [key: string]: number } = {};
+
+  console.log('=== CALCULATING CLEAN CATEGORY DISTRIBUTION ===');
+  console.log('Total products:', products.length);
+
+  products.forEach((p, index) => {
+    // Normalize the category field (like in Manage Products)
+    const normalized =
+      (p.product_type ||
+       p.category ||
+       p.productCategory ||
+       p.product_category ||
+       'Uncategorized')
+        .toString()
+        .trim()
+        .toLowerCase();
+
+    if (!normalized || normalized === 'n/a' || normalized === 'uncategorized') return;
+
+    categories[normalized] = (categories[normalized] || 0) + 1;
+
+    if (index < 10) {
+      console.log(`🧩 Product ${index + 1}:`, p.name || p.title || 'Unnamed');
+      console.log(`   → Normalized Category: ${normalized}`);
+    }
+  });
+
+  this.categoryDistribution = categories;
+  this.categoriesCount = Object.keys(categories).length;
+
+  console.log('✅ FINAL CATEGORY DISTRIBUTION:', this.categoryDistribution);
+  console.log('✅ TOTAL UNIQUE CATEGORIES:', this.categoriesCount);
+}
+
+
+  private findExactCategoryField(product: any): string {
+    // List all possible field names that might contain category
+    const possibleFields = [
+      'category',
+      'product_type',
+      'type',
+      'productCategory',
+      'category_name',
+      'productCategoryName',
+      'classification',
+      'group',
+      'family'
+    ];
+
+    // Check each possible field
+    for (const field of possibleFields) {
+      if (product[field] && typeof product[field] === 'string') {
+        const value = product[field].trim();
+        if (value && value !== '') {
+          return value;
+        }
+      }
     }
 
-    return allProducts;
-  }
+    // If no category found, check if there are any other string fields that might be categories
+    const stringFields = Object.keys(product).filter(key =>
+      typeof product[key] === 'string' &&
+      product[key].trim() !== '' &&
+      !['name', 'title', 'description', 'id', '_id', 'image', 'images'].includes(key)
+    );
 
-  calculateCategoryDistribution(products: any[]) {
-    const categories: { [key: string]: number } = {};
-    
-    products.forEach(product => {
-      const category = product.category || product.product_type || 'Uncategorized';
-      categories[category] = (categories[category] || 0) + 1;
-    });
+    if (stringFields.length > 0) {
+      console.log('Other possible category fields:', stringFields);
+      return product[stringFields[0]] || 'Uncategorized';
+    }
 
-    this.categoryDistribution = categories;
+    return 'Uncategorized';
   }
 
   calculateRatingDistribution(products: any[]) {
@@ -154,8 +237,8 @@ export class AdminDashboard implements OnInit, OnDestroy {
     };
 
     products.forEach(product => {
-      if (product.rating) {
-        const rating = Math.floor(product.rating);
+      if (product.rating !== undefined && product.rating !== null) {
+        const rating = Math.floor(Number(product.rating));
         if (rating === 5) ratings['5 Stars']++;
         else if (rating === 4) ratings['4 Stars']++;
         else if (rating === 3) ratings['3 Stars']++;
@@ -165,6 +248,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
     });
 
     this.ratingDistribution = ratings;
+    console.log('Rating Distribution:', this.ratingDistribution);
   }
 
   createCharts() {
@@ -177,6 +261,10 @@ export class AdminDashboard implements OnInit, OnDestroy {
   createReviewDistributionChart() {
     const ctx = document.getElementById('reviewDistributionChart') as HTMLCanvasElement;
     if (!ctx) return;
+
+    if (this.charts.reviewDistribution) {
+      this.charts.reviewDistribution.destroy();
+    }
 
     this.charts.reviewDistribution = new Chart(ctx, {
       type: 'doughnut',
@@ -227,15 +315,30 @@ export class AdminDashboard implements OnInit, OnDestroy {
     const categories = Object.keys(this.categoryDistribution);
     const counts = Object.values(this.categoryDistribution);
 
+    console.log('=== CHART DATA ===');
+    console.log('Categories for chart:', categories);
+    console.log('Counts for chart:', counts);
+
     const ctx = document.getElementById('categoryDistributionChart') as HTMLCanvasElement;
     if (!ctx) return;
+
+    // Destroy existing chart if it exists
+    if (this.charts.categoryDistribution) {
+      this.charts.categoryDistribution.destroy();
+    }
+
+    // Only create chart if we have real data
+    if (categories.length === 0 || counts.length === 0) {
+      console.error('No category data available for chart');
+      return;
+    }
 
     this.charts.categoryDistribution = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: categories,
         datasets: [{
-          label: 'Products',
+          label: 'Number of Products',
           data: counts,
           backgroundColor: [
             '#ff9a9e', '#fad0c4', '#ff6f91', '#ffb6c1', '#ff8ba7',
@@ -253,25 +356,43 @@ export class AdminDashboard implements OnInit, OnDestroy {
           },
           title: {
             display: true,
-            text: 'Products by Category',
+            text: 'Products by Category ',
             color: '#ff6f91',
             font: {
               size: 14,
               weight: 'bold'
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `Products: ${context.parsed.y}`;
+              }
             }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
-            ticks: {
+            title: {
+              display: true,
+              text: 'Number of Products',
               color: '#718096'
+            },
+            ticks: {
+              color: '#718096',
+              stepSize: 1
             },
             grid: {
               color: '#f7fafc'
             }
           },
           x: {
+            title: {
+              display: true,
+              text: 'Categories',
+              color: '#718096'
+            },
             ticks: {
               color: '#718096',
               maxRotation: 45
@@ -288,6 +409,10 @@ export class AdminDashboard implements OnInit, OnDestroy {
   createRatingDistributionChart() {
     const ctx = document.getElementById('ratingDistributionChart') as HTMLCanvasElement;
     if (!ctx) return;
+
+    if (this.charts.ratingDistribution) {
+      this.charts.ratingDistribution.destroy();
+    }
 
     this.charts.ratingDistribution = new Chart(ctx, {
       type: 'polarArea',
@@ -339,13 +464,17 @@ export class AdminDashboard implements OnInit, OnDestroy {
   }
 
   createTopProductsChart() {
-    const productNames = this.topRatedProducts.map(p => 
-      p.name.length > 20 ? p.name.substring(0, 20) + '...' : p.name
+    const productNames = this.topRatedProducts.map(p =>
+      p.name?.length > 20 ? p.name.substring(0, 20) + '...' : p.name || 'Unknown Product'
     );
     const ratings = this.topRatedProducts.map(p => p.rating || 0);
 
     const ctx = document.getElementById('topProductsChart') as HTMLCanvasElement;
     if (!ctx) return;
+
+    if (this.charts.topProducts) {
+      this.charts.topProducts.destroy();
+    }
 
     this.charts.topProducts = new Chart(ctx, {
       type: 'line',
@@ -406,9 +535,5 @@ export class AdminDashboard implements OnInit, OnDestroy {
     });
   }
 
-  logout() {
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userRole');
-    this.router.navigate(['/login']);
-  }
+
 }

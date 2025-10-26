@@ -2,48 +2,37 @@
   <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h2>💄 Cosmetics Admin</h2>
+      <h2>Glow Up</h2>
       <p>Management Panel</p>
     </div>
-    
+
     <nav class="sidebar-nav">
-      <div class="nav-item active" routerLink="/admin">
-        <span class="nav-icon">📊</span>
-        <span class="nav-text">Dashboard</span>
-      </div>
-      <div class="nav-item" routerLink="/admin/add-product">
-        <span class="nav-icon">➕</span>
-        <span class="nav-text">Add Product</span>
-      </div>
-      <div class="nav-item" routerLink="/admin/products">
-        <span class="nav-icon">🛍️</span>
-        <span class="nav-text">Manage Products</span>
-      </div>
-      <div class="nav-item" routerLink="/admin/reviews">
-        <span class="nav-icon">⭐</span>
-        <span class="nav-text">Manage Reviews</span>
-      </div>
+      @for (link of [
+        { path: '/admin/add-product', icon: '➕', label: 'Add Product' },
+        { path: '/admin/products', icon: '🛍️', label: 'Manage Products' },
+        { path: '/admin/reviews', icon: '⭐', label: 'Manage Reviews' }
+      ]; track link.label) {
+        <div class="nav-item" [routerLink]="link.path">
+          <span class="nav-icon">{{ link.icon }}</span>
+          <span class="nav-text">{{ link.label }}</span>
+        </div>
+      }
     </nav>
 
     <div class="sidebar-stats">
       <div class="stat-item">
-        <span class="stat-number">{{productsCount}}</span>
+        <span class="stat-number">{{ productsCount }}</span>
         <span class="stat-label">Total Products</span>
       </div>
       <div class="stat-item">
-        <span class="stat-number">{{reviewsCount}}</span>
+        <span class="stat-number">{{ reviewsCount }}</span>
         <span class="stat-label">Total Reviews</span>
       </div>
       <div class="stat-item">
-        <span class="stat-number">{{pendingReviewsCount}}</span>
+        <span class="stat-number">{{ pendingReviewsCount }}</span>
         <span class="stat-label">Pending Reviews</span>
       </div>
     </div>
-
-    <button class="logout-btn" (click)="logout()">
-      <span class="nav-icon">🚪</span>
-      <span class="nav-text">Logout</span>
-    </button>
   </aside>
 
   <!-- Main Content -->
@@ -53,10 +42,19 @@
         <h1>Dashboard Analytics</h1>
         <p>Visual insights into your cosmetics store performance</p>
       </div>
+
       <div class="header-actions">
         <div class="user-welcome">
           <span>Hello, Admin! 👋</span>
         </div>
+        <!-- Logout icon now in header instead of sidebar -->
+        <a
+          class="nav-link icon-btn"
+          title="Logout"
+          style="cursor: pointer;"
+        >
+          <i class="bi bi-box-arrow-right"></i>
+        </a>
       </div>
     </header>
 
@@ -66,7 +64,7 @@
         <div class="stat-icon">🛍️</div>
         <div class="stat-info">
           <h3>Total Products</h3>
-          <span class="stat-number">{{productsCount}}</span>
+          <span class="stat-number">{{ productsCount }}</span>
           <span class="stat-change">Across all categories</span>
         </div>
       </div>
@@ -75,13 +73,16 @@
         <div class="stat-icon">⭐</div>
         <div class="stat-info">
           <h3>Customer Reviews</h3>
-          <span class="stat-number">{{reviewsCount}}</span>
-          <span class="stat-change" *ngIf="pendingReviewsCount > 0" style="color: #ff6f91;">
-            {{pendingReviewsCount}} pending
-          </span>
-          <span class="stat-change" *ngIf="pendingReviewsCount === 0" style="color: #48bb78;">
-            All processed
-          </span>
+          <span class="stat-number">{{ reviewsCount }}</span>
+          @if (pendingReviewsCount > 0) {
+            <span class="stat-change" style="color: #ff6f91;">
+              {{ pendingReviewsCount }} pending
+            </span>
+          } @else {
+            <span class="stat-change" style="color: #48bb78;">
+              All processed
+            </span>
+          }
         </div>
       </div>
 
@@ -89,7 +90,7 @@
         <div class="stat-icon">📈</div>
         <div class="stat-info">
           <h3>Avg Rating</h3>
-          <span class="stat-number">{{averageRating.toFixed(1)}}/5</span>
+          <span class="stat-number">{{ averageRating.toFixed(1) }}/5</span>
           <span class="stat-change">Overall product quality</span>
         </div>
       </div>
@@ -98,7 +99,7 @@
         <div class="stat-icon">📁</div>
         <div class="stat-info">
           <h3>Categories</h3>
-          <span class="stat-number">{{categoriesCount}}</span>
+          <span class="stat-number">{{ categoriesCount }}</span>
           <span class="stat-change">Product variety</span>
         </div>
       </div>
@@ -112,7 +113,7 @@
             <canvas id="reviewDistributionChart"></canvas>
           </div>
         </div>
-        
+
         <div class="chart-card">
           <div class="chart-container">
             <canvas id="categoryDistributionChart"></canvas>
@@ -126,7 +127,7 @@
             <canvas id="ratingDistributionChart"></canvas>
           </div>
         </div>
-        
+
         <div class="chart-card">
           <div class="chart-container">
             <canvas id="topProductsChart"></canvas>
@@ -139,33 +140,23 @@
     <div class="quick-actions">
       <h2>Quick Actions</h2>
       <div class="actions-grid">
-        <div class="action-card" routerLink="/admin/add-product">
-          <div class="action-icon">➕</div>
-          <h3>Add New Product</h3>
-          <p>Expand your product catalog</p>
-          <div class="action-arrow">→</div>
-        </div>
-
-        <div class="action-card" routerLink="/admin/products">
-          <div class="action-icon">🛍️</div>
-          <h3>Manage Products</h3>
-          <p>Edit or remove existing products</p>
-          <div class="action-arrow">→</div>
-        </div>
-
-        <div class="action-card" routerLink="/admin/reviews">
-          <div class="action-icon">⭐</div>
-          <h3>Manage Reviews</h3>
-          <p>Moderate customer feedback</p>
-          <div class="action-arrow">→</div>
-        </div>
-
-        <div class="action-card" (click)="createCharts()">
-          <div class="action-icon">🔄</div>
-          <h3>Refresh Data</h3>
-          <p>Update charts with latest data</p>
-          <div class="action-arrow">↻</div>
-        </div>
+        @for (action of [
+          { path: '/admin/add-product', icon: '➕', title: 'Add New Product', text: 'Expand your product catalog' },
+          { path: '/admin/products', icon: '🛍️', title: 'Manage Products', text: 'Edit or remove existing products' },
+          { path: '/admin/reviews', icon: '⭐', title: 'Manage Reviews', text: 'Moderate customer feedback' },
+          { path: '', icon: '🔄', title: 'Refresh Data', text: 'Update charts with latest data', click: true }
+        ]; track action.title) {
+          <div
+            class="action-card"
+            [routerLink]="!action.click ? action.path : null"
+            (click)="action.click && createCharts()"
+          >
+            <div class="action-icon">{{ action.icon }}</div>
+            <h3>{{ action.title }}</h3>
+            <p>{{ action.text }}</p>
+            <div class="action-arrow">→</div>
+          </div>
+        }
       </div>
     </div>
   </main>

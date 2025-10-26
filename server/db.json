@@ -84,6 +84,13 @@
       "password": "147852A",
       "avatar": "https://randomuser.me/api/portraits/women/60.jpg",
       "role": "user"
+    },
+    {
+      "id": "3efb",
+      "name": "Nourhan Amr",
+      "email": "2638395513169095@facebook.com",
+      "avatar": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2638395513169095&height=50&width=50&ext=1764108626&hash=AT-Mh44uwjZm-vd9p-sLjLEy",
+      "role": "user"
     }
   ],
   "reviews": [
@@ -293,6 +300,16 @@
       "rating": 5,
       "image": "https://d3t32hsnjxo7q6.cloudfront.net/i/31b7ac34f3370824a7d7ed41d21092a3_ra,w158,h184_pa,w158,h184.png",
       "product_type": "lipstick"
+    },
+    {
+      "id": "b7a3",
+      "name": "Even Better&trade; Compact Makeup Broad Spectrum SPF 15",
+      "brand": "clinique",
+      "price": 60,
+      "category": "foundation",
+      "rating": 0,
+      "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_7M81_181x209.png",
+      "product_type": "foundation"
     }
   ]
 }
