@@ -3,29 +3,16 @@
   <p class="page-subtitle">View, edit, and delete existing products</p>
 
   <!-- Search Bar -->
-  <input
-    type="text"
-    placeholder="Search by name..."
-    [(ngModel)]="searchText"
-    (input)="applyFilters()"
-    class="search-input"
-  />
+  <input type="text" placeholder="Search by name..." [(ngModel)]="searchText" (input)="applyFilters()"
+    class="search-input" />
 
   <!-- Category Buttons -->
   <div class="category-buttons">
-    <button
-      class="category-btn"
-      [class.active]="selectedCategory === 'All'"
-      (click)="filterByCategory('All')"
-    >
+    <!-- <button class="category-btn" [class.active]="selectedCategory === 'All'" (click)="filterByCategory('All')">
       <i class="bi bi-grid"></i> All
-    </button>
-    <button
-      *ngFor="let category of categories"
-      class="category-btn"
-      [class.active]="selectedCategory === category"
-      (click)="filterByCategory(category)"
-    >
+    </button> -->
+    <button *ngFor="let category of categories" class="category-btn" [class.active]="selectedCategory === category"
+      (click)="filterByCategory(category)">
       <i class="bi bi-tag"></i> {{ category }}
     </button>
   </div>
@@ -53,7 +40,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let product of filteredProducts">
+        <tr *ngFor="let product of paginatedProducts">
           <td>
             <img [src]="getProductImage(product)" [alt]="product.name" class="product-image" />
           </td>
@@ -63,7 +50,7 @@
             <td><input [(ngModel)]="editingProduct.name" type="text" class="edit-input" /></td>
             <td><input [(ngModel)]="editingProduct.brand" type="text" class="edit-input" /></td>
             <td>
-              <input [(ngModel)]="editingProduct.product_type" type="text" class="edit-input" />
+              <input [(ngModel)]="editingProduct.category" type="text" class="edit-input" />
             </td>
             <td><input [(ngModel)]="editingProduct.price" type="number" class="edit-input" /></td>
             <td>
@@ -85,7 +72,7 @@
           <ng-template #viewMode>
             <td>{{ product.name }}</td>
             <td>{{ product.brand }}</td>
-            <td>{{ product.product_type || 'N/A' }}</td>
+            <td>{{ product.category || 'N/A' }}</td>
             <td>{{ product.price ? '$' + product.price : 'N/A' }}</td>
             <td>{{ product.rating ?? 'N/A' }}</td>
             <!-- Added rate column -->
@@ -101,6 +88,18 @@
         </tr>
       </tbody>
     </table>
+    <!-- Pagination Controls -->
+    <div *ngIf="totalPages > 1" class="pagination-container">
+      <button (click)="prevPage()" [disabled]="currentPage === 1" class="page-btn">« Prev</button>
+
+      <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i + 1)"
+        [class.active]="currentPage === i + 1" class="page-btn">
+        {{ i + 1 }}
+      </button>
+
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="page-btn">Next »</button>
+    </div>
+
   </div>
 
   <div *ngIf="!loading && filteredProducts.length === 0" class="no-products">
@@ -111,12 +110,11 @@
   <div *ngIf="confirmVisible" class="confirm-overlay">
     <div class="confirm-box">
       <p>
-        Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong
-        >?
+        Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong>?
       </p>
       <div class="confirm-buttons">
         <button class="confirm-yes" (click)="deleteConfirmed()">Yes</button>
-        <button class="confirm-no" (click)="cancelDelete()">No</button>
+        <!-- <button class="confirm-no" (click)="cancelDelete()">No</button> -->
       </div>
     </div>
   </div>

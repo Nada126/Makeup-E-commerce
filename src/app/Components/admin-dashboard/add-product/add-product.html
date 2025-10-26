@@ -26,7 +26,7 @@
               <option value="lipstick">Lipstick</option>
               <option value="foundation">Foundation</option>
               <option value="eyeshadow">Eyeshadow</option>
-                <option value="eyeliner">eyeliner</option>
+              <option value="eyeliner">eyeliner</option>
               <option value="LipLinear">LipLinear</option>
               <option value="Bronzer">Bronzer</option>
               <option value="eyebrow">eyebrow</option>
@@ -34,6 +34,11 @@
               <option value="blush">Blush</option>
               <option value="mascara">Mascara</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Product Type</label>
+            <input type="text" [(ngModel)]="product.product_type" name="product_type"
+              placeholder="e.g. matte, liquid, waterproof" class="form-control" />
           </div>
         </div>
 
@@ -50,10 +55,10 @@
             <label class="form-label">Description</label>
             <textarea [(ngModel)]="product.description" name="description" rows="3" class="form-control"></textarea>
           </div>
-<div class="form-group">
-  <label class="form-label">Rate (0-5)</label>
-  <input type="number" [(ngModel)]="product.rating" name="rating" min="0" max="5" class="form-control" />
-</div>
+          <div class="form-group">
+            <label class="form-label">Rate (0-5)</label>
+            <input type="number" [(ngModel)]="product.rating" name="rating" min="0" max="5" class="form-control" />
+          </div>
 
 
         </div>

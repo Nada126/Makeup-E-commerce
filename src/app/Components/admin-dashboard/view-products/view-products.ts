@@ -17,21 +17,39 @@ export class ViewProducts implements OnInit {
   jsonProducts: any[] = [];
   filteredProducts: any[] = [];
   editingProduct: any = null;
-  categories: string[] = [];
+  
+  // Fixed categories - only these 10 plus "All"
+  categories: string[] = [
+    'All',
+    'lipstick',
+    'foundation', 
+    'eyeshadow',
+    'eyeliner',
+    'LipLinear',
+    'Bronzer',
+    'eyebrow',
+    'nail_polish',
+    'blush',
+    'mascara'
+  ];
+  
   selectedCategory = 'All';
   searchText = '';
   loading = false;
 
-  // UI state
   message = '';
   messageType: 'success' | 'error' | 'info' = 'info';
   confirmVisible = false;
   productToDelete: any = null;
 
+  currentPage = 1;
+  itemsPerPage = 40;
+  totalPages = 0;
+
   private dbUrl = 'http://localhost:3001/products';
   private jsonUrl = '/data.json';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   async ngOnInit() {
     await this.loadAllProducts();
@@ -40,96 +58,194 @@ export class ViewProducts implements OnInit {
   async loadAllProducts(): Promise<void> {
     this.loading = true;
     try {
-      // Load DB products
-      let dbData: any[] = [];
+      const allProducts: any[] = [];
+
+      // DB products
       try {
-        dbData = await firstValueFrom(this.http.get<any[]>(this.dbUrl));
+        const dbData = await firstValueFrom(this.http.get<any[]>(this.dbUrl));
+        this.dbProducts = dbData.map(p => ({
+          ...p,
+          source: 'db',
+          image: p.image || p.image_link,
+          // Normalize category to match our fixed list
+          category: this.normalizeCategory(p.category || p.product_type)
+        }));
+        allProducts.push(...this.dbProducts);
       } catch {
         this.showMessage('Database not available.', 'error');
       }
 
-      this.dbProducts = [];
-      for (const p of dbData) {
-        if (await this.isImageAvailable(p.image)) {
-          this.dbProducts.push({ ...p, source: 'db' });
-        }
-      }
-
-      // Load JSON products
-      let jsonData: any = [];
+      // JSON products
       try {
-        jsonData = await firstValueFrom(this.http.get<any>(this.jsonUrl));
+        const jsonData = await firstValueFrom(this.http.get<any>(this.jsonUrl));
+        const jsonArray = jsonData.products || jsonData || [];
+        this.jsonProducts = jsonArray.map((p: any, i: number) => ({
+          ...p,
+          id: p.id ?? `json-${i}`,
+          source: 'json',
+          image: p.image || p.image_link,
+          // Normalize category to match our fixed list
+          category: this.normalizeCategory(p.category || p.product_type)
+        }));
+        allProducts.push(...this.jsonProducts);
       } catch {
         this.showMessage('Local JSON not found.', 'error');
       }
-      const jsonDataArray = jsonData.products || jsonData || [];
-      this.jsonProducts = [];
-      for (let i = 0; i < jsonDataArray.length; i++) {
-        const p = jsonDataArray[i];
-        if (await this.isImageAvailable(p.image || p.image_link)) {
-          this.jsonProducts.push({
-            ...p,
-            id: p.id ?? `json-${i}`,
-            source: 'json'
-          });
-        }
-      }
 
-      this.combineProducts();
+      // Show all products immediately
+      this.products = allProducts;
+      await this.filterBrokenImages();
+      this.applyFilters();
     } finally {
       this.loading = false;
     }
   }
 
-  async isImageAvailable(url: string | undefined): Promise<boolean> {
-    if (!url) return false;
-    try {
-      await firstValueFrom(this.http.head(url, { observe: 'response' }));
-      return true;
-    } catch {
-      return false;
-    }
+  /**
+   * Normalize category to match our fixed list
+   */
+  normalizeCategory(category: string): string {
+    if (!category) return 'Other';
+    
+    const lowerCategory = category.toLowerCase().trim();
+    
+    // Map variations to our fixed categories
+    const categoryMap: {[key: string]: string} = {
+      'lipstick': 'lipstick',
+      'foundation': 'foundation',
+      'eyeshadow': 'eyeshadow',
+      'eyeliner': 'eyeliner',
+      'liplinear': 'LipLinear',
+      'lip linear': 'LipLinear',
+      'bronzer': 'Bronzer',
+      'eyebrow': 'eyebrow',
+      'nail polish': 'nail_polish',
+      'nail_polish': 'nail_polish',
+      'blush': 'blush',
+      'mascara': 'mascara'
+    };
+
+    return categoryMap[lowerCategory] || 'Other';
   }
 
-  combineProducts(): void {
-    this.products = [...this.dbProducts, ...this.jsonProducts];
+  /**
+   * Accurate and fast broken-image filtering using HTML Image preload
+   */
+  async filterBrokenImages(): Promise<void> {
+    const validProducts: any[] = [];
+
+    // Use HEAD request (faster than loading images)
+    const checkImage = async (url: string): Promise<boolean> => {
+      if (!url) return false;
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+      } catch {
+        return false;
+      }
+    };
+
+    const results = await Promise.all(
+      this.products.map(async p => {
+        const ok = await checkImage(p.image);
+        return ok ? p : null;
+      })
+    );
+
+    // Keep only valid images
+    this.products = results.filter(Boolean) as any[];
+    this.dbProducts = this.dbProducts.filter(p =>
+      this.products.some(x => String(x.id) === String(p.id))
+    );
+    this.jsonProducts = this.jsonProducts.filter(p =>
+      this.products.some(x => String(x.id) === String(p.id))
+    );
+
     this.applyFilters();
-    this.updateCategories();
   }
 
-  updateCategories(): void {
-    const mainCategories = new Set<string>();
-    this.products.forEach(p => {
-      if (p.product_type) mainCategories.add(p.product_type);
+  applyFilters(page: number = 1) {
+    this.filteredProducts = this.products.filter(p => {
+      // Category filter - use normalized category field
+      const matchesCategory =
+        this.selectedCategory === 'All' ||
+        p.category === this.selectedCategory;
+
+      // Search filter
+      const matchesSearch =
+        !this.searchText || 
+        p.name?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        p.brand?.toLowerCase().includes(this.searchText.toLowerCase());
+
+      return matchesCategory && matchesSearch;
     });
-    this.categories = Array.from(mainCategories).sort();
+
+    this.updatePagination();
+    this.currentPage = page;
   }
 
   filterByCategory(category: string) {
     this.selectedCategory = category;
-    this.applyFilters();
+    this.applyFilters(1); // Reset to first page when filtering
   }
 
-  applyFilters() {
-    this.filteredProducts = this.products.filter(p => {
-      const matchesCategory = this.selectedCategory === 'All' || p.product_type === this.selectedCategory;
-      const matchesSearch = !this.searchText || p.name.toLowerCase().includes(this.searchText.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
+  // ===== EDIT =====
+  startEdit(product: any) {
+    this.editingProduct = { ...product };
+  }
+  
+  cancelEdit() {
+    this.editingProduct = null;
+  }
+  
+  saveEdit() {
+    if (!this.editingProduct) return;
+    const prod = this.editingProduct;
+
+    if (prod.source === 'db') {
+      this.http.put(`${this.dbUrl}/${prod.id}`, prod).subscribe({
+        next: () => {
+          const index = this.dbProducts.findIndex(p => String(p.id) === String(prod.id));
+          if (index !== -1) this.dbProducts[index] = { 
+            ...prod, 
+            source: 'db',
+            category: this.normalizeCategory(prod.category) // Ensure normalized category
+          };
+          this.combineProducts();
+          this.editingProduct = null;
+          this.showMessage('Product updated successfully!', 'success');
+        },
+        error: () => this.showMessage('Failed to update product', 'error')
+      });
+    } else {
+      const newProd = {
+        name: prod.name,
+        brand: prod.brand,
+        price: prod.price,
+        category: this.normalizeCategory(prod.category), // Ensure normalized category
+        rating: prod.rating ?? 0,
+        image: prod.image || prod.image_link,
+        product_type: prod.product_type
+      };
+      this.http.post(this.dbUrl, newProd).subscribe({
+        next: (saved: any) => {
+          this.dbProducts.push({ ...saved, source: 'db' });
+          this.jsonProducts = this.jsonProducts.filter(p => p.id !== prod.id);
+          this.combineProducts();
+          this.editingProduct = null;
+          this.showMessage('Product migrated to DB!', 'success');
+        },
+        error: () => this.showMessage('Failed to save product', 'error')
+      });
+    }
   }
 
-confirmDelete(product: any) {
-  const confirmed = window.confirm(`Are you sure you want to delete "${product.name}"?`);
-  if (confirmed) {
-    this.productToDelete = product;
-    this.deleteConfirmed();
-  }
-}
-
-
-  cancelDelete() {
-    this.productToDelete = null;
-    this.confirmVisible = false;
+  // ===== DELETE =====
+  confirmDelete(product: any) {
+    if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
+      this.productToDelete = product;
+      this.deleteConfirmed();
+    }
   }
 
   deleteConfirmed() {
@@ -140,72 +256,67 @@ confirmDelete(product: any) {
         next: () => {
           this.dbProducts = this.dbProducts.filter(p => p.id !== this.productToDelete.id);
           this.combineProducts();
-          this.showMessage('Product deleted successfully', 'success');
+          this.showMessage('Product deleted', 'success');
         },
-        error: () => this.showMessage('Failed to delete product', 'error')
+        error: () => this.showMessage('Failed to delete', 'error')
       });
-    } else if (this.productToDelete.source === 'json') {
+    } else {
       this.jsonProducts = this.jsonProducts.filter(p => p.id !== this.productToDelete.id);
       this.combineProducts();
-      this.showMessage('JSON product removed successfully', 'success');
+      this.showMessage('JSON product removed', 'success');
     }
 
     this.productToDelete = null;
-    this.confirmVisible = false;
   }
 
-  startEdit(product: any) {
-    this.editingProduct = { ...product };
+  // ===== PAGINATION =====
+  get paginatedProducts() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredProducts.slice(start, end);
   }
 
-  cancelEdit() {
-    this.editingProduct = null;
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.scrollToTop();
+    }
   }
-saveEdit() {
-  if (!this.editingProduct) return;
-  const prod = this.editingProduct;
-
-  if (prod.source === 'db') {
-    // Update DB product
-    this.http.put(`${this.dbUrl}/${prod.id}`, prod).subscribe({
-      next: () => {
-        const index = this.dbProducts.findIndex(p => String(p.id) === String(prod.id));
-        if (index !== -1) this.dbProducts[index] = { ...prod, source: 'db' };
-        this.combineProducts();
-        this.editingProduct = null;
-        this.showMessage('Product updated in DB successfully!', 'success');
-      },
-      error: () => this.showMessage('Failed to update product', 'error')
-    });
-  } else if (prod.source === 'json') {
-    // Prepare product for DB
-    const productToSave = {
-      name: prod.name,
-      brand: prod.brand,
-      price: prod.price,
-      category: prod.category || prod.product_type,
-      rating: prod.rating ?? 0,
-      image: prod.image || prod.image_link,
-      product_type: prod.product_type
-    };
-
-    // POST JSON product to DB
-    this.http.post(this.dbUrl, productToSave).subscribe({
-      next: (saved: any) => {
-        // Add to dbProducts
-        this.dbProducts.push({ ...saved, source: 'db', id: String(saved.id) });
-        // Remove from jsonProducts immediately
-        this.jsonProducts = this.jsonProducts.filter(p => p.id !== prod.id);
-        // Recombine products for display
-        this.combineProducts();
-        this.editingProduct = null;
-        this.showMessage('JSON product migrated to DB successfully!', 'success');
-      },
-      error: () => this.showMessage('Failed to save product to DB', 'error')
-    });
+  
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.scrollToTop();
+    }
   }
-}
+  
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.scrollToTop();
+    }
+  }
 
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredProducts.length / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages || 1;
+    }
+  }
+
+  combineProducts(): void {
+    this.products = [...this.dbProducts, ...this.jsonProducts].filter(p => p.image);
+    this.applyFilters(this.currentPage);
+  }
+
+  // ===== HELPERS =====
+  getProductImage(product: any): string {
+    return (
+      product.image ||
+      product.image_link ||
+      'https://via.placeholder.com/100x100?text=No+Image'
+    );
+  }
 
   showMessage(msg: string, type: 'success' | 'error' | 'info' = 'info') {
     this.message = msg;
@@ -213,7 +324,7 @@ saveEdit() {
     setTimeout(() => (this.message = ''), 3000);
   }
 
-  getProductImage(product: any): string {
-    return product.image || product.image_link || 'https://via.placeholder.com/100x100?text=No+Image';
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

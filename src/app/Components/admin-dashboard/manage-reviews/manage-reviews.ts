@@ -31,9 +31,6 @@ export class ManageReviews implements OnInit {
 
   private baseUrl = 'http://localhost:3001/reviews';
   private productsUrl = 'http://localhost:3001/products';
-  // NOTE: json-server in this project runs on port 3001 (see package.json scripts)
-  // Keep these URLs in sync with server/db.json => json-server --port 3001
-  // If you run a different API, adjust accordingly.
 
 
   constructor(private http: HttpClient) {}
@@ -42,44 +39,49 @@ export class ManageReviews implements OnInit {
     this.loadReviews();
   }
 
-  loadReviews() {
-    this.http.get<Review[]>(this.baseUrl).subscribe({
-      next: (reviews) => {
-        // Load products to get product names
-        this.http.get<Product[]>(this.productsUrl).subscribe({
-          next: (products) => {
-            console.log('Products:', products);
-            console.log('Reviews:', reviews);
-            // Map product names to reviews
-            this.reviews = reviews.map(review => {
-              const product = products.find(p => {
-                // Coerce both ids to string to avoid mismatches when db.json stores some ids as strings
-                console.log('Comparing p.id:', p.id, 'with review.productId:', review.productId, 'types:', typeof p.id, typeof review.productId);
-                return String(p.id) === String(review.productId);
+loadReviews() {
+  this.http.get<Review[]>(this.baseUrl).subscribe({
+    next: (reviews) => {
+      this.http.get<Product[]>(this.productsUrl).subscribe({
+        next: (dbProducts) => {
+          this.http.get<Product[]>('/data.json').subscribe({
+            next: (apiProducts) => {
+              const allProducts = [...dbProducts, ...apiProducts];
+
+              this.reviews = reviews.map((review) => {
+                const product = allProducts.find(
+                  (p) => String(p.id) === String(review.productId)
+                );
+
+                return {
+                  ...review,
+                  productName: product?.name || 'Unknown Product',
+                  productCode: product?.id || 'N/A'
+                };
               });
-              console.log('Found product for review', review.id, ':', product);
-              return {
-                ...review,
-                productName: product?.name || 'Unknown Product'
-              };
-            });
-            console.log('Mapped reviews:', this.reviews);
-            this.filterReviews();
-          },
-          error: (err) => {
-            console.error('Error loading products:', err);
-            // Still show reviews without product names
-            this.reviews = reviews;
-            this.filterReviews();
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error loading reviews:', err);
-        alert('❌ Failed to load reviews.');
-      }
-    });
-  }
+
+              this.filterReviews();
+            },
+            error: (err) => {
+              console.error('Error loading /data.json:', err);
+              this.reviews = reviews;
+              this.filterReviews();
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Error loading products from db.json:', err);
+          this.reviews = reviews;
+          this.filterReviews();
+        },
+      });
+    },
+    error: (err) => {
+      console.error('Error loading reviews:', err);
+      alert('❌ Failed to load reviews.');
+    },
+  });
+}
 
   filterReviews() {
     this.filteredReviews = this.reviews.filter(review => {
