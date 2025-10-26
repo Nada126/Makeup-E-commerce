@@ -92,7 +92,8 @@ export class GenericBrandPage implements OnInit {
     this.loading = true;
     this.hasProducts = true;
 
-    const url = `https://makeup-api.herokuapp.com/api/v1/products.json?brand=${this.brandName}`;
+    //const url = `https://makeup-api.herokuapp.com/api/v1/products.json?brand=${this.brandName}`;
+    const url = './data.json';
 
     this.http.get<Product[]>(url).subscribe({
       next: (data) => {

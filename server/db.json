@@ -126,6 +126,42 @@
       "comment": "wonderful Product",
       "productId": 845,
       "status": "approved"
+    },
+    {
+      "id": "18e9",
+      "userName": "nada",
+      "userImage": "https://randomuser.me/api/portraits/women/79.jpg",
+      "date": "2025-10-25",
+      "rating": 4,
+      "comment": "good",
+      "productId": 1047
+    },
+    {
+      "id": "99c3",
+      "userName": "nada",
+      "userImage": "https://randomuser.me/api/portraits/women/79.jpg",
+      "date": "2025-10-25",
+      "rating": 4,
+      "comment": "good",
+      "productId": 846
+    },
+    {
+      "id": "714b",
+      "userName": "nada",
+      "userImage": "https://randomuser.me/api/portraits/women/79.jpg",
+      "date": "2025-10-25",
+      "rating": 4,
+      "comment": "good",
+      "productId": 842
+    },
+    {
+      "id": "dc77",
+      "userName": "nada",
+      "userImage": "https://randomuser.me/api/portraits/women/50.jpg",
+      "date": "2025-10-25",
+      "rating": 3,
+      "comment": "good",
+      "productId": 842
     }
   ],
   "products": [
