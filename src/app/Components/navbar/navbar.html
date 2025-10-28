@@ -1,4 +1,3 @@
-<!-- ***** Header Area Start ***** -->
 <header class="sticky-top fw-bold shadow-sm background">
   <nav class="navbar navbar-expand-lg navbar-light container py-2">
     <!-- 🌸 Logo (Left) -->
@@ -39,9 +38,9 @@
         <!-- Favorites with badge -->
         <a class="nav-link icon-btn position-relative" (click)="goToFavorites()" role="button">
           <i class="bi bi-heart"></i>
-          @if (favCount > 0) {
+          @if (favoriteCount > 0) {
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {{ favCount }}
+              {{ favoriteCount }}
             </span>
           }
         </a>
@@ -99,9 +98,9 @@
       <!-- Favorites with badge -->
       <a class="nav-link icon-btn position-relative" (click)="goToFavorites()" role="button">
         <i class="bi bi-heart"></i>
-        @if (favCount > 0) {
+        @if (favoriteCount > 0) {
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-            {{ favCount }}
+            {{ favoriteCount }}
           </span>
         }
       </a>
@@ -154,4 +153,3 @@
     </div>
   </nav>
 </header>
-<!-- ***** Header Area End ***** -->

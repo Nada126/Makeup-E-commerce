@@ -17,7 +17,6 @@ export class Navbar implements OnInit {
   isAdmin = false;
   favoriteCount = 0;
   cartCount = 0;
-  favCount = 0;
 
   constructor(
     private auth: AuthService,
@@ -35,27 +34,21 @@ export class Navbar implements OnInit {
       this.isAdmin = true;
     }
 
-    // ✅ Subscribe to cartService for cart items count
     this.cartService.items$.subscribe(items => {
-      this.cartCount = items.reduce((s, i) => s + i.quantity, 0);
+      if (items && Array.isArray(items)) {
+        this.cartCount = items.reduce((total, item) => {
+          return total + (Number(item.quantity) || 1);
+        }, 0);
+      } else {
+        this.cartCount = 0;
+      }
+      console.log('Cart count updated:', this.cartCount);
     });
 
-    // ✅ Subscribe to favoriteService for favorites count - FIXED: using favorites$
-    if (this.favoriteService.favorites$) {
-      this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
-        this.favCount = favorites.length;
-        this.favoriteCount = favorites.length;
-      });
-    } else {
-      // Fallback: use method call and set up polling if needed
-      this.updateFavoritesCount();
-      setInterval(() => this.updateFavoritesCount(), 1000);
-    }
-  }
-
-  private updateFavoritesCount() {
-    this.favCount = this.favoriteService.getFavoritesCount();
-    this.favoriteCount = this.favCount;
+    this.favoriteService.favorites$.subscribe((favorites: Product[]) => {
+      this.favoriteCount = favorites?.length || 0;
+      console.log('Favorite count updated:', this.favoriteCount);
+    });
   }
 
   get isLoggedIn(): boolean {

@@ -422,33 +422,35 @@ export class ProductDetails implements OnInit {
     });
   }
 
-  addToCart() {
-    if (!this.product) return;
+// Consistent addToCart method for all components
+addToCart(product: Product, event?: Event) {
+  if (event) event.stopPropagation();
+  if (!product || product.id == null) return;
 
-    const item = {
-      productId: this.product.id,
-      name: this.product.name,
-      price: Number(this.product.price) || 0,
-      image: this.product.image,
-      quantity: 1,
-      product: this.product
-    };
+  const item = {
+    productId: product.id,
+    name: product.name,
+    price: Number(product.price) || 0,
+    image: product.image_link || product.image_link,
+    quantity: 1,
+    product
+  };
 
-    this.cartService.addItem(item);
+  this.cartService.addItem(item);
 
-    // SweetAlert notification
-    Swal.fire({
-      position: 'top-end',
-      icon: 'success',
-      title: 'Added to Cart!',
-      text: `${this.product.name} has been added to your cart`,
-      showConfirmButton: false,
-      timer: 2000,
-      toast: true,
-      background: '#f8f9fa',
-      iconColor: '#28a745'
-    });
-  }
+  // SweetAlert notification
+  Swal.fire({
+    position: 'top-end',
+    icon: 'success',
+    title: 'Added to Cart!',
+    text: `${product.name} has been added to your cart`,
+    showConfirmButton: false,
+    timer: 2000,
+    toast: true,
+    background: '#f8f9fa',
+    iconColor: '#28a745'
+  });
+}
 
   goBack() {
     if (window.history.length > 1) {

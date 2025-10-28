@@ -1,3 +1,56 @@
+/* Pink Theme Variables for Favorites */
+:host {
+  --pink-primary: #e91e63;
+  --pink-light: #f8bbd9;
+  --pink-dark: #ad1457;
+  --pink-bg: #fff5f7;
+}
+
+/* Empty State Matching Cart */
+.empty-cart {
+  background: var(--pink-bg);
+  border-radius: 15px;
+  padding: 3rem !important;
+}
+
+.empty-cart .empty-cart-icon {
+  font-size: 4rem;
+  color: var(--pink-light);
+}
+
+/* Pink Buttons for Favorites */
+.btn-pink {
+  background: var(--pink-primary) !important;
+  border-color: var(--pink-primary) !important;
+  color: white !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-pink:hover {
+  background: var(--pink-dark) !important;
+  border-color: var(--pink-dark) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+}
+
+.btn-outline-pink {
+  color: var(--pink-primary) !important;
+  border-color: var(--pink-primary) !important;
+  background: transparent !important;
+  font-weight: 500;
+}
+
+.btn-outline-pink:hover {
+  background: var(--pink-primary) !important;
+  color: white !important;
+  transform: translateY(-1px);
+}
+
+.text-pink-dark {
+  color: var(--pink-dark) !important;
+}
 .favorite-icon {
   position: absolute;
   top: 10px;

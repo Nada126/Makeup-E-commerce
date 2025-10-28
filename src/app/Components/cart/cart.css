@@ -1,0 +1,192 @@
+/* Replace the entire cart.css with this: */
+
+/* Direct colors since CSS variables aren't working */
+:root {
+  --pink-primary: #e91e63;
+  --pink-light: #f8bbd9;
+  --pink-dark: #ad1457;
+  --pink-bg: #fff5f7;
+}
+
+/* Text colors for pink theme */
+.text-pink-dark {
+  color: #ad1457 !important;
+}
+
+/* Border colors */
+.border-pink {
+  border-color: #f8bbd9 !important;
+}
+
+/* Empty Cart State */
+.empty-cart {
+  background: #fff5f7;
+  border-radius: 15px;
+  padding: 3rem !important;
+}
+
+.empty-cart-icon {
+  font-size: 4rem;
+  color: #f8bbd9;
+}
+
+/* Cart Items */
+.cart-item {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(233, 30, 99, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cart-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
+}
+
+.cart-item-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+.cart-item-title {
+  color: #333;
+  font-weight: 600;
+}
+
+.cart-item-price {
+  color: #e91e63;
+  font-weight: 500;
+}
+
+.cart-item-total {
+  color: #ad1457;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Quantity Controls */
+.quantity-controls {
+  justify-content: center;
+}
+
+.quantity-btn {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #e91e63;
+  color: #e91e63;
+  transition: all 0.3s ease;
+}
+
+.quantity-btn:hover:not(:disabled) {
+  background: #e91e63;
+  color: white;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-display {
+  font-weight: 600;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Remove Button */
+.remove-btn {
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.remove-btn:hover {
+  color: #ad1457 !important;
+}
+
+/* Cart Summary */
+.cart-summary {
+  background: #fff5f7;
+  border: 2px solid #f8bbd9 !important;
+}
+
+.total-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+.grand-total {
+  border-top: 2px solid #f8bbd9;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.grand-total-label {
+  color: #333;
+}
+
+.grand-total-value {
+  color: #ad1457;
+}
+
+/* Pink Buttons */
+.btn-pink {
+  background: #e91e63 !important;
+  border-color: #e91e63 !important;
+  color: white !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-pink:hover {
+  background: #ad1457 !important;
+  border-color: #ad1457 !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+}
+
+.btn-outline-pink {
+  color: #e91e63 !important;
+  border-color: #e91e63 !important;
+  background: transparent !important;
+  font-weight: 500;
+}
+
+.btn-outline-pink:hover {
+  background: #e91e63 !important;
+  color: white !important;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cart-item .row > div {
+    margin-bottom: 1rem;
+  }
+
+  .cart-item .row > div:last-child {
+    margin-bottom: 0;
+  }
+
+  .quantity-controls {
+    justify-content: flex-start;
+  }
+
+  .cart-totals {
+    text-align: left !important;
+  }
+
+  .btn-pink, .btn-outline-pink {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}

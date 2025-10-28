@@ -1,41 +1,109 @@
 <div class="container py-5">
-  <h2 class="mb-4">Your Cart ({{ items.length }} items)</h2>
+  <h2 class="mb-4 text-pink-dark">Your Shopping Cart ({{ items.length }} items)</h2>
 
-  <div *ngIf="items.length === 0" class="text-center py-5">
-    <p>Your cart is empty.</p>
-    <button class="btn btn-primary" (click)="router.navigate(['/products'])">Continue Shopping</button>
+  <!-- Empty Cart State -->
+  <div *ngIf="items.length === 0" class="text-center py-5 empty-cart">
+    <div class="empty-cart-icon mb-4">
+      <i class="bi bi-cart-x"></i>
+    </div>
+    <h4 class="text-muted mb-3">Your cart is empty</h4>
+    <p class="text-muted mb-4">Looks like you haven't added any items to your cart yet.</p>
+    <button class="btn btn-pink btn-lg" (click)="router.navigate(['/products'])">
+      <i class="bi bi-bag me-2"></i>Start Shopping
+    </button>
   </div>
 
-  <div *ngIf="items.length > 0">
-    <div class="list-group mb-4">
-      <div *ngFor="let item of items" class="list-group-item d-flex align-items-center">
-        <img [src]="item.image || 'https://via.placeholder.com/80'" width="80" height="80" class="me-3 rounded" />
-        <div class="flex-grow-1">
-          <h6 class="mb-1">{{ item.name }}</h6>
-          <p class="mb-1 text-muted">${{ item.price | number:'1.2-2' }}</p>
-          <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-sm btn-outline-secondary" (click)="changeQty(item, -1)">-</button>
-            <span>{{ item.quantity }}</span>
-            <button class="btn btn-sm btn-outline-secondary" (click)="changeQty(item, 1)">+</button>
-            <button class="btn btn-sm btn-link text-danger ms-3" (click)="remove(item)">Remove</button>
+  <!-- Cart with Items -->
+  <div *ngIf="items.length > 0" class="cart-container">
+    <div class="cart-items mb-4">
+      <div *ngFor="let item of items; let i = index" class="cart-item card mb-3">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <!-- Product Image -->
+            <div class="col-md-2">
+              <img [src]="item.image || 'https://via.placeholder.com/100'"
+                   [alt]="item.name"
+                   class="cart-item-image rounded">
+            </div>
+
+            <!-- Product Details -->
+            <div class="col-md-4">
+              <h5 class="cart-item-title mb-2">{{ item.name }}</h5>
+              <p class="cart-item-price mb-0">${{ item.price | number:'1.2-2' }}</p>
+            </div>
+
+            <!-- Quantity Controls -->
+            <div class="col-md-3">
+              <div class="quantity-controls d-flex align-items-center">
+                <button class="btn btn-outline-pink btn-sm quantity-btn"
+                        (click)="changeQty(item, -1)"
+                        [disabled]="item.quantity <= 1">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <span class="quantity-display mx-3">{{ item.quantity }}</span>
+                <button class="btn btn-outline-pink btn-sm quantity-btn"
+                        (click)="changeQty(item, 1)">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Item Total & Remove -->
+            <div class="col-md-3 text-end">
+              <div class="d-flex align-items-center justify-content-end">
+                <div class="me-3">
+                  <p class="cart-item-total mb-0">${{ (item.price * item.quantity) | number:'1.2-2' }}</p>
+                </div>
+                <button class="btn btn-link text-danger p-0 remove-btn"
+                        (click)="remove(item)"
+                        title="Remove item">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="text-end">
-          <p class="mb-0 fw-bold">${{ (item.price * item.quantity) | number:'1.2-2' }}</p>
         </div>
       </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center">
-      <div>
-        <button class="btn btn-outline-secondary me-2" (click)="clearCart()">Clear Cart</button>
-        <button class="btn btn-secondary" (click)="goToProducts()">Continue Shopping</button>
-      </div>
-      <div class="text-end">
-        <div class="mb-2 fs-5">Total: <strong>${{ total | number:'1.2-2' }}</strong></div>
-        <button class="btn btn-primary btn-lg" (click)="checkout()">
-          <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
-        </button>
+    <!-- Cart Summary & Actions -->
+    <div class="cart-summary card border-pink">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-pink" (click)="clearCart()">
+                <i class="bi bi-trash me-2"></i>Clear Cart
+              </button>
+              <button class="btn btn-outline-secondary" (click)="goToProducts()">
+                <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+              </button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="cart-totals text-md-end">
+              <div class="total-line mb-2">
+                <span class="total-label">Subtotal:</span>
+                <span class="total-value">${{ getSubtotal() | number:'1.2-2' }}</span>
+              </div>
+              <div class="total-line mb-2">
+                <span class="total-label">Shipping:</span>
+                <span class="total-value">${{ getShipping() | number:'1.2-2' }}</span>
+              </div>
+              <div class="total-line mb-3">
+                <span class="total-label">Tax:</span>
+                <span class="total-value">${{ getTax() | number:'1.2-2' }}</span>
+              </div>
+              <div class="grand-total mb-4">
+                <span class="grand-total-label">Total:</span>
+                <span class="grand-total-value">${{ total | number:'1.2-2' }}</span>
+              </div>
+              <button class="btn btn-pink btn-lg w-100 w-md-auto" (click)="checkout()">
+                <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

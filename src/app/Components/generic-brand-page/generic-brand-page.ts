@@ -1,9 +1,13 @@
+// generic-brand-page.ts - FIXED VERSION
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Product } from '../../modules/Product';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FavoriteService } from '../../Services/favorite.service';
+import { CartService } from '../../Services/cart-service';
+import { ChangeDetectorRef } from '@angular/core';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-generic-brand-page',
@@ -28,23 +32,25 @@ export class GenericBrandPage implements OnInit {
 
   // Only 10 carefully selected working brands
   brandNames: { [key: string]: string } = {
-    'almay': 'Almay',                    
-    'annabelle': 'Annabelle',
+    'benefit': 'benefit',
+    'dior': 'dior',
     'essie': 'Essie',
-    'covergirl': 'CoverGirl',
-    'nyx': 'NYX',
+    'fenty': 'fenty',
+    'marcilla': 'marcilla',
     'maybelline': 'Maybelline',
-    'pacifica': 'Pacifica',
-    'revlon': 'Revlon',
-    'stila': 'Stila',
-    'clinique': 'Clinique'
+    'maias': 'maias',
+    'pacifica': 'pacifica',
+    'revlon': 'revlon',
+    'stila': 'stila'
   };
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    public favoriteService: FavoriteService
+    public favoriteService: FavoriteService,
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   openDetail(product: Product | undefined) {
@@ -52,6 +58,7 @@ export class GenericBrandPage implements OnInit {
     this.router.navigate(['/product', product.id], { state: { product } });
   }
 
+  // Fixed toggleFavorite with SweetAlert
   toggleFavorite(product: Product, event?: Event) {
     if (event) {
       event.stopPropagation();
@@ -60,10 +67,36 @@ export class GenericBrandPage implements OnInit {
     if (this.favoriteService.isFavorite(product.id)) {
       this.favoriteService.removeFromFavorites(product.id);
       product.isFavorite = false;
+
+      Swal.fire({
+        position: 'top-end',
+        icon: 'info',
+        title: 'Removed from Favorites',
+        text: `${product.name} has been removed from your favorites`,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        background: '#f8f9fa',
+        iconColor: '#ff6f91'
+      });
     } else {
       this.favoriteService.addToFavorites(product);
       product.isFavorite = true;
+
+      Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Added to Favorites!',
+        text: `${product.name} has been added to your favorites`,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        background: '#f8f9fa',
+        iconColor: '#ff6f91'
+      });
     }
+
+    this.cdr.detectChanges();
   }
 
   navigateToProducts() {
@@ -78,6 +111,11 @@ export class GenericBrandPage implements OnInit {
         this.pageTitle = this.brandNames[brand] || this.formatBrandName(brand);
         this.fetchProducts();
       }
+    });
+
+    // Subscribe to favorites changes
+    this.favoriteService.favorites$.subscribe(() => {
+      this.cdr.detectChanges();
     });
   }
 
@@ -181,8 +219,34 @@ export class GenericBrandPage implements OnInit {
     }
   }
 
-  addToCart(product: Product) {
-    alert(`${product.name} added to cart!`);
+  // Fixed addToCart with SweetAlert
+  addToCart(product: Product, event?: Event) {
+    if (event) event.stopPropagation();
+    if (!product || product.id == null) return;
+
+    const item = {
+      productId: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      image: product.image_link,
+      quantity: 1,
+      product
+    };
+
+    this.cartService.addItem(item);
+
+    // SweetAlert notification instead of alert
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Added to Cart!',
+      text: `${product.name} has been added to your cart`,
+      showConfirmButton: false,
+      timer: 2000,
+      toast: true,
+      background: '#f8f9fa',
+      iconColor: '#28a745'
+    });
   }
 
   sortByPrice(event: any) {

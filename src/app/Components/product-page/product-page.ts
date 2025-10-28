@@ -235,21 +235,23 @@ export class ProductPage implements OnInit {
     }
   }
 
-// In the addToCart method of product-page.ts, replace the alert with:
+// Consistent addToCart method for all components
 addToCart(product: Product, event?: Event) {
   if (event) event.stopPropagation();
   if (!product || product.id == null) return;
+
   const item = {
     productId: product.id,
     name: product.name,
     price: Number(product.price) || 0,
-    image: product.image_link,
+    image: product.image_link || product.image_link,
     quantity: 1,
     product
   };
+
   this.cartService.addItem(item);
 
-  // SweetAlert notification instead of alert
+  // SweetAlert notification
   Swal.fire({
     position: 'top-end',
     icon: 'success',

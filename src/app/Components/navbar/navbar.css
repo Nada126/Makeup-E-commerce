@@ -131,3 +131,24 @@ height: 70px;
   background-color: #ffe4ec;
   color: #ff6f91;
 }
+
+
+/* Smaller badges for cart and favorites */
+.navbar .badge {
+  font-size: 0.6rem;
+  padding: 0.2em 0.4em;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Position adjustments for smaller badges */
+.navbar .position-relative {
+  position: relative;
+}
+
+.navbar .translate-middle {
+  transform: translate(-60%, -20%);
+}

@@ -34,9 +34,9 @@ export class Cart implements OnInit {
     });
   }
 
-  private computeTotal() {
-    this.total = this.items.reduce((sum, i) => sum + (Number(i.price) || 0) * (Number(i.quantity) || 0), 0);
-  }
+  // private computeTotal() {
+  //   this.total = this.items.reduce((sum, i) => sum + (Number(i.price) || 0) * (Number(i.quantity) || 0), 0);
+  // }
 
   changeQty(item: any, delta: number) {
     const currentQty = Number(item.quantity ?? item.qty ?? 1);
@@ -60,6 +60,27 @@ export class Cart implements OnInit {
 
     this.cartService.updateQuantity(id, newQty);
   }
+getSubtotal(): number {
+  return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+}
+
+getShipping(): number {
+  const subtotal = this.getSubtotal();
+  return subtotal > 50 ? 0 : 5.99; // Free shipping over $50
+}
+
+getTax(): number {
+  const subtotal = this.getSubtotal();
+  return subtotal * 0.14; // 14% tax
+}
+
+// Update computeTotal method
+private computeTotal() {
+  const subtotal = this.getSubtotal();
+  const shipping = this.getShipping();
+  const tax = this.getTax();
+  this.total = subtotal + shipping + tax;
+}
 
   remove(item: any) {
     const id = item.productId ?? item.id ?? item.product?.id;

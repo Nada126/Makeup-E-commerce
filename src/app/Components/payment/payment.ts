@@ -7,7 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import Swal from 'sweetalert2';
 
 // Replace with your test publishable key from Stripe dashboard
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_your_test_publishable_key_here';
+const STRIPE_PUBLISHABLE_KEY = '';
 
 @Component({
   selector: 'app-payment',
@@ -38,13 +38,6 @@ export class Payment implements OnInit {
   processing = false;
   message = '';
   paymentProcessing = false;
-
-  // Test card options for demo
-  testCards = [
-    { number: '4242424242424242', name: 'Visa (Success)' },
-    { number: '4000002500003155', name: 'Visa (Authentication Required)' },
-    { number: '4000000000009995', name: 'Visa (Declined)' }
-  ];
 
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -78,22 +71,22 @@ export class Payment implements OnInit {
     });
   }
 
-  private loadCartData(): void {
-    const nav = (this.router as any).getCurrentNavigation ? (this.router as any).getCurrentNavigation() : null;
-    const stateItems = nav?.extras?.state?.items ?? (history && (history.state as any)?.items);
-    const stateTotal = nav?.extras?.state?.total ?? (history && (history.state as any)?.total);
+private loadCartData(): void {
+  const nav = (this.router as any).getCurrentNavigation ? (this.router as any).getCurrentNavigation() : null;
+  const stateItems = nav?.extras?.state?.items ?? (history && (history.state as any)?.items);
+  const stateTotal = nav?.extras?.state?.total ?? (history && (history.state as any)?.total);
 
-    if (Array.isArray(stateItems) && stateItems.length > 0) {
-      this.items = stateItems;
-      this.subtotal = Number(stateTotal) || this.calcSubtotalFromItems();
-    } else {
-      this.items = this.cartService.getItems();
-      this.subtotal = this.calcSubtotalFromItems();
-    }
-
-    this.calculateTotals();
+  if (Array.isArray(stateItems) && stateItems.length > 0) {
+    this.items = stateItems;
+    this.subtotal = this.calcSubtotalFromItems(); // Always recalculate from items
+  } else {
+    this.items = this.cartService.getItems();
+    this.subtotal = this.calcSubtotalFromItems();
   }
 
+  this.calculateTotals();
+  console.log('Cart data loaded:', { items: this.items, subtotal: this.subtotal, total: this.total });
+}
   private setupCartSubscription(): void {
     this.cartService.items$.subscribe(items => {
       this.items = items || [];
@@ -140,7 +133,7 @@ export class Payment implements OnInit {
         icon: 'error',
         title: 'Form Incomplete',
         text: 'Please fill all required fields correctly.',
-        confirmButtonColor: '#3085d6'
+        confirmButtonColor: '#f8bbd9'
       });
       return;
     }
@@ -150,7 +143,7 @@ export class Payment implements OnInit {
         icon: 'warning',
         title: 'Empty Cart',
         text: 'Your cart is empty.',
-        confirmButtonColor: '#3085d6'
+        confirmButtonColor: '#f8bbd9'
       });
       return;
     }
@@ -208,7 +201,7 @@ export class Payment implements OnInit {
         showCancelButton: true,
         confirmButtonText: 'Confirm',
         cancelButtonText: 'Cancel',
-        confirmButtonColor: '#3085d6',
+        confirmButtonColor: '#f8bbd9',
         cancelButtonColor: '#d33'
       }).then((result) => {
         if (!result.isConfirmed) {
@@ -219,65 +212,68 @@ export class Payment implements OnInit {
     // For successful cards (4242...), proceed without issues
   }
 
-  private async placeOrder(): Promise<void> {
-    const order = {
-      id: 'ORD-' + Date.now().toString(36),
-      createdAt: new Date().toISOString(),
-      customer: {
-        fullName: this.getFormControl(this.checkoutForm, 'fullName').value,
-        email: this.getFormControl(this.checkoutForm, 'email').value,
-        phone: this.getFormControl(this.checkoutForm, 'phone').value,
-        address: {
-          line1: this.getFormControl(this.checkoutForm, 'addressLine1').value,
-          line2: this.getFormControl(this.checkoutForm, 'addressLine2').value,
-          city: this.getFormControl(this.checkoutForm, 'city').value,
-          postalCode: this.getFormControl(this.checkoutForm, 'postalCode').value,
-          country: this.getFormControl(this.checkoutForm, 'country').value
-        }
-      },
-      payment: {
-        method: 'card',
-        last4: this.getFormControl(this.paymentForm, 'cardNumber').value.slice(-4),
-        brand: 'visa'
-      },
-      items: this.items,
-      subtotal: this.subtotal,
-      tax: this.tax,
-      shipping: this.shipping,
-      total: this.total,
-      status: 'confirmed'
-    };
+private async placeOrder(): Promise<void> {
+  const order = {
+    id: 'ORD-' + Date.now().toString(36),
+    createdAt: new Date().toISOString(),
+    customer: {
+      fullName: this.getFormControl(this.checkoutForm, 'fullName').value,
+      email: this.getFormControl(this.checkoutForm, 'email').value,
+      phone: this.getFormControl(this.checkoutForm, 'phone').value,
+      address: {
+        line1: this.getFormControl(this.checkoutForm, 'addressLine1').value,
+        line2: this.getFormControl(this.checkoutForm, 'addressLine2').value,
+        city: this.getFormControl(this.checkoutForm, 'city').value,
+        postalCode: this.getFormControl(this.checkoutForm, 'postalCode').value,
+        country: this.getFormControl(this.checkoutForm, 'country').value
+      }
+    },
+    payment: {
+      method: 'card',
+      last4: this.getFormControl(this.paymentForm, 'cardNumber').value.slice(-4),
+      brand: 'visa'
+    },
+    items: this.items,
+    subtotal: this.subtotal,
+    tax: this.tax,
+    shipping: this.shipping,
+    total: this.total,
+    status: 'confirmed'
+  };
 
-    // Save order to localStorage
-    try {
-      const raw = localStorage.getItem('orders') || '[]';
-      const orders = JSON.parse(raw);
-      orders.push(order);
-      localStorage.setItem('orders', JSON.stringify(orders));
-    } catch (err) {
-      console.error('Error saving order locally', err);
-    }
+  // Save order to localStorage
+  try {
+    const raw = localStorage.getItem('orders') || '[]';
+    const orders = JSON.parse(raw);
+    orders.push(order);
+    localStorage.setItem('orders', JSON.stringify(orders));
+  } catch (err) {
+    console.error('Error saving order locally', err);
+  }
 
-    // Clear cart
-    this.cartService.clearCart();
+  const finalTotal = this.total;
+  // Clear cart
+this.cartService.clearCart();
 
-    // Show success message
-    await Swal.fire({
-      icon: 'success',
-      title: 'Payment Successful!',
-      html: `
-        <p>Thank you for your order!</p>
-        <p><strong>Order ID:</strong> ${order.id}</p>
-        <p><strong>Total:</strong> $${this.total.toFixed(2)}</p>
-        <p>You will receive a confirmation email shortly.</p>
-      `,
-      confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Continue Shopping'
-    });
+// Show success message - REMOVE the orderPlaced state change
+const result = await Swal.fire({
+  icon: 'success',
+  title: 'Payment Successful!',
+  html: `
+    <p>Thank you for your order!</p>
+    <p><strong>Order ID:</strong> ${order.id}</p>
+    <p><strong>Total:</strong> $${finalTotal.toFixed(2)}</p>
+    <p>You will receive a confirmation email shortly.</p>
+  `,
+  confirmButtonColor: '#e91e63',
+  confirmButtonText: 'Continue Shopping'
+});
 
-    // Navigate to home or orders page
+  // Navigate to home or orders page only after user clicks the button
+  if (result.isConfirmed) {
     this.router.navigate(['/']);
   }
+}
 
   cancel() {
     Swal.fire({
@@ -285,7 +281,7 @@ export class Payment implements OnInit {
       text: 'Are you sure you want to cancel this payment?',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#f8bbd9',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, cancel',
       cancelButtonText: 'No, continue'

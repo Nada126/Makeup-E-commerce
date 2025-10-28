@@ -20,7 +20,7 @@ export class Favorite implements OnInit {
   constructor(
     private favoriteService: FavoriteService,
     private cartService: CartService,
-    private router: Router
+    public router: Router
   ) {}
 
   ngOnInit() {

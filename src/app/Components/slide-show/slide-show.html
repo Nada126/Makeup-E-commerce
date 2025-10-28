@@ -1,19 +1,25 @@
-<div class="slideShow" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-    <!-- Make the image clickable -->
-    <img
-        [src]="currentSlide.src"
-        alt="Slide"
-        class="slide-img clickable"
-        (click)="goToBrand()"
-    >
 
-    <!-- Prev Arrow -->
-    <button class="arrow left" (click)="prev()">
-      &#10094;
-    </button>
+<div class="slideShow position-relative overflow-hidden rounded shadow-sm"
+     (mouseenter)="onMouseEnter()"
+     (mouseleave)="onMouseLeave()">
 
-    <!-- Next Arrow -->
-    <button class="arrow right" (click)="next()">
-      &#10095;
-    </button>
+  <!-- Image (clickable) -->
+  <img [src]="currentSlide.src"
+       alt="Slide"
+       class="slide-img w-100 h-100 object-fit-cover cursor-pointer"
+       (click)="goToBrand()">
+
+  <!-- Left arrow -->
+  <button class="arrow position-absolute top-50 start-0 translate-middle-y btn btn-dark rounded-circle d-flex align-items-center justify-content-center"
+          (click)="prev()"
+          aria-label="Previous">
+    <span class="fs-4">‹</span>
+  </button>
+
+  <!-- Right arrow -->
+  <button class="arrow position-absolute top-50 end-0 translate-middle-y btn btn-dark rounded-circle d-flex align-items-center justify-content-center"
+          (click)="next()"
+          aria-label="Next">
+    <span class="fs-4">›</span>
+  </button>
 </div>

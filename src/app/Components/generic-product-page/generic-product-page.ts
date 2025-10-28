@@ -1,3 +1,4 @@
+// generic-product-page.ts - FIXED VERSION
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -7,6 +8,7 @@ import { FavoriteService } from '../../Services/favorite.service';
 import { CartService } from '../../Services/cart-service';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-generic-product-page',
@@ -43,8 +45,6 @@ export class GenericProductPage implements OnInit {
     'nail_polish': 'Nail Polish'
   };
 
-  favoriteIds = new Set<number>();
-
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -59,112 +59,72 @@ export class GenericProductPage implements OnInit {
     this.router.navigate(['/product', product.id], { state: { product } });
   }
 
-  // Unified toggleFavorite method that combines both functionalities
+  // Fixed toggleFavorite method
   toggleFavorite(product: Product, event?: Event) {
     if (event) {
-      event.stopPropagation(); // Prevent card click when clicking favorite
+      event.stopPropagation();
     }
 
     const id = product?.id;
     if (id == null || Number.isNaN(Number(id))) return;
 
-    // Use both service-based and local state management
     if (this.favoriteService.isFavorite(id)) {
-      // Remove from favorites using service
+      // Remove from favorites
       this.favoriteService.removeFromFavorites(id);
-      // Update local state
-      product.isFavorite = false;
-      this.favoriteIds.delete(id);
+
+      // Show SweetAlert for removal
+      Swal.fire({
+        position: 'top-end',
+        icon: 'info',
+        title: 'Removed from Favorites',
+        text: `${product.name} has been removed from your favorites`,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        background: '#f8f9fa',
+        iconColor: '#ff6f91'
+      });
     } else {
-      // Add to favorites using service
+      // Add to favorites
       this.favoriteService.addToFavorites(product);
-      // Update local state
-      product.isFavorite = true;
-      this.favoriteIds.add(id);
+
+      // Show SweetAlert for addition
+      Swal.fire({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Added to Favorites!',
+        text: `${product.name} has been added to your favorites`,
+        showConfirmButton: false,
+        timer: 2000,
+        toast: true,
+        background: '#f8f9fa',
+        iconColor: '#ff6f91'
+      });
     }
 
     this.cdr.detectChanges();
-  }
-
-  // Check if product is favorite using both methods
-  isFavorite(product: Product): boolean {
-    const id = product?.id;
-    if (id == null || Number.isNaN(Number(id))) return false;
-    
-    // Use service as primary, local state as fallback
-    return this.favoriteService.isFavorite(id) || this.favoriteIds.has(id);
   }
 
   navigateToProducts() {
     this.router.navigate(['/products']);
   }
 
-  // ngOnInit() {
-  //   this.route.paramMap.subscribe(params => {
-  //     const type = params.get('type');
-  //     if (type) {
-  //       this.productType = type;
-  //       this.pageTitle = this.productTypeNames[type] || this.formatProductType(type);
-  //       this.fetchProducts();
-  //     }
-  //   });
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      const type = params.get('type');
+      if (type) {
+        this.productType = type;
+        this.pageTitle = this.productTypeNames[type] || this.formatProductType(type);
+        this.fetchProducts();
+      }
+    });
 
-  //   // Subscribe to favorites changes - FIXED: using userFavorites$ instead of favorites$
-  //   this.favoriteService.userFavorites$.subscribe((favorites: Product[]) => {
-  //     // Update local favoriteIds set
-  //     this.favoriteIds.clear();
-  //     favorites.forEach((fav: Product) => {
-  //       const id = Number(fav.id);
-  //       if (!Number.isNaN(id)) {
-  //         this.favoriteIds.add(id);
-  //       }
-  //     });
-      
-  //     // Update isFavorite property on products
-  //     if (this.products) {
-  //       this.products.forEach(product => {
-  //         product.isFavorite = this.isFavorite(product);
-  //       });
-  //     }
-      
-  //     this.cdr.detectChanges();
-  //   });
-  // }
-// Alternative ngOnInit if userFavorites$ doesn't exist
-ngOnInit() {
-  this.route.paramMap.subscribe(params => {
-    const type = params.get('type');
-    if (type) {
-      this.productType = type;
-      this.pageTitle = this.productTypeNames[type] || this.formatProductType(type);
-      this.fetchProducts();
-    }
-  });
-
-  // Alternative: Use method calls and update on actions
-  this.updateFavoritesFromService();
-}
-
-private updateFavoritesFromService() {
-  const favorites = this.favoriteService.getFavoritesList();
-  this.favoriteIds.clear();
-  favorites.forEach((fav: Product) => {
-    const id = Number(fav.id);
-    if (!Number.isNaN(id)) {
-      this.favoriteIds.add(id);
-    }
-  });
-  
-  if (this.products) {
-    this.products.forEach(product => {
-      product.isFavorite = this.isFavorite(product);
+    // Subscribe to favorites changes for real-time updates
+    this.favoriteService.favorites$.subscribe(() => {
+      this.cdr.detectChanges();
     });
   }
-  
-  this.cdr.detectChanges();
-}
 
-// Then call this.updateFavoritesFromService() after each toggleFavorite call
   private formatProductType(type: string): string {
     return type.split('_').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
@@ -210,12 +170,11 @@ private updateFavoritesFromService() {
   processProducts(data: Product[]) {
     const validProducts: Product[] = [];
 
-    // Convert price/rating to numbers and set initial favorite state
+    // Convert price/rating to numbers
     const allProducts = data.map(p => ({
       ...p,
       price: Number(p.price) || 0,
-      rating: Number(p.rating) || 0,
-      isFavorite: this.isFavorite(p) // Use the unified isFavorite method
+      rating: Number(p.rating) || 0
     }));
 
     // Check if image exists
@@ -274,19 +233,34 @@ private updateFavoritesFromService() {
     }
   }
 
+  // Fixed addToCart with SweetAlert
   addToCart(product: Product, event?: Event) {
     if (event) event.stopPropagation();
     if (!product || product.id == null) return;
+
     const item = {
-      productId: product.id, // This is fine - it's for the cart item, not the Product interface
+      productId: product.id,
       name: product.name,
       price: Number(product.price) || 0,
-      image: product.image_link,
+      image: product.image_link || product.image_link,
       quantity: 1,
       product
     };
+
     this.cartService.addItem(item);
-    alert(`${product.name} added to cart`);
+
+    // SweetAlert notification
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Added to Cart!',
+      text: `${product.name} has been added to your cart`,
+      showConfirmButton: false,
+      timer: 2000,
+      toast: true,
+      background: '#f8f9fa',
+      iconColor: '#28a745'
+    });
   }
 
   sortByPrice(event: any) {
