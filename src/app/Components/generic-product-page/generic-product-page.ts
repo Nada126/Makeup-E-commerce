@@ -9,13 +9,14 @@ import { CartService } from '../../Services/cart-service';
 import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { ProductService } from '../../Services/product-service';
 
 @Component({
   selector: 'app-generic-product-page',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './generic-product-page.html',
-  styleUrls: ['./generic-product-page.css']
+  styleUrls: ['./generic-product-page.css'],
 })
 export class GenericProductPage implements OnInit {
   searchQuery: string = '';
@@ -33,16 +34,16 @@ export class GenericProductPage implements OnInit {
 
   // Map product types to display names
   productTypeNames: { [key: string]: string } = {
-    'lipstick': 'Lipstick',
-    'lip_liner': 'Lip Liner',
-    'foundation': 'Foundation',
-    'eyeliner': 'Eyeliner',
-    'eyeshadow': 'Eyeshadow',
-    'blush': 'Blush',
-    'bronzer': 'Bronzer',
-    'mascara': 'Mascara',
-    'eyebrow': 'Eyebrow',
-    'nail_polish': 'Nail Polish'
+    lipstick: 'Lipstick',
+    lip_liner: 'Lip Liner',
+    foundation: 'Foundation',
+    eyeliner: 'Eyeliner',
+    eyeshadow: 'Eyeshadow',
+    blush: 'Blush',
+    bronzer: 'Bronzer',
+    mascara: 'Mascara',
+    eyebrow: 'Eyebrow',
+    nail_polish: 'Nail Polish',
   };
 
   constructor(
@@ -52,6 +53,7 @@ export class GenericProductPage implements OnInit {
     public favoriteService: FavoriteService,
     private cartService: CartService,
     private cdr: ChangeDetectorRef,
+    private productService: ProductService
   ) {}
 
   openDetail(product: Product | undefined) {
@@ -82,7 +84,7 @@ export class GenericProductPage implements OnInit {
         timer: 2000,
         toast: true,
         background: '#f8f9fa',
-        iconColor: '#ff6f91'
+        iconColor: '#ff6f91',
       });
     } else {
       // Add to favorites
@@ -98,7 +100,7 @@ export class GenericProductPage implements OnInit {
         timer: 2000,
         toast: true,
         background: '#f8f9fa',
-        iconColor: '#ff6f91'
+        iconColor: '#ff6f91',
       });
     }
 
@@ -110,7 +112,7 @@ export class GenericProductPage implements OnInit {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const type = params.get('type');
       if (type) {
         this.productType = type;
@@ -126,23 +128,27 @@ export class GenericProductPage implements OnInit {
   }
 
   private formatProductType(type: string): string {
-    return type.split('_').map(word =>
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    return type
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   }
 
   fetchProducts() {
     this.loading = true;
     const apiUrl = `https://makeup-api.herokuapp.com/api/v1/products.json?product_type=${this.productType}`;
-
+    this.checkServerProducts();
     this.http.get<Product[]>(apiUrl).subscribe({
       next: (data) => {
         this.processProducts(data);
       },
       error: (err) => {
-        console.error(`Error fetching ${this.productType} products from API, trying local data:`, err);
-        this.fetchLocalProducts();
-      }
+        console.error(
+          `Error fetching ${this.productType} products from API, trying local data:`,
+          err
+        );
+        this.LoadProducts();
+      },
     });
   }
 
@@ -152,8 +158,8 @@ export class GenericProductPage implements OnInit {
     this.http.get<Product[]>(localUrl).subscribe({
       next: (data) => {
         // Filter local data by product type
-        const filteredData = data.filter(product =>
-          product.product_type?.toLowerCase() === this.productType.toLowerCase()
+        const filteredData = data.filter(
+          (product) => product.product_type?.toLowerCase() === this.productType.toLowerCase()
         );
         this.processProducts(filteredData);
       },
@@ -163,23 +169,55 @@ export class GenericProductPage implements OnInit {
         this.products = [];
         this.filteredProducts = [];
         this.categories = [];
-      }
+      },
     });
   }
 
+  LoadProducts() {
+    this.productService.fetchAllProducts().subscribe({
+      next: (data) => {
+        const filteredData = data.filter(
+          (product) => product.product_type?.toLowerCase() === this.productType.toLowerCase()
+        );
+        this.processProducts(filteredData);
+      },
+      error: (err) => {
+        console.error('Error fetching local products:', err);
+        this.loading = false;
+        this.products = [];
+        this.filteredProducts = [];
+        this.categories = [];
+      },
+    });
+  }
+  checkServerProducts() {
+  this.productService.getServerProductsByType(this.productType).subscribe(serverProducts => {
+    if (serverProducts.length === 0) {
+      console.warn(`⚠️ No products of type '${this.productType}' found in JSON server.`);
+    } else {
+      console.log(`🟣 Found ${serverProducts.length} '${this.productType}' products in JSON server:`);
+
+      serverProducts.forEach(p => {
+        console.log(`   🔸 Name: ${p.name} | 💰 Price: ${p.price ?? 'N/A'}`);
+      });
+    }
+  });
+}
   processProducts(data: Product[]) {
     const validProducts: Product[] = [];
 
     // Convert price/rating to numbers
-    const allProducts = data.map(p => ({
+    const allProducts = data.map((p) => ({
       ...p,
       price: Number(p.price) || 0,
-      rating: Number(p.rating) || 0
+      rating: Number(p.rating) || 0,
     }));
 
     // Check if image exists
-    const checkImagePromises = allProducts.map(product =>
-      this.http.head(product.image_link || '', { observe: 'response' }).toPromise()
+    const checkImagePromises = allProducts.map((product) =>
+      this.http
+        .head(product.image_link || '', { observe: 'response' })
+        .toPromise()
         .then(() => validProducts.push(product))
         .catch(() => null)
     );
@@ -189,7 +227,7 @@ export class GenericProductPage implements OnInit {
       this.filteredProducts = this.products;
 
       // Extract unique categories from the products
-      this.categories = [...new Set(this.products.map(p => p.category).filter(Boolean))];
+      this.categories = [...new Set(this.products.map((p) => p.category).filter(Boolean))];
 
       console.log(`Available categories for ${this.productType}:`, this.categories);
       this.loading = false;
@@ -215,7 +253,7 @@ export class GenericProductPage implements OnInit {
     if (type === 'All') {
       this.filteredProducts = this.products;
     } else {
-      this.filteredProducts = this.products.filter(p => {
+      this.filteredProducts = this.products.filter((p) => {
         if (!p.category) return false;
         const productCategory = p.category.toLowerCase().trim();
         const filterType = type.toLowerCase().trim();
@@ -244,7 +282,7 @@ export class GenericProductPage implements OnInit {
       price: Number(product.price) || 0,
       image: product.image_link || product.image_link,
       quantity: 1,
-      product
+      product,
     };
 
     this.cartService.addItem(item);
@@ -259,7 +297,7 @@ export class GenericProductPage implements OnInit {
       timer: 2000,
       toast: true,
       background: '#f8f9fa',
-      iconColor: '#28a745'
+      iconColor: '#28a745',
     });
   }
 
@@ -291,10 +329,11 @@ export class GenericProductPage implements OnInit {
   onSearch(event: any) {
     const searchValue = event.target.value.toLowerCase().trim();
 
-    this.filteredProducts = this.products.filter(p =>
-      p.name?.toLowerCase().includes(searchValue) ||
-      p.brand?.toLowerCase().includes(searchValue) ||
-      p.category?.toLowerCase().includes(searchValue)
+    this.filteredProducts = this.products.filter(
+      (p) =>
+        p.name?.toLowerCase().includes(searchValue) ||
+        p.brand?.toLowerCase().includes(searchValue) ||
+        p.category?.toLowerCase().includes(searchValue)
     );
 
     this.currentPage = 1;

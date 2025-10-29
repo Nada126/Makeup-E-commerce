@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { CartService } from '../../Services/cart-service';
 import { ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2';
+import { ProductService } from '../../Services/product-service';
 
 @Component({
   selector: 'app-product-page',
@@ -36,8 +37,9 @@ export class ProductPage implements OnInit {
     private router: Router,
     public favoriteService: FavoriteService,
     private cartService: CartService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private productService: ProductService
+  ) { }
 
   handleCategoryClick(category: string) {
     const specialProductTypes = [
@@ -95,7 +97,7 @@ export class ProductPage implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching products from API, trying local data:', err);
-        this.fetchLocalProducts();
+        this.LoadProducts();
       },
     });
   }
@@ -130,13 +132,10 @@ export class ProductPage implements OnInit {
     return this.favoriteService.isFavorite(id) || this.favoriteIds.has(id);
   }
 
-  // Local products fallback
-  fetchLocalProducts() {
-    const localUrl = './data.json';
-
-    this.http.get<Product[]>(localUrl).subscribe({
+  LoadProducts() {
+    this.productService.fetchAllProducts().subscribe({
       next: (data) => {
-        this.processProducts(data);
+        this.processProducts(data)
       },
       error: (err) => {
         console.error('Error fetching local products:', err);
@@ -145,20 +144,17 @@ export class ProductPage implements OnInit {
         this.filteredProducts = [];
         this.categories = [];
       },
-    });
+    })
   }
-
   // Process products with proper favorite state initialization
   processProducts(data: Product[]) {
     const validProducts: Product[] = [];
-
     const allProducts = data.map((p) => ({
       ...p,
       price: Number(p.price) || 0,
       rating: Number(p.rating) || 0,
       isFavorite: this.isFavorite(p), // Use unified isFavorite method
     }));
-
     // Image validation
     const checkImagePromises = allProducts.map((product) =>
       this.http
@@ -167,7 +163,6 @@ export class ProductPage implements OnInit {
         .then(() => validProducts.push(product))
         .catch(() => null)
     );
-
     Promise.all(checkImagePromises).then(() => {
       this.products = validProducts;
       this.filteredProducts = this.products;
@@ -235,35 +230,35 @@ export class ProductPage implements OnInit {
     }
   }
 
-// Consistent addToCart method for all components
-addToCart(product: Product, event?: Event) {
-  if (event) event.stopPropagation();
-  if (!product || product.id == null) return;
+  // Consistent addToCart method for all components
+  addToCart(product: Product, event?: Event) {
+    if (event) event.stopPropagation();
+    if (!product || product.id == null) return;
 
-  const item = {
-    productId: product.id,
-    name: product.name,
-    price: Number(product.price) || 0,
-    image: product.image_link || product.image_link,
-    quantity: 1,
-    product
-  };
+    const item = {
+      productId: product.id,
+      name: product.name,
+      price: Number(product.price) || 0,
+      image: product.image_link || product.image_link,
+      quantity: 1,
+      product,
+    };
 
-  this.cartService.addItem(item);
+    this.cartService.addItem(item);
 
-  // SweetAlert notification
-  Swal.fire({
-    position: 'top-end',
-    icon: 'success',
-    title: 'Added to Cart!',
-    text: `${product.name} has been added to your cart`,
-    showConfirmButton: false,
-    timer: 2000,
-    toast: true,
-    background: '#f8f9fa',
-    iconColor: '#28a745'
-  });
-}
+    // SweetAlert notification
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Added to Cart!',
+      text: `${product.name} has been added to your cart`,
+      showConfirmButton: false,
+      timer: 2000,
+      toast: true,
+      background: '#f8f9fa',
+      iconColor: '#28a745',
+    });
+  }
 
   sortByPrice(event: any) {
     const value = event.target.value;
@@ -315,8 +310,7 @@ addToCart(product: Product, event?: Event) {
       this.filteredProducts = this.products.filter(
         (p) =>
           (this.selectedCategory === 'All' || p.product_type === this.selectedCategory) &&
-          (p.name?.toLowerCase().includes(query) ||
-            p.brand?.toLowerCase().includes(query))
+          (p.name?.toLowerCase().includes(query) || p.brand?.toLowerCase().includes(query))
       );
     }
     this.currentPage = 1;
@@ -325,10 +319,11 @@ addToCart(product: Product, event?: Event) {
   onSearch(event: any) {
     const searchValue = event.target.value.toLowerCase().trim();
 
-    this.filteredProducts = this.products.filter(p =>
-      p.name?.toLowerCase().includes(searchValue) ||
-      p.brand?.toLowerCase().includes(searchValue) ||
-      p.category?.toLowerCase().includes(searchValue)
+    this.filteredProducts = this.products.filter(
+      (p) =>
+        p.name?.toLowerCase().includes(searchValue) ||
+        p.brand?.toLowerCase().includes(searchValue) ||
+        p.category?.toLowerCase().includes(searchValue)
     );
 
     this.currentPage = 1;

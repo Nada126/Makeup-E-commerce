@@ -335,6 +335,12 @@ export class ViewProducts implements OnInit {
 
   combineProducts(): void {
     this.products = [...this.dbProducts, ...this.jsonProducts].filter((p) => p.image);
+    this.products.forEach((p) => {
+      p.product_type = (p.product_type || p.category || p.product_category || 'unknown')
+        .toString()
+        .trim()
+        .toLowerCase();
+    });
     this.applyFilters(this.currentPage);
   }
 

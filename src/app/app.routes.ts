@@ -22,7 +22,7 @@ export const routes: Routes = [
     { path: 'home', component: Home, title: 'Home' },
     { path: 'products', component: ProductPage, title: 'Products' },
     { path: 'products/:type', component: GenericProductPage, title: 'Product Category' },
-    { path: 'brand/:brand', component: GenericBrandPage, title: 'Brand Products' }, 
+    { path: 'brand/:brand', component: GenericBrandPage, title: 'Brand Products' },
     {path: 'product/:id', component: ProductDetails },
     { path: 'favorites', component: Favorite, title: 'My Favorites' },
     { path: 'about', component: About, title: 'About' },
@@ -32,32 +32,18 @@ export const routes: Routes = [
     { path: 'cart', component: Cart, title:'Cart' },
     { path: 'favourites', component: Favourites },
     { path: 'payment', component: Payment },
-
-
-    // { path: 'admin', component: AdminDashboard, title: 'Dashboard', canActivate:[AdminGuard] },
     { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },
-
-// ✅ Admin routes
-    { path: 'not-authorized', component: NotAuthorized, title: 'Not-Authorized' },// ✅ Admin routes
-{
-  path: 'admin',
-  canActivate: [AdminGuard],
-  children: [
-    { path: '', loadComponent: () => import('./Components/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard) },
-    { path: 'add-product', loadComponent: () => import('./Components/admin-dashboard/add-product/add-product').then(m => m.AddProduct) },
-    { path: 'products', loadComponent: () => import('./Components/admin-dashboard/view-products/view-products').then(m => m.ViewProducts) },
-    { path: 'reviews', loadComponent: () => import('./Components/admin-dashboard/manage-reviews/manage-reviews').then(m => m.ManageReviews) },
-  ],
-},
-
+    {
+      path: 'admin',
+      canActivate: [AdminGuard],
+      children: [
+        { path: '', loadComponent: () => import('./Components/admin-dashboard/admin-dashboard').then(m => m.AdminDashboard) },
+        { path: 'add-product', loadComponent: () => import('./Components/admin-dashboard/add-product/add-product').then(m => m.AddProduct) },
+        { path: 'products', loadComponent: () => import('./Components/admin-dashboard/view-products/view-products').then(m => m.ViewProducts) },
+        { path: 'reviews', loadComponent: () => import('./Components/admin-dashboard/manage-reviews/manage-reviews').then(m => m.ManageReviews) },
+      ],
+    },
     { path: '**', component: NotFound, title: 'Not Found' },
 ];
-// =======
-//     { path: 'data-deletion', component: DataDeletion, title: 'Data-Deletion' },
-//     { path: 'cart', component: Cart, title:'Cart' },
-//     { path: 'favourites', component: Favourites },
 
-//     { path: '**', component: NotFound, title: 'Not Found' }
-// ]
-// >>>>>>> b601b4a8f7cf20530ccd706749cbc7aeb4b51e8b
 

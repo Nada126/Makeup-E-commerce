@@ -244,7 +244,7 @@
       "name": "New Lipliner",
       "brand": "L.A.Girl",
       "price": 12,
-      "category": "LipLinear",
+      "category": "Lip Liner",
       "rating": 0,
       "image": "https://beautypalast.ch/images/products/6340_2_L_A__Girl_Lipliner_-_Lipliner_Pencil.jpg",
       "description": "",
@@ -316,6 +316,29 @@
       "category": "foundation",
       "rating": 0,
       "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_7M81_181x209.png",
+      "product_type": "foundation"
+    },
+    {
+      "id": "1761764820869",
+      "name": "new blush",
+      "brand": "Lasy",
+      "price": 10,
+      "category": "blush",
+      "product_type": "blush",
+      "rating": 3,
+      "image": "https://mymakeupstory.in/wp-content/uploads/2023/12/TB01.jpg",
+      "description": "blusher",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "7000",
+      "name": "Line Smoothing Concealer",
+      "brand": "clinique",
+      "price": 30,
+      "category": "foundation",
+      "rating": 0,
+      "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_65EF_181x209.png",
       "product_type": "foundation"
     }
   ]
