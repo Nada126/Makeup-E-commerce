@@ -1,38 +1,16 @@
 <div class="admin-reviews-container">
-  <!-- Header with your gradient theme -->
-  <header class="reviews-header">
-    <div class="header-content">
-      <div class="header-title">
-        <h1>⭐ Manage Reviews</h1>
-        <p>Review and moderate customer feedback</p>
-      </div>
-      <div class="header-actions">
-        <a routerLink="/admin" class="back-btn">
-          ← Back to Dashboard
-        </a>
-      </div>
-    </div>
-  </header>
+
 
   <!-- Controls Section -->
   <div class="controls-section">
     <div class="search-box">
-      <input
-        type="text"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="filterReviews()"
-        placeholder="Search reviews by user, product, or comment..."
-        class="search-input"
-      >
+      <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filterReviews()"
+        placeholder="Search reviews by user, product, or comment..." class="search-input">
       <span class="search-icon">🔍</span>
     </div>
 
     <div class="filter-controls">
-      <select
-        [(ngModel)]="selectedStatus"
-        (ngModelChange)="filterReviews()"
-        class="status-filter"
-      >
+      <select [(ngModel)]="selectedStatus" (ngModelChange)="filterReviews()" class="status-filter">
         <option value="all">All Status</option>
         <option value="pending">Pending</option>
         <option value="approved">Approved</option>
@@ -73,30 +51,22 @@
         <p class="review-comment">"{{review.comment}}"</p>
         <div class="product-info">
           <strong>📦 Product:</strong>
-          <span>{{review.productName || 'Loading product...'}}</span>
+          <span>{{ review.productName }}</span>
+          <small class="product-id"> — ID: {{ review.productId }}</small>
         </div>
       </div>
 
       <div class="review-actions">
         <div class="action-buttons">
-          <button
-            *ngIf="(review.status || 'pending') !== 'approved'"
-            (click)="updateReviewStatus(review.id!, 'approved')"
-            class="btn-approve"
-          >
+          <button *ngIf="(review.status || 'pending') !== 'approved'"
+            (click)="updateReviewStatus(review.id!, 'approved')" class="btn-approve">
             ✅ Approve
           </button>
-          <button
-            *ngIf="(review.status || 'pending') !== 'rejected'"
-            (click)="updateReviewStatus(review.id!, 'rejected')"
-            class="btn-reject"
-          >
+          <button *ngIf="(review.status || 'pending') !== 'rejected'"
+            (click)="updateReviewStatus(review.id!, 'rejected')" class="btn-reject">
             ❌ Reject
           </button>
-          <button
-            (click)="deleteReview(review.id!)"
-            class="btn-delete"
-          >
+          <button (click)="deleteReview(review.id!)" class="btn-delete">
             🗑 Delete
           </button>
         </div>

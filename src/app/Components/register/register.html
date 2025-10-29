@@ -3,13 +3,43 @@
     <h2>Create Account ✨</h2>
     <p class="subtitle">Register a new account</p>
 
-    <input type="text" placeholder="Full Name" [(ngModel)]="name">
-    <input type="email" placeholder="Email address" [(ngModel)]="email">
-    <input type="password" placeholder="Password" [(ngModel)]="password">
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
 
-    <button (click)="register()">Register</button>
+      <!-- Name -->
+      <div class="input-group">
+        <input type="text" placeholder="Full Name" formControlName="name" />
+        <span class="msg" *ngIf="f['name'].invalid && (f['name'].touched || f['name'].dirty)">
+          <span *ngIf="f['name'].errors?.['required']">Full name is required.</span>
+          <span *ngIf="f['name'].errors?.['minlength']">Name must be at least 3 characters.</span>
+        </span>
+      </div>
 
-    <p class="msg">{{ message }}</p>
+      <!-- Email -->
+      <div class="input-group">
+        <input type="email" placeholder="Email address" formControlName="email" />
+        <span class="msg" *ngIf="f['email'].invalid && (f['email'].touched || f['email'].dirty)">
+          <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+          <span *ngIf="f['email'].errors?.['email']">Enter a valid email.</span>
+        </span>
+      </div>
+
+      <!-- Password -->
+      <div class="input-group">
+        <input type="password" placeholder="Password" formControlName="password" />
+        <span class="msg" *ngIf="f['password'].invalid && (f['password'].touched || f['password'].dirty)">
+          <span *ngIf="f['password'].errors?.['required']">Password is required.</span>
+          <span *ngIf="f['password'].errors?.['minlength']">Must be at least 6 characters.</span>
+          <span *ngIf="f['password'].errors?.['pattern']">
+            Must include 1 uppercase and 1 number.
+          </span>
+        </span>
+      </div>
+
+      <!-- Register button -->
+      <button type="submit" [disabled]="!registerForm.valid">Register</button>
+    </form>
+
+    <p class="error-msg">{{ message }}</p>
 
     <p class="register-text">
       Already have an account?

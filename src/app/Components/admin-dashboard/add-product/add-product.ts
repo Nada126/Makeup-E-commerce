@@ -16,6 +16,7 @@ export class AddProduct {
     brand: '',
     price: null,
     category: '',
+    product_type: '',
     rating: 0,
     image: '',
     description: '',
@@ -36,6 +37,7 @@ addProduct() {
     price: Number(this.product.price),
     stock: this.product.stock ? Number(this.product.stock) : 0,
     rating: this.product.rating ? Number(this.product.rating) : 0,
+    product_type: this.product.product_type?.trim() || '',
     id: String(Date.now()),
     source: 'db'
   };
@@ -48,11 +50,13 @@ addProduct() {
         brand: '',
         price: null,
         category: '',
+        product_type: '',
         rating: 0,
         image: '',
         description: '',
         stock: null,
       };
+      window.location.href = '#/admin/view-products'; 
     },
     error: (err) => {
       console.error('Error adding product:', err);

@@ -152,3 +152,19 @@ height: 70px;
 .navbar .translate-middle {
   transform: translate(-60%, -20%);
 }
+/* 🧑‍💼 Admin nav uses same style as user nav */
+.navbar-nav.admin-nav .nav-link {
+  color: #4a4a4a;
+  font-weight: 500;
+  padding: 6px 16px;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav.admin-nav .nav-link.active,
+.navbar-nav.admin-nav .nav-link:hover {
+  color: #ff6f91;
+}
+
+.navbar-nav.admin-nav .nav-link::after {
+  background: linear-gradient(90deg, #ff6f91, #ffb6b9);
+}

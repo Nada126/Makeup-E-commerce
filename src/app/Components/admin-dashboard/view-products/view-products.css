@@ -11,6 +11,8 @@
   text-align: center;
   background: linear-gradient(45deg, #ff6f91, #ff9a9e);
   -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
@@ -367,4 +369,49 @@
   .action-buttons {
     flex-direction: column;
   }
+}
+
+/* ===========================
+   🌸 Elegant Gradient Pagination
+   =========================== */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+  gap: 8px;
+  flex-wrap: wrap;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+.page-btn {
+  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 8px rgba(255, 105, 135, 0.25);
+  font-size: 0.95rem;
+}
+
+.page-btn:hover {
+  background: linear-gradient(45deg, #ff6f91, #ff9a9e);
+  transform: scale(1.05);
+  box-shadow: 0 5px 12px rgba(255, 105, 135, 0.35);
+}
+
+.page-btn.active {
+  background: linear-gradient(45deg, #ff6f91, #ff9a9e);
+  box-shadow: 0 5px 14px rgba(255, 105, 135, 0.4);
+  transform: scale(1.08);
+}
+
+.page-btn:disabled {
+  background: #f3d5dc;
+  color: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
 }

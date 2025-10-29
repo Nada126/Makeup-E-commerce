@@ -9,7 +9,7 @@ import { firstValueFrom } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './view-products.html',
-  styleUrls: ['./view-products.css']
+  styleUrls: ['./view-products.css'],
 })
 export class ViewProducts implements OnInit {
   products: any[] = [];
@@ -22,11 +22,14 @@ export class ViewProducts implements OnInit {
   searchText = '';
   loading = false;
 
-  // UI state
   message = '';
   messageType: 'success' | 'error' | 'info' = 'info';
   confirmVisible = false;
   productToDelete: any = null;
+
+  currentPage = 1;
+  itemsPerPage = 40;
+  totalPages = 0;
 
   private dbUrl = 'http://localhost:3001/products';
   private jsonUrl = '/data.json';
@@ -40,120 +43,188 @@ export class ViewProducts implements OnInit {
   async loadAllProducts(): Promise<void> {
     this.loading = true;
     try {
-      // Load DB products
-      let dbData: any[] = [];
+      const allProducts: any[] = [];
+
+      // DB products
       try {
-        dbData = await firstValueFrom(this.http.get<any[]>(this.dbUrl));
-      } catch {
+        const dbData = await firstValueFrom(this.http.get<any[]>(this.dbUrl));
+        this.dbProducts = dbData.map((p) => ({
+          ...p,
+          source: 'db',
+          image: p.image || p.image_link,
+        }));
+        allProducts.push(...this.dbProducts);
+      } catch (error) {
+        console.error('Database error:', error);
         this.showMessage('Database not available.', 'error');
       }
 
-      this.dbProducts = [];
-      for (const p of dbData) {
-        if (await this.isImageAvailable(p.image)) {
-          this.dbProducts.push({ ...p, source: 'db' });
-        }
-      }
-
-      // Load JSON products
-      let jsonData: any = [];
+      // JSON products
       try {
-        jsonData = await firstValueFrom(this.http.get<any>(this.jsonUrl));
-      } catch {
+        const jsonData = await firstValueFrom(this.http.get<any>(this.jsonUrl));
+        const jsonArray = jsonData.products || jsonData || [];
+        this.jsonProducts = jsonArray.map((p: any, i: number) => ({
+          ...p,
+          id: p.id ?? `json-${i}`,
+          source: 'json',
+          image: p.image || p.image_link,
+        }));
+        allProducts.push(...this.jsonProducts);
+      } catch (error) {
+        console.error('JSON error:', error);
         this.showMessage('Local JSON not found.', 'error');
       }
-      const jsonDataArray = jsonData.products || jsonData || [];
-      this.jsonProducts = [];
-      for (let i = 0; i < jsonDataArray.length; i++) {
-        const p = jsonDataArray[i];
-        if (await this.isImageAvailable(p.image || p.image_link)) {
-          this.jsonProducts.push({
-            ...p,
-            id: p.id ?? `json-${i}`,
-            source: 'json'
-          });
-        }
-      }
 
-      this.combineProducts();
+      // Show all products immediately
+      this.products = allProducts;
+
+      // ✅ Normalize category names (important fix)
+      this.products.forEach((p) => {
+        p.product_type = (p.product_type || p.category || p.product_category || 'N/A')
+          .toString()
+          .trim();
+
+        if (p.product_type !== 'N/A') {
+          p.product_type = p.product_type.toLowerCase();
+        }
+      });
+
+      await this.filterBrokenImages();
+      this.updateCategories();
+      this.applyFilters();
     } finally {
       this.loading = false;
     }
   }
 
-  async isImageAvailable(url: string | undefined): Promise<boolean> {
-    if (!url) return false;
-    try {
-      await firstValueFrom(this.http.head(url, { observe: 'response' }));
-      return true;
-    } catch {
-      return false;
-    }
-  }
+  /**
+   * Accurate and fast broken-image filtering using HTML Image preload
+   */
+  async filterBrokenImages(): Promise<void> {
+    if (this.products.length === 0) return;
 
-  combineProducts(): void {
-    this.products = [...this.dbProducts, ...this.jsonProducts];
-    this.applyFilters();
+    const validProducts: any[] = [];
+
+    // Use HEAD request (faster than loading images)
+    const checkImage = async (url: string): Promise<boolean> => {
+      if (!url || url === '') return false;
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+      } catch {
+        return false;
+      }
+    };
+
+    const results = await Promise.all(
+      this.products.map(async (p) => {
+        const ok = await checkImage(p.image);
+        return ok ? p : null;
+      })
+    );
+
+    this.products = results.filter(Boolean) as any[];
+
+    this.dbProducts = this.dbProducts.filter((p) =>
+      this.products.some((x) => String(x.id) === String(p.id))
+    );
+    this.jsonProducts = this.jsonProducts.filter((p) =>
+      this.products.some((x) => String(x.id) === String(p.id))
+    );
     this.updateCategories();
+    this.updatePagination();
+  }
+  updateCategories(): void {
+    if (!this.products || this.products.length === 0) {
+      this.categories = [];
+      return;
+    }
+    const freq = new Map<string, { original: string; count: number }>();
+
+    this.products.forEach((p) => {
+      const raw = (p.product_type ?? p.category ?? p.product_category ?? '').toString().trim();
+      if (!raw) return;
+
+      const key = raw.toLowerCase();
+      if (!freq.has(key)) freq.set(key, { original: raw, count: 0 });
+      freq.get(key)!.count++;
+    });
+
+    const freqArr = Array.from(freq.entries()).map(([k, v]) => ({
+      key: k,
+      label: v.original,
+      count: v.count,
+    }));
+    console.log('🔢 product_type frequencies:', freqArr);
+    const THRESHOLD = 2;
+    const mainTypes = freqArr.filter((x) => x.count >= THRESHOLD).map((x) => x.label);
+    const selectedTypes = mainTypes.length ? mainTypes : freqArr.map((x) => x.label);
+    const uniqueSorted = Array.from(new Set(selectedTypes.map((s) => s.trim()))).sort((a, b) =>
+      a.toLowerCase().localeCompare(b.toLowerCase())
+    );
+
+    this.categories = ['All', ...uniqueSorted];
+  }
+  applyFilters(page: number = 1) {
+    this.filteredProducts = this.products.filter((p) => {
+      const category = p.product_type?.toLowerCase() || 'n/a';
+      const matchesCategory =
+        this.selectedCategory === 'All' || category === this.selectedCategory.toLowerCase();
+
+      const matchesSearch =
+        !this.searchText ||
+        p.name?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+        p.brand?.toLowerCase().includes(this.searchText.toLowerCase());
+
+      return matchesCategory && matchesSearch;
+    });
+
+    this.updatePagination();
+    this.currentPage = Math.max(1, Math.min(page, this.totalPages || 1));
   }
 
-  updateCategories(): void {
-    const mainCategories = new Set<string>();
-    this.products.forEach(p => {
-      if (p.product_type) mainCategories.add(p.product_type);
-    });
-    this.categories = Array.from(mainCategories).sort();
+  // Also update the saveEdit method to handle categories correctly
+  async saveEdit() {
+    if (!this.editingProduct) return;
+    const prod = this.editingProduct;
+
+    try {
+      if (prod.source === 'db') {
+        await firstValueFrom(this.http.put(`${this.dbUrl}/${prod.id}`, prod));
+        const index = this.dbProducts.findIndex((p) => String(p.id) === String(prod.id));
+        if (index !== -1) this.dbProducts[index] = { ...prod, source: 'db' };
+        this.combineProducts();
+        this.editingProduct = null;
+        this.showMessage('Product updated successfully!', 'success');
+      } else {
+        const newProd = {
+          name: prod.name,
+          brand: prod.brand,
+          price: prod.price,
+          category: prod.product_type, // Use product_type as category for DB
+          rating: prod.rating ?? 0,
+          image: prod.image || prod.image_link,
+          product_type: prod.product_type,
+        };
+        const saved: any = await firstValueFrom(this.http.post(this.dbUrl, newProd));
+        this.dbProducts.push({ ...saved, source: 'db' });
+        this.jsonProducts = this.jsonProducts.filter((p) => p.id !== prod.id);
+        this.combineProducts();
+        this.editingProduct = null;
+        this.showMessage('Product migrated to DB!', 'success');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      this.showMessage('Failed to save product', 'error');
+    }
   }
 
   filterByCategory(category: string) {
     this.selectedCategory = category;
-    this.applyFilters();
+    this.applyFilters(1); // Reset to page 1 when filtering
   }
 
-  applyFilters() {
-    this.filteredProducts = this.products.filter(p => {
-      const matchesCategory = this.selectedCategory === 'All' || p.product_type === this.selectedCategory;
-      const matchesSearch = !this.searchText || p.name.toLowerCase().includes(this.searchText.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }
-
-confirmDelete(product: any) {
-  const confirmed = window.confirm(`Are you sure you want to delete "${product.name}"?`);
-  if (confirmed) {
-    this.productToDelete = product;
-    this.deleteConfirmed();
-  }
-}
-
-
-  cancelDelete() {
-    this.productToDelete = null;
-    this.confirmVisible = false;
-  }
-
-  deleteConfirmed() {
-    if (!this.productToDelete) return;
-
-    if (this.productToDelete.source === 'db') {
-      this.http.delete(`${this.dbUrl}/${this.productToDelete.id}`).subscribe({
-        next: () => {
-          this.dbProducts = this.dbProducts.filter(p => p.id !== this.productToDelete.id);
-          this.combineProducts();
-          this.showMessage('Product deleted successfully', 'success');
-        },
-        error: () => this.showMessage('Failed to delete product', 'error')
-      });
-    } else if (this.productToDelete.source === 'json') {
-      this.jsonProducts = this.jsonProducts.filter(p => p.id !== this.productToDelete.id);
-      this.combineProducts();
-      this.showMessage('JSON product removed successfully', 'success');
-    }
-
-    this.productToDelete = null;
-    this.confirmVisible = false;
-  }
-
+  // ===== EDIT =====
   startEdit(product: any) {
     this.editingProduct = { ...product };
   }
@@ -161,51 +232,118 @@ confirmDelete(product: any) {
   cancelEdit() {
     this.editingProduct = null;
   }
-saveEdit() {
-  if (!this.editingProduct) return;
-  const prod = this.editingProduct;
 
-  if (prod.source === 'db') {
-    // Update DB product
-    this.http.put(`${this.dbUrl}/${prod.id}`, prod).subscribe({
-      next: () => {
-        const index = this.dbProducts.findIndex(p => String(p.id) === String(prod.id));
-        if (index !== -1) this.dbProducts[index] = { ...prod, source: 'db' };
-        this.combineProducts();
-        this.editingProduct = null;
-        this.showMessage('Product updated in DB successfully!', 'success');
-      },
-      error: () => this.showMessage('Failed to update product', 'error')
-    });
-  } else if (prod.source === 'json') {
-    // Prepare product for DB
-    const productToSave = {
-      name: prod.name,
-      brand: prod.brand,
-      price: prod.price,
-      category: prod.category || prod.product_type,
-      rating: prod.rating ?? 0,
-      image: prod.image || prod.image_link,
-      product_type: prod.product_type
-    };
+  // async saveEdit() {
+  //   if (!this.editingProduct) return;
+  //   const prod = this.editingProduct;
 
-    // POST JSON product to DB
-    this.http.post(this.dbUrl, productToSave).subscribe({
-      next: (saved: any) => {
-        // Add to dbProducts
-        this.dbProducts.push({ ...saved, source: 'db', id: String(saved.id) });
-        // Remove from jsonProducts immediately
-        this.jsonProducts = this.jsonProducts.filter(p => p.id !== prod.id);
-        // Recombine products for display
-        this.combineProducts();
-        this.editingProduct = null;
-        this.showMessage('JSON product migrated to DB successfully!', 'success');
-      },
-      error: () => this.showMessage('Failed to save product to DB', 'error')
-    });
+  //   try {
+  //     if (prod.source === 'db') {
+  //       await firstValueFrom(this.http.put(`${this.dbUrl}/${prod.id}`, prod));
+  //       const index = this.dbProducts.findIndex(p => String(p.id) === String(prod.id));
+  //       if (index !== -1) this.dbProducts[index] = { ...prod, source: 'db' };
+  //       this.combineProducts();
+  //       this.editingProduct = null;
+  //       this.showMessage('Product updated successfully!', 'success');
+  //     } else {
+  //       const newProd = {
+  //         name: prod.name,
+  //         brand: prod.brand,
+  //         price: prod.price,
+  //         category: prod.category || prod.product_type,
+  //         rating: prod.rating ?? 0,
+  //         image: prod.image || prod.image_link,
+  //         product_type: prod.product_type
+  //       };
+  //       const saved: any = await firstValueFrom(this.http.post(this.dbUrl, newProd));
+  //       this.dbProducts.push({ ...saved, source: 'db' });
+  //       this.jsonProducts = this.jsonProducts.filter(p => p.id !== prod.id);
+  //       this.combineProducts();
+  //       this.editingProduct = null;
+  //       this.showMessage('Product migrated to DB!', 'success');
+  //     }
+  //   } catch (error) {
+  //     console.error('Save error:', error);
+  //     this.showMessage('Failed to save product', 'error');
+  //   }
+  // }
+
+  // ===== DELETE =====
+  confirmDelete(product: any) {
+    if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
+      this.productToDelete = product;
+      this.deleteConfirmed();
+    }
   }
-}
 
+  async deleteConfirmed() {
+    if (!this.productToDelete) return;
+
+    try {
+      if (this.productToDelete.source === 'db') {
+        await firstValueFrom(this.http.delete(`${this.dbUrl}/${this.productToDelete.id}`));
+        this.dbProducts = this.dbProducts.filter((p) => p.id !== this.productToDelete.id);
+        this.combineProducts();
+        this.showMessage('Product deleted', 'success');
+      } else {
+        this.jsonProducts = this.jsonProducts.filter((p) => p.id !== this.productToDelete.id);
+        this.combineProducts();
+        this.showMessage('JSON product removed', 'success');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      this.showMessage('Failed to delete product', 'error');
+    } finally {
+      this.productToDelete = null;
+    }
+  }
+
+  // ===== PAGINATION =====
+  get paginatedProducts() {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredProducts.slice(start, end);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.scrollToTop();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.scrollToTop();
+    }
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.scrollToTop();
+    }
+  }
+
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredProducts.length / this.itemsPerPage) || 1;
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  combineProducts(): void {
+    this.products = [...this.dbProducts, ...this.jsonProducts].filter((p) => p.image);
+    this.applyFilters(this.currentPage);
+  }
+
+  // ===== HELPERS =====
+  getProductImage(product: any): string {
+    return (
+      product.image || product.image_link || 'https://via.placeholder.com/100x100?text=No+Image'
+    );
+  }
 
   showMessage(msg: string, type: 'success' | 'error' | 'info' = 'info') {
     this.message = msg;
@@ -213,7 +351,12 @@ saveEdit() {
     setTimeout(() => (this.message = ''), 3000);
   }
 
-  getProductImage(product: any): string {
-    return product.image || product.image_link || 'https://via.placeholder.com/100x100?text=No+Image';
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Add trackBy function for better performance
+  trackByProductId(index: number, product: any): string {
+    return `${product.source}-${product.id}`;
   }
 }
