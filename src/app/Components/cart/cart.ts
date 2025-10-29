@@ -66,7 +66,7 @@ getSubtotal(): number {
 
 getShipping(): number {
   const subtotal = this.getSubtotal();
-  return subtotal > 50 ? 0 : 5.99; // Free shipping over $50
+  return subtotal > 50 ? 0 : 5.00; // Free shipping over $50
 }
 
 getTax(): number {

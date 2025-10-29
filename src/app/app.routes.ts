@@ -22,9 +22,9 @@ export const routes: Routes = [
     { path: 'home', component: Home, title: 'Home' },
     { path: 'products', component: ProductPage, title: 'Products' },
     { path: 'products/:type', component: GenericProductPage, title: 'Product Category' },
-    { path: 'brand/:brand', component: GenericBrandPage, title: 'Brand Products' }, // Add this route
+    { path: 'brand/:brand', component: GenericBrandPage, title: 'Brand Products' }, 
     {path: 'product/:id', component: ProductDetails },
-    { path: 'favorites', component: Favorite, title: 'My Favorites' }, // Add this line
+    { path: 'favorites', component: Favorite, title: 'My Favorites' },
     { path: 'about', component: About, title: 'About' },
     { path: 'login', component: Login, title: 'Login' },
     { path: 'register', component: Register, title: 'Register' },
