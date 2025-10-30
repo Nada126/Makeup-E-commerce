@@ -340,6 +340,84 @@
       "rating": 0,
       "image": "https://www.clinique.com/media/export/cms/products/181x209/clq_65EF_181x209.png",
       "product_type": "foundation"
+    },
+    {
+      "id": "1761854794604",
+      "name": "newwwwwwww",
+      "brand": "brand",
+      "price": 12,
+      "category": "foundation",
+      "product_type": "matte",
+      "rating": 5,
+      "image": "htttp:",
+      "description": "desc",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "1761855672015",
+      "name": "new ma",
+      "brand": "brand",
+      "price": 12,
+      "category": "eyeliner",
+      "product_type": "matte",
+      "rating": 3,
+      "image": "hgaagshgasg",
+      "description": "desc",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "1761855948123",
+      "name": "new nasc",
+      "brand": "new",
+      "price": 12,
+      "category": "mascara",
+      "product_type": "matte",
+      "rating": 3,
+      "image": "https://ibeautyjo.com/wp-content/uploads/2024/12/topface-3Dimension-Mascara-2.jpg",
+      "description": "desc",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "1761856070153",
+      "name": "new nasc",
+      "brand": "new",
+      "price": 12,
+      "category": "mascara",
+      "product_type": "matte",
+      "rating": 3,
+      "image": "https://ibeautyjo.com/wp-content/uploads/2024/12/topface-3Dimension-Mascara-2.jpg",
+      "description": "desc",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "1761856552840",
+      "name": "new",
+      "brand": "ibrow",
+      "price": 10,
+      "category": "eyebrow",
+      "product_type": "any",
+      "rating": 0,
+      "image": "htt",
+      "description": "desc",
+      "stock": 0,
+      "source": "db"
+    },
+    {
+      "id": "1761856908207",
+      "name": "new test",
+      "brand": "ibrow",
+      "price": 10,
+      "category": "",
+      "product_type": "blush",
+      "rating": 0,
+      "image": "htt",
+      "description": "desc",
+      "stock": 0,
+      "source": "db"
     }
   ]
 }

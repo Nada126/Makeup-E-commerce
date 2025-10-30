@@ -21,7 +21,7 @@
 
           <div class="form-group">
             <label class="form-label">Category*</label>
-            <select [(ngModel)]="product.category" name="category" required class="form-select">
+            <select [(ngModel)]="product.product_type" name="category" required class="form-select">
               <option value="">Select category</option>
               <option value="lipstick">Lipstick</option>
               <option value="foundation">Foundation</option>
@@ -35,11 +35,11 @@
               <option value="mascara">Mascara</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label class="form-label">Product Type</label>
             <input type="text" [(ngModel)]="product.product_type" name="product_type"
               placeholder="e.g. matte, liquid, waterproof" class="form-control" />
-          </div>
+          </div> -->
         </div>
 
         <div class="col-md-6">

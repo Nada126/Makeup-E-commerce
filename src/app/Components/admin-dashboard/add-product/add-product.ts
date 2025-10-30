@@ -27,7 +27,7 @@ export class AddProduct {
 
   constructor(private http: HttpClient) { }
   addProduct() {
-    if (!this.product.name || !this.product.price || !this.product.category) {
+    if (!this.product.name || !this.product.price || !this.product.product_type) {
       alert('Please fill in all required fields.');
       return;
     }
@@ -49,7 +49,7 @@ export class AddProduct {
           name: '',
           brand: '',
           price: null,
-          category: '',
+          category: 'any',
           product_type: '',
           rating: 0,
           image: '',
