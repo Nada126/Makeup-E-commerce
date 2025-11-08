@@ -1,8 +1,7 @@
-
 header.background {
   background: linear-gradient(90deg, #ffc1cc 0%, #ffb6b9 50%, #fad0c4 100%);
-  border-radius: 0 0 18px 18px;
-  padding: 4px 0; /* Smaller height */
+  border-radius: 0 0 18px 0;
+  padding: 4px 0;
   box-shadow: 0 2px 12px rgba(255, 182, 193, 0.4);
   position: sticky;
   top: 0;

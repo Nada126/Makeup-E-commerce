@@ -8,8 +8,8 @@
 .success-state {
   text-align: center;
   padding: 40px;
-  background: #f8fff9;
-  border: 2px solid #4CAF50;
+  background: #fff5f7;
+  border: 2px solid #ff9a9e;
   border-radius: 10px;
   max-width: 600px;
   margin: 50px auto;
@@ -17,7 +17,7 @@
 
 .success-icon {
   font-size: 48px;
-  color: #4CAF50;
+  color: #ff6f91;
   margin-bottom: 20px;
 }
 
@@ -52,15 +52,15 @@
   background: white;
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 20px rgba(255, 105, 135, 0.1);
+  border: 1px solid #ff9a9e;
 }
 
 .order-summary-card h3 {
-  color: #2c5aa0;
+  color: #ff6f91;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid #ff9a9e;
   font-size: 1.3rem;
 }
 
@@ -74,7 +74,7 @@
   display: flex;
   align-items: flex-start;
   padding: 15px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #ff9a9e;
   gap: 12px;
 }
 
@@ -110,13 +110,13 @@
 
 .item-total {
   font-weight: bold;
-  color: #2c5aa0;
+  color: #ff6f91;
   font-size: 1rem;
   flex-shrink: 0;
 }
 
 .summary-totals {
-  border-top: 2px solid #e0e0e0;
+  border-top: 2px solid #ff9a9e;
   padding-top: 20px;
   margin-top: 20px;
 }
@@ -131,9 +131,9 @@
 .grand-total {
   font-size: 1.2em;
   font-weight: bold;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid #ff9a9e;
   padding-top: 12px;
-  color: #2c5aa0;
+  color: #ff6f91;
 }
 
 /* Forms */
@@ -141,15 +141,15 @@
   background: white;
   padding: 25px;
   border-radius: 12px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.08);
-  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 15px rgba(255, 105, 135, 0.08);
+  border: 1px solid #ff9a9e;
 }
 
 .customer-form h3, .payment-details h3 {
-  color: #2c5aa0;
+  color: #ff6f91;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid #ff9a9e;
   font-size: 1.3rem;
 }
 
@@ -174,27 +174,27 @@ label {
 input {
   width: 100%;
   padding: 14px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #ff9a9e;
   border-radius: 8px;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #fafafa;
+  background: #fff5f7;
 }
 
 input:focus {
   outline: none;
-  border-color: #2c5aa0;
+  border-color: #ff6f91;
   background: white;
-  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+  box-shadow: 0 0 0 3px rgba(255, 111, 145, 0.1);
 }
 
 input.error {
-  border-color: #e74c3c;
-  background: #fef7f7;
+  border-color: #ff6f91;
+  background: #fff5f7;
 }
 
 .error-message {
-  color: #e74c3c;
+  color: #ff6f91;
   font-size: 0.85rem;
   margin-top: 6px;
   display: block;
@@ -202,16 +202,16 @@ input.error {
 
 /* Test Cards */
 .test-cards {
-  background: linear-gradient(135deg, #fff8e1, #ffecb3);
+  background: linear-gradient(135deg, #fff5f7, #ff9a9e);
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 25px;
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid #ff6f91;
 }
 
 .test-cards label {
   font-weight: 700;
-  color: #5d4037;
+  color: #ff6f91;
   margin-bottom: 12px;
 }
 
@@ -222,7 +222,7 @@ input.error {
 }
 
 .test-card-btn {
-  background: #2196F3;
+  background: #ff6f91;
   color: white;
   border: none;
   padding: 10px 15px;
@@ -234,7 +234,7 @@ input.error {
 }
 
 .test-card-btn:hover {
-  background: #1976D2;
+  background: #ff9a9e;
   transform: translateX(5px);
 }
 
@@ -258,89 +258,18 @@ input.error {
   width: 100%;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #2c5aa0, #1e3d72);
-  color: white;
-  box-shadow: 0 4px 15px rgba(44, 90, 160, 0.3);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1e3d72, #152a57);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(44, 90, 160, 0.4);
-}
-
-.btn-primary:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: #545b62;
-  transform: translateY(-1px);
-}
-
-.security-notice {
-  text-align: center;
-  padding: 15px;
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  border-radius: 8px;
-  color: #1565c0;
-  font-size: 0.9rem;
-  border: 1px solid #90caf9;
-}
-
-.security-notice p {
-  margin: 5px 0;
-}
-
-/* SweetAlert2 Customizations */
-.swal2-popup {
-  border-radius: 12px !important;
-}
-
-.swal2-confirm {
-  background: #2c5aa0 !important;
-}
-
-.action-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 25px 0;
-}
-
-.btn-primary, .btn-secondary {
-  padding: 16px 24px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  width: 100%;
-}
-
 /* Pay Button - Pink Theme */
 .btn-primary {
-  background: linear-gradient(135deg, #e91e63, #ad1457) !important;
+  background: linear-gradient(135deg, #ff6f91, #ff9a9e) !important;
   color: white !important;
-  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 111, 145, 0.3);
   border: none;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #ad1457, #880e4f) !important;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4) !important;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(233, 30, 99, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 111, 145, 0.4);
 }
 
 .btn-primary:disabled {
@@ -353,16 +282,16 @@ input.error {
 /* Cancel Button - Outline Pink */
 .btn-secondary {
   background: transparent !important;
-  color: #e91e63 !important;
-  border: 2px solid #e91e63 !important;
+  color: #ff6f91 !important;
+  border: 2px solid #ff6f91 !important;
   font-weight: 500;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #e91e63 !important;
+  background: #ff6f91 !important;
   color: white !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 111, 145, 0.2);
 }
 
 .btn-secondary:disabled {
@@ -372,53 +301,36 @@ input.error {
   cursor: not-allowed;
 }
 
-/* Update SweetAlert to match pink theme */
+/* Security Notice */
+.security-notice {
+  text-align: center;
+  padding: 15px;
+  background: linear-gradient(135deg, #fff5f7, #ff9a9e);
+  border-radius: 8px;
+  color: #ff6f91;
+  font-size: 0.9rem;
+  border: 1px solid #ff9a9e;
+}
+
+.security-notice p {
+  margin: 5px 0;
+}
+
+/* SweetAlert2 Customizations */
+.swal2-popup {
+  border-radius: 12px !important;
+}
+
 .swal2-confirm {
-  background: #e91e63 !important;
-  border-color: #e91e63 !important;
+  background: #ff6f91 !important;
+  border-color: #ff6f91 !important;
 }
 
 .swal2-confirm:hover {
-  background: #ad1457 !important;
-  border-color: #ad1457 !important;
-}
-.order-summary-card h3 {
-  color: #e91e63; /* Pink primary color */
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f8bbd9; /* Pink light color */
-  font-size: 1.3rem;
+  background: #ff9a9e !important;
+  border-color: #ff9a9e !important;
 }
 
-.item-total {
-  font-weight: bold;
-  color: #e91e63; /* Pink primary color */
-  font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.grand-total {
-  font-size: 1.2em;
-  font-weight: bold;
-  border-top: 1px solid #f8bbd9; /* Pink light color */
-  padding-top: 12px;
-  color: #e91e63; /* Pink primary color */
-}
-
-.customer-form h3, .payment-details h3 {
-  color: #e91e63; /* Pink primary color */
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f8bbd9; /* Pink light color */
-  font-size: 1.3rem;
-}
-
-input:focus {
-  outline: none;
-  border-color: #e91e63; /* Pink primary color */
-  background: white;
-  box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1); /* Pink with opacity */
-}
 /* Responsive Design */
 @media (max-width: 968px) {
   .checkout-layout {
@@ -472,15 +384,15 @@ input:focus {
 }
 
 .order-items::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #fff5f7;
   border-radius: 3px;
 }
 
 .order-items::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #ff9a9e;
   border-radius: 3px;
 }
 
 .order-items::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #ff6f91;
 }

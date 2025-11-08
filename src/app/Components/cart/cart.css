@@ -1,21 +1,19 @@
-/* Replace the entire cart.css with this: */
 
-/* Direct colors since CSS variables aren't working */
 :root {
-  --pink-primary: #e91e63;
-  --pink-light: #f8bbd9;
-  --pink-dark: #ad1457;
+  --pink-primary: #ff6f91;
+  --pink-light: #ff9a9e;
+  --pink-dark: #fad0c4;
   --pink-bg: #fff5f7;
 }
 
 /* Text colors for pink theme */
 .text-pink-dark {
-  color: #ad1457 !important;
+  color: #ff6f91 !important;
 }
 
 /* Border colors */
 .border-pink {
-  border-color: #f8bbd9 !important;
+  border-color: #ff9a9e !important;
 }
 
 /* Empty Cart State */
@@ -27,20 +25,20 @@
 
 .empty-cart-icon {
   font-size: 4rem;
-  color: #f8bbd9;
+  color: #ff9a9e;
 }
 
 /* Cart Items */
 .cart-item {
   border: none;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(233, 30, 99, 0.1);
+  box-shadow: 0 2px 10px rgba(255, 105, 135, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cart-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(233, 30, 99, 0.15);
+  box-shadow: 0 4px 15px rgba(255, 105, 135, 0.15);
 }
 
 .cart-item-image {
@@ -55,12 +53,12 @@
 }
 
 .cart-item-price {
-  color: #e91e63;
+  color: #ff6f91;
   font-weight: 500;
 }
 
 .cart-item-total {
-  color: #ad1457;
+  color: #ff6f91;
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -77,13 +75,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #e91e63;
-  color: #e91e63;
+  border: 2px solid #ff6f91;
+  color: #ff6f91;
   transition: all 0.3s ease;
 }
 
 .quantity-btn:hover:not(:disabled) {
-  background: #e91e63;
+  background: #ff6f91;
   color: white;
 }
 
@@ -105,13 +103,13 @@
 }
 
 .remove-btn:hover {
-  color: #ad1457 !important;
+  color: #ff6f91 !important;
 }
 
 /* Cart Summary */
 .cart-summary {
   background: #fff5f7;
-  border: 2px solid #f8bbd9 !important;
+  border: 2px solid #ff9a9e !important;
 }
 
 .total-line {
@@ -121,7 +119,7 @@
 }
 
 .grand-total {
-  border-top: 2px solid #f8bbd9;
+  border-top: 2px solid #ff9a9e;
   padding-top: 1rem;
   display: flex;
   justify-content: space-between;
@@ -134,37 +132,83 @@
 }
 
 .grand-total-value {
-  color: #ad1457;
+  color: #ff6f91;
 }
 
-/* Pink Buttons */
+/* Pink Buttons - Matching favorites page */
 .btn-pink {
-  background: #e91e63 !important;
-  border-color: #e91e63 !important;
+  background: #ff6f91 !important;
+  border-color: #ff6f91 !important;
   color: white !important;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
 .btn-pink:hover {
-  background: #ad1457 !important;
-  border-color: #ad1457 !important;
+  background: #fad0c4 !important;
+  border-color: #fad0c4 !important;
   color: white !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 105, 135, 0.3);
 }
 
 .btn-outline-pink {
-  color: #e91e63 !important;
-  border-color: #e91e63 !important;
+  color: #ff6f91 !important;
+  border-color: #ff6f91 !important;
   background: transparent !important;
   font-weight: 500;
 }
 
 .btn-outline-pink:hover {
-  background: #e91e63 !important;
+  background: #ff6f91 !important;
   color: white !important;
   transform: translateY(-1px);
+}
+
+/* Add to Cart Button Style for Cart Page */
+.btn-outline-dark {
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(255, 105, 135, 0.25);
+}
+
+.btn-outline-dark:hover {
+  background: linear-gradient(45deg, #ff6f91, #ff9a9e);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 105, 135, 0.35);
+}
+
+.btn-outline-dark:active {
+  transform: scale(0.98);
+  background: linear-gradient(45deg, #ff6f91, #ff9a9e);
+  box-shadow: 0 2px 6px rgba(255, 105, 135, 0.3);
+}
+
+/* Continue Shopping Button */
+.btn-outline-secondary {
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  border: 2px solid #6c757d;
+  color: #6c757d;
+  background: transparent;
+  font-weight: 500;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+}
+
+.btn-outline-secondary:hover {
+  background: #6c757d;
+  color: white;
+  transform: scale(1.05);
+  border-color: #6c757d;
 }
 
 /* Responsive Design */
