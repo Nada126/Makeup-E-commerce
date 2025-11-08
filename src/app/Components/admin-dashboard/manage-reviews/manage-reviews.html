@@ -1,6 +1,4 @@
 <div class="admin-reviews-container">
-
-
   <!-- Controls Section -->
   <div class="controls-section">
     <div class="search-box">
@@ -22,6 +20,12 @@
         <span class="stat-pending">Pending: {{pendingReviewsCount}}</span>
       </div>
     </div>
+  </div>
+
+  <!-- Message Box -->
+  <div *ngIf="message" class="message-box" [ngClass]="messageType">
+    {{ message }}
+    <button *ngIf="message" (click)="message = ''" class="close-msg">×</button>
   </div>
 
   <!-- Reviews List -->
@@ -66,10 +70,36 @@
             (click)="updateReviewStatus(review.id!, 'rejected')" class="btn-reject">
             ❌ Reject
           </button>
-          <button (click)="deleteReview(review.id!)" class="btn-delete">
+          <button (click)="confirmDelete(review)" class="btn-delete">
             🗑 Delete
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modern Delete Confirmation Modal -->
+  <div *ngIf="confirmVisible" class="modal-overlay" (click)="cancelDelete()">
+    <div class="modern-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <i class="bi bi-exclamation-triangle warning-icon"></i>
+        <h3>Delete Review</h3>
+      </div>
+      
+      <div class="modal-body">
+        <p>Are you sure you want to delete this review by <strong>"{{ reviewToDelete?.userName }}"</strong>?</p>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelDelete()">
+          <i class="bi bi-x-lg"></i>
+          Cancel
+        </button>
+        <button class="btn-danger" (click)="deleteConfirmed()">
+          <i class="bi bi-trash"></i>
+          Delete Review
+        </button>
       </div>
     </div>
   </div>

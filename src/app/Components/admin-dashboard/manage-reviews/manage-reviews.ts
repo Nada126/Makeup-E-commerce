@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { Review } from '../../../modules/review';
 import { Product } from '../../../modules/Product';
 
-
 @Component({
   selector: 'app-manage-reviews',
   standalone: true,
@@ -19,6 +18,10 @@ export class ManageReviews implements OnInit {
   filteredReviews: Review[] = [];
   selectedStatus: string = 'all';
   searchTerm: string = '';
+  message = '';
+  messageType: 'success' | 'error' | 'info' = 'info';
+  confirmVisible = false;
+  reviewToDelete: any = null;
 
   // Computed properties for template
   get totalReviews(): number {
@@ -32,56 +35,55 @@ export class ManageReviews implements OnInit {
   private baseUrl = 'http://localhost:3001/reviews';
   private productsUrl = 'http://localhost:3001/products';
 
-
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.loadReviews();
   }
 
-loadReviews() {
-  this.http.get<Review[]>(this.baseUrl).subscribe({
-    next: (reviews) => {
-      this.http.get<Product[]>(this.productsUrl).subscribe({
-        next: (dbProducts) => {
-          this.http.get<Product[]>('/data.json').subscribe({
-            next: (apiProducts) => {
-              const allProducts = [...dbProducts, ...apiProducts];
+  loadReviews() {
+    this.http.get<Review[]>(this.baseUrl).subscribe({
+      next: (reviews) => {
+        this.http.get<Product[]>(this.productsUrl).subscribe({
+          next: (dbProducts) => {
+            this.http.get<Product[]>('/data.json').subscribe({
+              next: (apiProducts) => {
+                const allProducts = [...dbProducts, ...apiProducts];
 
-              this.reviews = reviews.map((review) => {
-                const product = allProducts.find(
-                  (p) => String(p.id) === String(review.productId)
-                );
+                this.reviews = reviews.map((review) => {
+                  const product = allProducts.find(
+                    (p) => String(p.id) === String(review.productId)
+                  );
 
-                return {
-                  ...review,
-                  productName: product?.name || 'Unknown Product',
-                  productCode: product?.id || 'N/A'
-                };
-              });
+                  return {
+                    ...review,
+                    productName: product?.name || 'Unknown Product',
+                    productCode: product?.id || 'N/A'
+                  };
+                });
 
-              this.filterReviews();
-            },
-            error: (err) => {
-              console.error('Error loading /data.json:', err);
-              this.reviews = reviews;
-              this.filterReviews();
-            },
-          });
-        },
-        error: (err) => {
-          console.error('Error loading products from db.json:', err);
-          this.reviews = reviews;
-          this.filterReviews();
-        },
-      });
-    },
-    error: (err) => {
-      console.error('Error loading reviews:', err);
-      alert('❌ Failed to load reviews.');
-    },
-  });
-}
+                this.filterReviews();
+              },
+              error: (err) => {
+                console.error('Error loading /data.json:', err);
+                this.reviews = reviews;
+                this.filterReviews();
+              },
+            });
+          },
+          error: (err) => {
+            console.error('Error loading products from db.json:', err);
+            this.reviews = reviews;
+            this.filterReviews();
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error loading reviews:', err);
+        this.showMessage('❌ Failed to load reviews.', 'error');
+      },
+    });
+  }
 
   filterReviews() {
     this.filteredReviews = this.reviews.filter(review => {
@@ -103,29 +105,47 @@ loadReviews() {
       this.http.patch(`${this.baseUrl}/${reviewId}`, { status }).subscribe({
         next: () => {
           this.filterReviews();
+          this.showMessage('✅ Review status updated successfully!', 'success');
         },
         error: (err) => {
           console.error('Error updating review:', err);
-          alert('❌ Failed to update review status.');
+          this.showMessage('❌ Failed to update review status.', 'error');
         }
       });
     }
   }
 
-  deleteReview(reviewId: number) {
-    if (confirm('Are you sure you want to delete this review?')) {
-      this.http.delete(`${this.baseUrl}/${reviewId}`).subscribe({
-        next: () => {
-          this.reviews = this.reviews.filter(r => r.id !== reviewId);
-          this.filterReviews();
-          alert('✅ Review deleted successfully!');
-        },
-        error: (err) => {
-          console.error('Error deleting review:', err);
-          alert('❌ Failed to delete review.');
-        }
-      });
-    }
+  // Delete methods with modern modal
+  confirmDelete(review: any) {
+    this.reviewToDelete = review;
+    this.confirmVisible = true;
+  }
+
+  cancelDelete() {
+    this.confirmVisible = false;
+    this.reviewToDelete = null;
+  }
+
+  deleteConfirmed() {
+    if (!this.reviewToDelete) return;
+
+    const reviewId = this.reviewToDelete.id;
+
+    this.http.delete(`${this.baseUrl}/${reviewId}`).subscribe({
+      next: () => {
+        this.reviews = this.reviews.filter(r => r.id !== reviewId);
+        this.filterReviews();
+        this.showMessage('✅ Review deleted successfully!', 'success');
+      },
+      error: (err) => {
+        console.error('Error deleting review:', err);
+        this.showMessage('❌ Failed to delete review.', 'error');
+      },
+      complete: () => {
+        this.confirmVisible = false;
+        this.reviewToDelete = null;
+      }
+    });
   }
 
   getStatusBadgeClass(status: string): string {
@@ -139,5 +159,11 @@ loadReviews() {
 
   getStars(rating: number): number[] {
     return Array(rating).fill(0);
+  }
+
+  showMessage(msg: string, type: 'success' | 'error' | 'info' = 'info') {
+    this.message = msg;
+    this.messageType = type;
+    setTimeout(() => (this.message = ''), 3000);
   }
 }

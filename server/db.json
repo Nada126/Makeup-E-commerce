@@ -122,16 +122,6 @@
       "status": "pending"
     },
     {
-      "id": "1678",
-      "userName": "nada",
-      "userImage": "https://randomuser.me/api/portraits/women/50.jpg",
-      "date": "2025-10-19",
-      "rating": 3,
-      "comment": "good",
-      "productId": 846,
-      "status": "pending"
-    },
-    {
       "id": "a28e",
       "userName": "Nour Amr",
       "userImage": "https://randomuser.me/api/portraits/women/28.jpg",
@@ -153,30 +143,14 @@
   ],
   "products": [
     {
-      "id": "1761859371476",
-      "name": "neweyeliner",
-      "brand": "new",
-      "price": 10,
-      "category": "",
-      "product_type": "eyeliner",
-      "rating": 5,
-      "image": "new",
-      "description": "new",
-      "stock": 0,
-      "source": "db"
-    },
-    {
-      "id": "1761859531273",
-      "name": "newProduct",
-      "brand": "new",
-      "price": 10,
-      "category": "",
-      "product_type": "blush",
+      "id": "a465",
+      "name": "Blotted Lip",
+      "brand": "colourpop",
+      "price": 6,
+      "category": "lipstick",
       "rating": 0,
-      "image": "new",
-      "description": "new",
-      "stock": 0,
-      "source": "db"
+      "image": "https://cdn.shopify.com/s/files/1/1338/0845/products/brain-freeze_a_800x1200.jpg?v=1502255076",
+      "product_type": "lipstick"
     }
   ]
 }
