@@ -34,7 +34,7 @@ export class ViewProducts implements OnInit {
   private dbUrl = 'http://localhost:3001/products';
   private jsonUrl = '/data.json';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   async ngOnInit() {
     await this.loadAllProducts();
@@ -233,47 +233,16 @@ export class ViewProducts implements OnInit {
     this.editingProduct = null;
   }
 
-  // async saveEdit() {
-  //   if (!this.editingProduct) return;
-  //   const prod = this.editingProduct;
-
-  //   try {
-  //     if (prod.source === 'db') {
-  //       await firstValueFrom(this.http.put(`${this.dbUrl}/${prod.id}`, prod));
-  //       const index = this.dbProducts.findIndex(p => String(p.id) === String(prod.id));
-  //       if (index !== -1) this.dbProducts[index] = { ...prod, source: 'db' };
-  //       this.combineProducts();
-  //       this.editingProduct = null;
-  //       this.showMessage('Product updated successfully!', 'success');
-  //     } else {
-  //       const newProd = {
-  //         name: prod.name,
-  //         brand: prod.brand,
-  //         price: prod.price,
-  //         category: prod.category || prod.product_type,
-  //         rating: prod.rating ?? 0,
-  //         image: prod.image || prod.image_link,
-  //         product_type: prod.product_type
-  //       };
-  //       const saved: any = await firstValueFrom(this.http.post(this.dbUrl, newProd));
-  //       this.dbProducts.push({ ...saved, source: 'db' });
-  //       this.jsonProducts = this.jsonProducts.filter(p => p.id !== prod.id);
-  //       this.combineProducts();
-  //       this.editingProduct = null;
-  //       this.showMessage('Product migrated to DB!', 'success');
-  //     }
-  //   } catch (error) {
-  //     console.error('Save error:', error);
-  //     this.showMessage('Failed to save product', 'error');
-  //   }
-  // }
-
   // ===== DELETE =====
+
   confirmDelete(product: any) {
-    if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      this.productToDelete = product;
-      this.deleteConfirmed();
-    }
+    this.productToDelete = product;
+    this.confirmVisible = true;
+  }
+
+  cancelDelete() {
+    this.confirmVisible = false;
+    this.productToDelete = null;
   }
 
   async deleteConfirmed() {
@@ -284,16 +253,17 @@ export class ViewProducts implements OnInit {
         await firstValueFrom(this.http.delete(`${this.dbUrl}/${this.productToDelete.id}`));
         this.dbProducts = this.dbProducts.filter((p) => p.id !== this.productToDelete.id);
         this.combineProducts();
-        this.showMessage('Product deleted', 'success');
+        this.showMessage('Product deleted successfully!', 'success');
       } else {
         this.jsonProducts = this.jsonProducts.filter((p) => p.id !== this.productToDelete.id);
         this.combineProducts();
-        this.showMessage('JSON product removed', 'success');
+        this.showMessage('Product removed successfully!', 'success');
       }
     } catch (error) {
       console.error('Delete error:', error);
       this.showMessage('Failed to delete product', 'error');
     } finally {
+      this.confirmVisible = false;
       this.productToDelete = null;
     }
   }

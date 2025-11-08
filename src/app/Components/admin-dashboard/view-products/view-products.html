@@ -3,23 +3,14 @@
   <p class="page-subtitle">View, edit, and delete existing products</p>
 
   <!-- Search Bar -->
-  <input
-    type="text"
-    placeholder="Search by name..."
-    [(ngModel)]="searchText"
-    (input)="applyFilters()"
-    class="search-input"
-  />
+  <input type="text" placeholder="Search by name..." [(ngModel)]="searchText" (input)="applyFilters()"
+    class="search-input" />
 
   <!-- Category Buttons -->
   <!-- Category Buttons -->
   <div class="category-buttons">
-    <button
-      *ngFor="let category of categories"
-      class="category-btn"
-      [class.active]="selectedCategory === category"
-      (click)="filterByCategory(category)"
-    >
+    <button *ngFor="let category of categories" class="category-btn" [class.active]="selectedCategory === category"
+      (click)="filterByCategory(category)">
       <i class="bi bi-tag"></i> {{ category }}
     </button>
   </div>
@@ -57,12 +48,8 @@
             <td><input [(ngModel)]="editingProduct.name" type="text" class="edit-input" /></td>
             <td><input [(ngModel)]="editingProduct.brand" type="text" class="edit-input" /></td>
             <td>
-              <input
-                [(ngModel)]="editingProduct.product_type"
-                [value]="editingProduct.product_type || editingProduct.category"
-                type="text"
-                class="edit-input"
-              />
+              <input [(ngModel)]="editingProduct.product_type"
+                [value]="editingProduct.product_type || editingProduct.category" type="text" class="edit-input" />
             </td>
 
             <td><input [(ngModel)]="editingProduct.price" type="number" class="edit-input" /></td>
@@ -107,12 +94,8 @@
     <div *ngIf="totalPages > 1" class="pagination-container">
       <button (click)="prevPage()" [disabled]="currentPage === 1" class="page-btn">« Prev</button>
 
-      <button
-        *ngFor="let page of [].constructor(totalPages); let i = index"
-        (click)="goToPage(i + 1)"
-        [class.active]="currentPage === i + 1"
-        class="page-btn"
-      >
+      <button *ngFor="let page of [].constructor(totalPages); let i = index" (click)="goToPage(i + 1)"
+        [class.active]="currentPage === i + 1" class="page-btn">
         {{ i + 1 }}
       </button>
 
@@ -127,15 +110,28 @@
   </div>
 
   <!-- Confirmation Modal -->
-  <div *ngIf="confirmVisible" class="confirm-overlay">
-    <div class="confirm-box">
-      <p>
-        Are you sure you want to delete <strong>{{ productToDelete?.name }}</strong
-        >?
-      </p>
-      <div class="confirm-buttons">
-        <button class="confirm-yes" (click)="deleteConfirmed()">Yes</button>
-        <!-- <button class="confirm-no" (click)="cancelDelete()">No</button> -->
+  <!-- Modern Delete Confirmation Modal -->
+  <div *ngIf="confirmVisible" class="modal-overlay" (click)="cancelDelete()">
+    <div class="modern-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <i class="bi bi-exclamation-triangle warning-icon"></i>
+        <h3>Delete Product</h3>
+      </div>
+
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong>"{{ productToDelete?.name }}"</strong>?</p>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelDelete()">
+          <i class="bi bi-x-lg"></i>
+          Cancel
+        </button>
+        <button class="btn-danger" (click)="deleteConfirmed()">
+          <i class="bi bi-trash"></i>
+          Delete Product
+        </button>
       </div>
     </div>
   </div>
