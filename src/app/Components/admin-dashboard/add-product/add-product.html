@@ -63,6 +63,14 @@
 
         </div>
       </div>
+<!-- Success Toast -->
+<div
+  class="toast toast-success"
+  *ngIf="showSuccessToast"
+  (click)="showSuccessToast = false"
+>
+  ✅ Product added successfully!
+</div>
 
       <div class="form-actions">
         <button type="submit" class="btn-submit">Add Product</button>
