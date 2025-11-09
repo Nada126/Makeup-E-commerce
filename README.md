@@ -1,13 +1,12 @@
 # 🌟 Glow Up - Makeup E-commerce
 
-**Glow Up** is a modern, responsive, and feature-rich **makeup e-commerce website** built using **Angular** and **Firebase**. This web application is designed for a seamless shopping experience, providing both end-users and admins with distinct, intuitive interfaces to manage every aspect of online beauty retail.
+Glow Up is a modern, responsive, and feature-rich makeup e-commerce website built with **Angular** and secure OAuth authentication (Google, Facebook). This web application is designed for a smooth shopping experience for users and provides a dedicated dashboard for admins to manage products and reviews.
 
 ---
 
 ## 📌 Table of Contents
 - [Features](#-features)
 - [Technologies Used](#-technologies-used)
-- [Project Structure](#-project-structure)
 - [Installation & Setup](#️-installation--setup)
 - [Usage](#-usage)
 
@@ -15,87 +14,68 @@
 
 ## 🚀 Features
 
-### User Experience
-- **Browse & Discover:** Search by brand, category, type, price, or rating.
-- **Smart Pagination:** Effortless navigation through large product lists.
-- **Product Details:** Comprehensive info including images, ratings, reviews, and price.
-- **Favorites:** Instantly add or remove items from your wishlist.
-- **Cart Management:** Add items to cart, update quantities, and prepare orders.
-- **Secure Authentication:** Register or login via **Google** & **Facebook**.
-- **User Reviews:** Authenticated users can write, edit, and delete their own product reviews.
-- **Responsive Design:** Fully optimized for desktops and mobiles.
+### User Features
+- **Browse & Discover:** Search and filter products by brand, category, type, price, and rating.
+- **Smart Pagination:** Easily navigate through product pages.
+- **Product Details:** View detailed product information such as images, descriptions, price, and ratings.
+- **Favorites:** Add or remove products from your favorites list.
+- **Shopping Cart:** Add products to the cart and review selections before purchase.
+- **Product Reviews:** Submit reviews for products.  
+  - _Note: Only admins can moderate, edit, or delete reviews; regular users cannot modify or remove reviews once submitted._
+- **Secure Authentication:** Register and login with Google or Facebook (OAuth).
+- **Responsive Design:** Optimized for both desktop and mobile devices.
 
-### Admin Dashboard
-- **Dashboard Overview:** Visual analytics on products, orders, reviews, and users.
-- **Product Management:** Add, update, or delete products effortlessly.
-- **Review Moderation:** Manage customer reviews, change status, or remove inappropriate content.
-- **User & Orders Management:** Oversee all user accounts and track order history.
+### Admin Features
+- **Dashboard Analytics:** View statistics about products and reviews (total products, total reviews, average rating, and review status charts).
+- **Product Management:** Add, update, or delete products.
+- **Review Moderation:** Approve, reject, or delete user reviews.
+  - _Note: The dashboard does not manage orders or users – it is focused on products and reviews analytics only._
 
 ---
 
 ## 🛠 Technologies Used
 
-- **Frontend:** Angular, TypeScript, HTML5, CSS3, Bootstrap  
-- **Backend & Database:** Firebase (Authentication, Firestore, Functions)
-- **Authentication:** OAuth with Google & Facebook
-- **Other Tools:** Angular CLI, RxJS, Bootstrap Icons, RESTful APIs
+- **Frontend:** Angular, TypeScript, HTML5, CSS3, Bootstrap
+- **Authentication:** Google OAuth, Facebook OAuth
 - **Version Control:** Git & GitHub
-
----
-
-## 📁 Project Structure
-
-```
-/src
- ├─ app
- │   ├─ components/    # UI components
- │   ├─ services/      # Business logic & API calls
- │   ├─ models/        # TypeScript interfaces & types
- │   └─ app.module.ts
- ├─ assets/            # Images & static files
- └─ styles.css         # Global styles
-```
 
 ---
 
 ## ⚙️ Installation & Setup
 
-1. **Clone the repository**
+1. **Clone the repository:**
     ```bash
     git clone https://github.com/Nada126/Makeup-E-commerce.git
     ```
 
-2. **Navigate to the project folder**
+2. **Navigate to the project folder:**
     ```bash
     cd Makeup-E-commerce
     ```
 
-3. **Install dependencies**
+3. **Install project dependencies:**
     ```bash
     npm install
     ```
 
-4. **Run the development server**
+4. **Run the development server:**
     ```bash
     npx ng serve
     ```
 
-5. **Open your browser at:**
-    ```
-    http://localhost:4200/
-    ```
-
-*If using Firebase features, ensure you configure your Firebase credentials in `environment.ts` following the provided sample or project documentation.*
+5. **Access the app in your browser:**  
+    Visit [http://localhost:4200/](http://localhost:4200/) to start using Glow Up.
 
 ---
 
 ## 📌 Usage
 
-- **Explore Products:** Start browsing and filter by category, brand, or any criteria.
-- **Favorite & Cart:** Add products to your favorites or cart for easier checkout.
-- **Review System:** Rate and review products you purchased.
-- **Admin Interface:** Log in as an admin to manage products, reviews, users, and get real-time analytics.
+- Browse and filter makeup products with multiple search criteria.
+- Add products to your favorites or cart (if implemented).
+- Submit reviews after signing in with Google or Facebook.
+- Admins can manage products and moderate reviews through the dedicated dashboard.
+- All actions work seamlessly on mobile and desktop.
 
 ---
 
-**Glow Up delivers a beautiful foundation for building any cosmetics e-commerce platform—ready for your custom look!**
+**Glow Up gives you a professional-ready foundation for any makeup e-commerce platform!**
