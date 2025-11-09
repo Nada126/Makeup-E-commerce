@@ -1,59 +1,101 @@
-# ECommerce
+# 🌟 Glow Up - Makeup E-commerce
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
+**Glow Up** is a modern, responsive, and feature-rich **makeup e-commerce website** built using **Angular** and **Firebase**. This web application is designed for a seamless shopping experience, providing both end-users and admins with distinct, intuitive interfaces to manage every aspect of online beauty retail.
 
-## Development server
+---
 
-To start a local development server, run:
+## 📌 Table of Contents
+- [Features](#-features)
+- [Technologies Used](#-technologies-used)
+- [Project Structure](#-project-structure)
+- [Installation & Setup](#️-installation--setup)
+- [Usage](#-usage)
 
-```bash
-ng serve
+---
+
+## 🚀 Features
+
+### User Experience
+- **Browse & Discover:** Search by brand, category, type, price, or rating.
+- **Smart Pagination:** Effortless navigation through large product lists.
+- **Product Details:** Comprehensive info including images, ratings, reviews, and price.
+- **Favorites:** Instantly add or remove items from your wishlist.
+- **Cart Management:** Add items to cart, update quantities, and prepare orders.
+- **Secure Authentication:** Register or login via **Google** & **Facebook**.
+- **User Reviews:** Authenticated users can write, edit, and delete their own product reviews.
+- **Responsive Design:** Fully optimized for desktops and mobiles.
+
+### Admin Dashboard
+- **Dashboard Overview:** Visual analytics on products, orders, reviews, and users.
+- **Product Management:** Add, update, or delete products effortlessly.
+- **Review Moderation:** Manage customer reviews, change status, or remove inappropriate content.
+- **User & Orders Management:** Oversee all user accounts and track order history.
+
+---
+
+## 🛠 Technologies Used
+
+- **Frontend:** Angular, TypeScript, HTML5, CSS3, Bootstrap  
+- **Backend & Database:** Firebase (Authentication, Firestore, Functions)
+- **Authentication:** OAuth with Google & Facebook
+- **Other Tools:** Angular CLI, RxJS, Bootstrap Icons, RESTful APIs
+- **Version Control:** Git & GitHub
+
+---
+
+## 📁 Project Structure
+
+```
+/src
+ ├─ app
+ │   ├─ components/    # UI components
+ │   ├─ services/      # Business logic & API calls
+ │   ├─ models/        # TypeScript interfaces & types
+ │   └─ app.module.ts
+ ├─ assets/            # Images & static files
+ └─ styles.css         # Global styles
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## ⚙️ Installation & Setup
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+1. **Clone the repository**
+    ```bash
+    git clone https://github.com/Nada126/Makeup-E-commerce.git
+    ```
 
-```bash
-ng generate component component-name
-```
+2. **Navigate to the project folder**
+    ```bash
+    cd Makeup-E-commerce
+    ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+3. **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-```bash
-ng generate --help
-```
+4. **Run the development server**
+    ```bash
+    npx ng serve
+    ```
 
-## Building
+5. **Open your browser at:**
+    ```
+    http://localhost:4200/
+    ```
 
-To build the project run:
+*If using Firebase features, ensure you configure your Firebase credentials in `environment.ts` following the provided sample or project documentation.*
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 📌 Usage
 
-## Running unit tests
+- **Explore Products:** Start browsing and filter by category, brand, or any criteria.
+- **Favorite & Cart:** Add products to your favorites or cart for easier checkout.
+- **Review System:** Rate and review products you purchased.
+- **Admin Interface:** Log in as an admin to manage products, reviews, users, and get real-time analytics.
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Glow Up delivers a beautiful foundation for building any cosmetics e-commerce platform—ready for your custom look!**
