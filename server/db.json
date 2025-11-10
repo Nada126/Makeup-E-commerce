@@ -126,7 +126,7 @@
       "rating": 3,
       "comment": "It covers my dark circles all over the day",
       "productId": 1004,
-      "status": "pending"
+      "status": "approved"
     },
     {
       "id": "a28e",
@@ -146,18 +146,34 @@
       "rating": 4,
       "comment": "good",
       "productId": 842
+    },
+    {
+      "id": "e85e",
+      "userName": "Nourhan Amr",
+      "userImage": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2638395513169095&height=50&width=50&ext=1764108626&hash=AT-Mh44uwjZm-vd9p-sLjLEy",
+      "date": "2025-11-08",
+      "rating": 5,
+      "comment": "Beautiful Lipstick",
+      "productId": 516
+    },
+    {
+      "id": "f9f1",
+      "userName": "Nourhan Amr",
+      "userImage": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2638395513169095&height=50&width=50&ext=1764108626&hash=AT-Mh44uwjZm-vd9p-sLjLEy",
+      "date": "2025-11-08",
+      "rating": 4,
+      "comment": "Fantastic Product",
+      "productId": 842
+    },
+    {
+      "id": "9bab",
+      "userName": "Nourhan Amr",
+      "userImage": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2638395513169095&height=50&width=50&ext=1764108626&hash=AT-Mh44uwjZm-vd9p-sLjLEy",
+      "date": "2025-11-08",
+      "rating": 4,
+      "comment": "Fatastic Product",
+      "productId": 516
     }
   ],
-  "products": [
-    {
-      "id": "a465",
-      "name": "Blotted Lip",
-      "brand": "colourpop",
-      "price": 6,
-      "category": "lipstick",
-      "rating": 0,
-      "image": "https://cdn.shopify.com/s/files/1/1338/0845/products/brain-freeze_a_800x1200.jpg?v=1502255076",
-      "product_type": "lipstick"
-    }
-  ]
+  "products": []
 }

@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient} from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-product',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './add-product.html',
-  styleUrl: './add-product.css'
+  styleUrls: ['./add-product.css']
 })
 export class AddProduct {
   product = {
@@ -24,8 +25,10 @@ export class AddProduct {
   };
 
   private baseUrl = 'http://localhost:3001/products';
+  showSuccessToast = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private router: Router) { }
+
   addProduct() {
     if (!this.product.name || !this.product.price || !this.product.product_type) {
       alert('Please fill in all required fields.');
@@ -44,7 +47,7 @@ export class AddProduct {
 
     this.http.post(this.baseUrl, productToAdd).subscribe({
       next: () => {
-        alert('✅ Product added successfully!');
+        // Reset form
         this.product = {
           name: '',
           brand: '',
@@ -56,7 +59,13 @@ export class AddProduct {
           description: '',
           stock: null,
         };
-        window.location.href = '#/admin/view-products';
+this.showSuccessToast = true;
+
+// Navigate after 2s so user sees the toast
+setTimeout(() => {
+  this.router.navigateByUrl('/admin/products');
+}, 2000);
+
       },
       error: (err) => {
         console.error('Error adding product:', err);

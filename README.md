@@ -1,59 +1,81 @@
-# ECommerce
+# 🌟 Glow Up - Makeup E-commerce
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.5.
+Glow Up is a modern, responsive, and feature-rich makeup e-commerce website built with **Angular** and secure OAuth authentication (Google, Facebook). This web application is designed for a smooth shopping experience for users and provides a dedicated dashboard for admins to manage products and reviews.
 
-## Development server
+---
 
-To start a local development server, run:
+## 📌 Table of Contents
+- [Features](#-features)
+- [Technologies Used](#-technologies-used)
+- [Installation & Setup](#️-installation--setup)
+- [Usage](#-usage)
 
-```bash
-ng serve
-```
+---
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🚀 Features
 
-## Code scaffolding
+### User Features
+- **Browse & Discover:** Search and filter products by brand, category, type, price, and rating.
+- **Smart Pagination:** Easily navigate through product pages.
+- **Product Details:** View detailed product information such as images, descriptions, price, and ratings.
+- **Favorites:** Add or remove products from your favorites list.
+- **Shopping Cart:** Add products to the cart and review selections before purchase.
+- **Product Reviews:** Submit reviews for products.  
+  - _Note: Only admins can moderate, edit, or delete reviews; regular users cannot modify or remove reviews once submitted._
+- **Secure Authentication:** Register and login with Google or Facebook (OAuth).
+- **Responsive Design:** Optimized for both desktop and mobile devices.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Admin Features
+- **Dashboard Analytics:** View statistics about products and reviews (total products, total reviews, average rating, and review status charts).
+- **Product Management:** Add, update, or delete products.
+- **Review Moderation:** Approve, reject, or delete user reviews.
+  - _Note: The dashboard does not manage orders or users – it is focused on products and reviews analytics only._
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🛠 Technologies Used
 
-```bash
-ng generate --help
-```
+- **Frontend:** Angular, TypeScript, HTML5, CSS3, Bootstrap
+- **Authentication:** Google OAuth, Facebook OAuth
+- **Version Control:** Git & GitHub
 
-## Building
+---
 
-To build the project run:
+## ⚙️ Installation & Setup
 
-```bash
-ng build
-```
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/Nada126/Makeup-E-commerce.git
+    ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+2. **Navigate to the project folder:**
+    ```bash
+    cd Makeup-E-commerce
+    ```
 
-## Running unit tests
+3. **Install project dependencies:**
+    ```bash
+    npm install
+    ```
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+4. **Run the development server:**
+    ```bash
+    npx ng serve
+    ```
 
-```bash
-ng test
-```
+5. **Access the app in your browser:**  
+    Visit [http://localhost:4200/](http://localhost:4200/) to start using Glow Up.
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## 📌 Usage
 
-```bash
-ng e2e
-```
+- Browse and filter makeup products with multiple search criteria.
+- Add products to your favorites or cart (if implemented).
+- Submit reviews after signing in with Google or Facebook.
+- Admins can manage products and moderate reviews through the dedicated dashboard.
+- All actions work seamlessly on mobile and desktop.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Glow Up gives you a professional-ready foundation for any makeup e-commerce platform!**
